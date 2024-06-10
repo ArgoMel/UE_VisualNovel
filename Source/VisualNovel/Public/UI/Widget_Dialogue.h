@@ -19,6 +19,9 @@ protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 
+private:
+	FTimerHandle mTypeTimer;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> DialogueText;
@@ -37,6 +40,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mDialogueOptionClass;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	FString mCurText;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	FString mConsumedText;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	FString mTargetText;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
+	float mTextSpeed;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
 	bool mShowUnselectableOption;
 
@@ -48,8 +59,11 @@ protected:
 	UFUNCTION()
 	void OnClickToContinueBtnClicked();
 
-	void UpdateDialogue();
+	UFUNCTION()
+	void DelayTypeText();
 
 public:
+	void UpdateText();
 	void ChooseOption(int32 OptionIndex);
+	void ShowOptions();
 };

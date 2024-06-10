@@ -11,6 +11,7 @@
 UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	mTextSpeed = 0.05f;
 	mShowUnselectableOption = true;
 
 	GetClassAsset(mDialogueOptionClass, UUserWidget, "/Game/VN/WP_DialogueOption.WP_DialogueOption_C");
@@ -29,18 +30,27 @@ void UWidget_Dialogue::NativeConstruct()
 	{
 		return;
 	}
-	UpdateDialogue();
+	UpdateText();
 }
 
 void UWidget_Dialogue::OnClickToContinueBtnClicked()
 {
+	if(mCurText!=mTargetText)
+	{
+		mTypeTimer.Invalidate();
+		mCurText = mTargetText;
+		DialogueText->SetText(FText::FromString(mCurText));
+		ShowOptions();
+		return;
+	}
+
 	int32 optionNum = mShowUnselectableOption ?
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if(optionNum ==1)
 	{
 		if (mDialogueContext->ChooseOption(0))
 		{
-			UpdateDialogue();
+			UpdateText();
 		}
 		else
 		{
@@ -49,14 +59,27 @@ void UWidget_Dialogue::OnClickToContinueBtnClicked()
 	}
 }
 
-void UWidget_Dialogue::UpdateDialogue()
+void UWidget_Dialogue::DelayTypeText()
+{
+	if(mConsumedText.IsEmpty()||
+		mCurText == mTargetText)
+	{
+		mTypeTimer.Invalidate();
+		ShowOptions();
+		return;
+	}
+	mCurText += mConsumedText[0];
+	mConsumedText=mConsumedText.RightChop(1);
+	DialogueText->SetText(FText::FromString(mCurText));
+}
+
+void UWidget_Dialogue::UpdateText()
 {
 	for (int32 i = 0; i < ButtonsVBox->GetChildrenCount();++i)
 	{
 		ButtonsVBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
-	DialogueText->SetText(mDialogueContext->GetActiveNodeText());
 	UObject* activeParicipant =
 		Cast<UObject>(mDialogueContext->GetActiveNodeParticipant());
 	if (IsValid(activeParicipant))
@@ -71,53 +94,20 @@ void UWidget_Dialogue::UpdateDialogue()
 		SpeakerBorder->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
-	if (!IsValid(mDialogueOptionClass))
+	if(mTextSpeed==0.f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UWidget_Dialogue::mDialogueOptionClass 클래스 없음"));
-		return;
+		mCurText = mDialogueContext->GetActiveNodeText().ToString();
+		mTargetText= mCurText;
+		DialogueText->SetText(mDialogueContext->GetActiveNodeText());
+		ShowOptions();
 	}
-	int32 optionNum = mShowUnselectableOption ? 
-		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
-	if (optionNum < 2)
+	else
 	{
-		return;
-	}
-	for (int32 i = 0; i < optionNum; ++i)
-	{
-		UWidget_DialogueOption* dialogueOption = nullptr;
-		bool canRecycle = i < ButtonsVBox->GetChildrenCount();
-		if(canRecycle)
-		{
-			dialogueOption=Cast<UWidget_DialogueOption>(ButtonsVBox->GetChildAt(i));
-		}
-		else
-		{
-			dialogueOption =
-				CreateWidget<UWidget_DialogueOption>(GetOwningPlayer(), mDialogueOptionClass);
-		}
-		if (!IsValid(dialogueOption))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("UWidget_Dialogue::dialogueOption 캐스팅 실패"));
-			return;
-		}
-		if(mShowUnselectableOption)
-		{
-			dialogueOption->Init(this,mDialogueContext->GetOptionTextFromAll(i),i);
-		}
-		else
-		{
-			dialogueOption->Init(this,mDialogueContext->GetOptionText(i),i);
-		}
-		dialogueOption->SetVisibility(ESlateVisibility::Visible);
-		if (!canRecycle)
-		{
-			ButtonsVBox->AddChild(dialogueOption);
-		}
-
-		if(mShowUnselectableOption)
-		{
-			dialogueOption->SetIsEnabled(mDialogueContext->IsOptionSatisfied(i));
-		}
+		mCurText.Empty();
+		mConsumedText= mDialogueContext->GetActiveNodeText().ToString();
+		mTargetText = mConsumedText;
+		DialogueText->SetText(FText::GetEmpty());
+		GetWorld()->GetTimerManager().SetTimer(mTypeTimer, this, &ThisClass::DelayTypeText, mTextSpeed, true);
 	}
 }
 
@@ -131,5 +121,57 @@ void UWidget_Dialogue::ChooseOption(int32 OptionIndex)
 	{
 		mDialogueContext->ChooseOption(OptionIndex);
 	}
-	UpdateDialogue();
+	UpdateText();
+}
+
+void UWidget_Dialogue::ShowOptions()
+{
+	if (!IsValid(mDialogueOptionClass))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UWidget_Dialogue::mDialogueOptionClass 클래스 없음"));
+		return;
+	}
+	int32 optionNum = mShowUnselectableOption ?
+		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
+	if (optionNum < 2)
+	{
+		return;
+	}
+	for (int32 i = 0; i < optionNum; ++i)
+	{
+		UWidget_DialogueOption* dialogueOption = nullptr;
+		bool canRecycle = i < ButtonsVBox->GetChildrenCount();
+		if (canRecycle)
+		{
+			dialogueOption = Cast<UWidget_DialogueOption>(ButtonsVBox->GetChildAt(i));
+		}
+		else
+		{
+			dialogueOption =
+				CreateWidget<UWidget_DialogueOption>(GetOwningPlayer(), mDialogueOptionClass);
+		}
+		if (!IsValid(dialogueOption))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UWidget_Dialogue::dialogueOption 캐스팅 실패"));
+			return;
+		}
+		if (mShowUnselectableOption)
+		{
+			dialogueOption->Init(this, mDialogueContext->GetOptionTextFromAll(i), i);
+		}
+		else
+		{
+			dialogueOption->Init(this, mDialogueContext->GetOptionText(i), i);
+		}
+		dialogueOption->SetVisibility(ESlateVisibility::Visible);
+		if (!canRecycle)
+		{
+			ButtonsVBox->AddChild(dialogueOption);
+		}
+
+		if (mShowUnselectableOption)
+		{
+			dialogueOption->SetIsEnabled(mDialogueContext->IsOptionSatisfied(i));
+		}
+	}
 }
