@@ -329,10 +329,10 @@ UObject* UDlgContext::GetActiveNodeParticipant() const
 	auto* ObjectPtr = Participants.Find(Node->GetNodeParticipantName());
 	if (ObjectPtr == nullptr || !IsValid(*ObjectPtr))
 	{
-		LogErrorWithContext(FString::Printf(
-			TEXT("GetActiveNodeParticipant - The ParticipantName = `%s` from the Active Node does NOT exist in the current Participants"),
-			*SpeakerName.ToString()
-		));
+		//LogErrorWithContext(FString::Printf(
+		//	TEXT("GetActiveNodeParticipant - The ParticipantName = `%s` from the Active Node does NOT exist in the current Participants"),
+		//	*SpeakerName.ToString()
+		//));
 		return nullptr;
 	}
 

@@ -1,6 +1,6 @@
 #include "UI/Widget_DialogueOption.h"
 #include "UI/Widget_Dialogue.h"
-#include "Components/TextBlock.h"
+#include "Components/RichTextBlock.h"
 #include "Components/Button.h"
 
 UWidget_DialogueOption::UWidget_DialogueOption(const FObjectInitializer& ObjectInitializer)

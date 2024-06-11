@@ -4,7 +4,7 @@
 #include "Widget_DialogueOption.generated.h"
 
 class UButton;
-class UTextBlock;
+class URichTextBlock;
 class UWidget_Dialogue;
 
 UCLASS(Abstract)
@@ -21,7 +21,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> DialogueBtn;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> DialogueText;
+	TObjectPtr<URichTextBlock> DialogueText;
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;

@@ -3,6 +3,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Widget_Dialogue.generated.h"
 
+class URichTextBlock;
 class UBorder;
 class UTextBlock;
 class UVerticalBox;
@@ -24,7 +25,7 @@ private:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> DialogueText;
+	TObjectPtr<URichTextBlock> DialogueText;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UBorder> SpeakerBorder;

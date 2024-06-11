@@ -1,8 +1,10 @@
 #include "UI/Widget_Dialogue.h"
 #include "UI/Widget_DialogueOption.h"
+#include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
 #include <DlgSystem/DlgDialogueParticipant.h>
+#include "Components/RichTextBlock.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Components/VerticalBox.h"
@@ -96,15 +98,17 @@ void UWidget_Dialogue::UpdateText()
 
 	if(mTextSpeed==0.f)
 	{
-		mCurText = mDialogueContext->GetActiveNodeText().ToString();
+		mCurText = UBFL_VN::ToTargetText(
+			mDialogueContext->GetActiveNodeText(),IsValid(activeParicipant));
 		mTargetText= mCurText;
-		DialogueText->SetText(mDialogueContext->GetActiveNodeText());
+		DialogueText->SetText(FText::FromString(mCurText));
 		ShowOptions();
 	}
 	else
 	{
 		mCurText.Empty();
-		mConsumedText= mDialogueContext->GetActiveNodeText().ToString();
+		mConsumedText= UBFL_VN::ToTargetText(
+			mDialogueContext->GetActiveNodeText(), IsValid(activeParicipant));
 		mTargetText = mConsumedText;
 		DialogueText->SetText(FText::GetEmpty());
 		GetWorld()->GetTimerManager().SetTimer(mTypeTimer, this, &ThisClass::DelayTypeText, mTextSpeed, true);
@@ -155,14 +159,18 @@ void UWidget_Dialogue::ShowOptions()
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_Dialogue::dialogueOption 캐스팅 실패"));
 			return;
 		}
+		FString tempString;
 		if (mShowUnselectableOption)
 		{
-			dialogueOption->Init(this, mDialogueContext->GetOptionTextFromAll(i), i);
+			tempString=UBFL_VN::ToTargetText(
+				mDialogueContext->GetOptionTextFromAll(i), false);
 		}
 		else
 		{
-			dialogueOption->Init(this, mDialogueContext->GetOptionText(i), i);
+			tempString=UBFL_VN::ToTargetText(
+				mDialogueContext->GetOptionText(i), false);
 		}
+		dialogueOption->Init(this, FText::FromString(tempString), i);
 		dialogueOption->SetVisibility(ESlateVisibility::Visible);
 		if (!canRecycle)
 		{
