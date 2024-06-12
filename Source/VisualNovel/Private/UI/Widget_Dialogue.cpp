@@ -70,7 +70,29 @@ void UWidget_Dialogue::DelayTypeText()
 		ShowOptions();
 		return;
 	}
+	if (mCurText.EndsWith(TEXT(">")))
+	{
+		mCurText.RemoveFromEnd(TEXT("</>"));
+	}
+	bool isSymbol = true;
+	TArray<FString> paths;
+	mConsumedText.ParseIntoArray(paths, TEXT(">"));
+	mConsumedText.Empty();
+	for (FString& element : paths)
+	{
+		element += TEXT(">");
+		if (isSymbol&&element.StartsWith(TEXT("<")))
+		{
+			mCurText += element;
+		}
+		else
+		{
+			isSymbol = false;
+			mConsumedText += element;
+		}
+	}
 	mCurText += mConsumedText[0];
+	mCurText += TEXT("</>");
 	mConsumedText=mConsumedText.RightChop(1);
 	DialogueText->SetText(FText::FromString(mCurText));
 }
