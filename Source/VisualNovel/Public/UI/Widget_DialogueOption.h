@@ -27,8 +27,6 @@ protected:
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Variable", meta = (ExposeOnSpawn = true))
-	FText mText;
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Variable", meta = (ExposeOnSpawn = true))
 	int32 mOptionIndex;
 
 protected:

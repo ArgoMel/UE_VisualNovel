@@ -1,20 +1,23 @@
 #include "UI/Widget_Dialogue.h"
 #include "UI/Widget_DialogueOption.h"
+#include "Actor/Participant.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
-#include <DlgSystem/DlgDialogueParticipant.h>
 #include "Components/RichTextBlock.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Components/VerticalBox.h"
 #include "Components/Button.h"
+#include "Components/EditableText.h"
+#include <DlgSystem/DlgManager.h>
 
 UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	mTextSpeed = 0.05f;
-	mShowUnselectableOption = true;
+	bShowUnselectableOption = true;
+	bAskForPlayerName = false;
 
 	GetClassAsset(mDialogueOptionClass, UUserWidget, "/Game/VN/WP_DialogueOption.WP_DialogueOption_C");
 }
@@ -23,20 +26,32 @@ void UWidget_Dialogue::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	ClickToContinueBtn->OnClicked.AddDynamic(this,&ThisClass::OnClickToContinueBtnClicked);
+	PlayerNameInput->OnTextChanged.AddDynamic(this,&ThisClass::OnPlayerNameInputChanged);
+	PlayerNameInput->OnTextCommitted.AddDynamic(this,&ThisClass::OnPlayerNameInputCommitted);
 }
 
 void UWidget_Dialogue::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (!IsValid(mDialogueContext))
+	mParticipants.Add(this);
+	mDialogueContext=UDlgManager::StartDialogue(mDLGDialogue, mParticipants);
+	if (IsValid(mDialogueContext))
 	{
-		return;
+		UpdateText();
 	}
-	UpdateText();
+}
+
+FName UWidget_Dialogue::GetParticipantName_Implementation() const
+{
+	return TEXT("Widget");
 }
 
 void UWidget_Dialogue::OnClickToContinueBtnClicked()
 {
+	if(PlayerNameInput->IsVisible())
+	{
+		return;
+	}
 	if(mCurText!=mTargetText)
 	{
 		mTypeTimer.Invalidate();
@@ -46,7 +61,7 @@ void UWidget_Dialogue::OnClickToContinueBtnClicked()
 		return;
 	}
 
-	int32 optionNum = mShowUnselectableOption ?
+	int32 optionNum = bShowUnselectableOption ?
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if(optionNum ==1)
 	{
@@ -61,12 +76,39 @@ void UWidget_Dialogue::OnClickToContinueBtnClicked()
 	}
 }
 
+void UWidget_Dialogue::OnPlayerNameInputChanged(const FText& Text)
+{
+	FString temp = Text.ToString();
+	if(temp.Len()>=10)
+	{
+		PlayerNameInput->SetText(FText::FromString(temp.Left(10)));
+	}
+}
+
+void UWidget_Dialogue::OnPlayerNameInputCommitted(const FText& Text, 
+	ETextCommit::Type CommitMethod)
+{
+	if(CommitMethod!=ETextCommit::OnEnter||
+		Text.IsEmpty())
+	{
+		return;
+	}
+	AParticipant* participant=
+		Cast<AParticipant>(mDialogueContext->GetMutableParticipant(ISPHERIA));
+	if(!IsValid(participant))
+	{
+		return;
+	}
+	participant->mPlayerName=Text;
+	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
+	ChooseOption(0);
+}
+
 void UWidget_Dialogue::DelayTypeText()
 {
 	if(mConsumedText.IsEmpty()||
 		mCurText == mTargetText)
 	{
-		mTypeTimer.Invalidate();
 		ShowOptions();
 		return;
 	}
@@ -139,7 +181,7 @@ void UWidget_Dialogue::UpdateText()
 
 void UWidget_Dialogue::ChooseOption(int32 OptionIndex)
 {
-	if(mShowUnselectableOption)
+	if(bShowUnselectableOption)
 	{
 		mDialogueContext->ChooseOptionFromAll(OptionIndex);
 	}
@@ -152,12 +194,22 @@ void UWidget_Dialogue::ChooseOption(int32 OptionIndex)
 
 void UWidget_Dialogue::ShowOptions()
 {
+	if(bAskForPlayerName)
+	{
+		PlayerNameInput->SetVisibility(ESlateVisibility::Visible);
+		return;
+	}
+	if(!mTypeTimer.IsValid())
+	{
+		return;
+	}
+	GetWorld()->GetTimerManager().ClearTimer(mTypeTimer);
 	if (!IsValid(mDialogueOptionClass))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UWidget_Dialogue::mDialogueOptionClass 클래스 없음"));
 		return;
 	}
-	int32 optionNum = mShowUnselectableOption ?
+	int32 optionNum = bShowUnselectableOption ?
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if (optionNum < 2)
 	{
@@ -179,10 +231,10 @@ void UWidget_Dialogue::ShowOptions()
 		if (!IsValid(dialogueOption))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_Dialogue::dialogueOption 캐스팅 실패"));
-			return;
+			continue;
 		}
 		FString tempString;
-		if (mShowUnselectableOption)
+		if (bShowUnselectableOption)
 		{
 			tempString=UBFL_VN::ToTargetText(
 				mDialogueContext->GetOptionTextFromAll(i), false);
@@ -199,7 +251,7 @@ void UWidget_Dialogue::ShowOptions()
 			ButtonsVBox->AddChild(dialogueOption);
 		}
 
-		if (mShowUnselectableOption)
+		if (bShowUnselectableOption)
 		{
 			dialogueOption->SetIsEnabled(mDialogueContext->IsOptionSatisfied(i));
 		}

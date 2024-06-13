@@ -16,6 +16,9 @@ public class VisualNovel : ModuleRules
             "DlgSystem"
         });
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] 
+		{
+            "SlateCore"
+        });
 	}
 }

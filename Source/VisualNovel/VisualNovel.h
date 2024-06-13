@@ -48,3 +48,6 @@ else \
 	RETURN_POINTER = nullptr;\
 }
 #pragma endregion
+
+#define ISPHERIA TEXT("Ispheria")
+#define AFFECTION TEXT("mAffection")

@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include <DlgSystem/DlgDialogueParticipant.h>
 #include "Widget_Dialogue.generated.h"
 
 class URichTextBlock;
@@ -8,10 +9,13 @@ class UBorder;
 class UTextBlock;
 class UVerticalBox;
 class UButton;
+class UEditableText;
 class UDlgContext;
+class UDlgDialogue;
 
 UCLASS(Abstract)
 class VISUALNOVEL_API UWidget_Dialogue : public UUserWidget
+	,public IDlgDialogueParticipant
 {
 	GENERATED_BODY()
 public:
@@ -19,6 +23,8 @@ public:
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
+public:
+	FName GetParticipantName_Implementation() const;
 
 private:
 	FTimerHandle mTypeTimer;
@@ -37,6 +43,11 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> ClickToContinueBtn;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UEditableText> PlayerNameInput;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
+	TObjectPtr<UDlgContext> mDialogueContext;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mDialogueOptionClass;
@@ -50,21 +61,29 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
 	float mTextSpeed;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
-	bool mShowUnselectableOption;
+	bool bShowUnselectableOption;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
+	bool bAskForPlayerName;
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
-	TObjectPtr<UDlgContext> mDialogueContext;
+	TArray<UObject*> mParticipants;
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
+	TObjectPtr<UDlgDialogue> mDLGDialogue;
 
 protected:
 	UFUNCTION()
 	void OnClickToContinueBtnClicked();
+	UFUNCTION()
+	void OnPlayerNameInputChanged(const FText& Text);
+	UFUNCTION()
+	void OnPlayerNameInputCommitted(const FText& Text, ETextCommit::Type CommitMethod);
 
 	UFUNCTION()
 	void DelayTypeText();
 
 public:
 	void UpdateText();
-	void ChooseOption(int32 OptionIndex);
+	void ChooseOption(int32 OptionIndex=0);
 	void ShowOptions();
 };

@@ -25,11 +25,10 @@ FString UBFL_VN::ToTargetText(FText InText, bool AddQuotes)
 
 	if(AddQuotes)
 	{
-		FString leftStr;
-		processString.Split(TEXT(">"), &leftStr, nullptr);
-		processString.RemoveFromStart(leftStr);
-		processString=processString.RightChop(1);
-		processString= leftStr+ TEXT(">\"") + processString + TEXT("\"");
+		int32 index = INDEX_NONE;
+		processString.FindChar('>', index);
+		processString.InsertAt(index+1, TEXT("\""));
+		processString+= TEXT("\"");
 	}
 
 	TArray<FString> words;
@@ -38,7 +37,8 @@ FString UBFL_VN::ToTargetText(FText InText, bool AddQuotes)
 	FString lastTextStyle;
 	for (FString& curStr : words)
 	{
-		int32 index = curStr.Find(TEXT(">"));
+		int32 index = INDEX_NONE;
+		curStr.FindChar('>', index);
 		if(index!=INDEX_NONE)
 		{			
 			lastTextStyle = curStr.Mid(0, index+1);
@@ -74,11 +74,11 @@ FString UBFL_VN::RemoveSymbolText(FString InText)
 {
 	FString tempStr = InText;
 	InText.Split(TEXT(">"), nullptr, &tempStr);
-	tempStr.ReplaceInline(TEXT("."), TEXT(""));
-	tempStr.ReplaceInline(TEXT("?"), TEXT(""));
-	tempStr.ReplaceInline(TEXT("!"), TEXT(""));
-	tempStr.ReplaceInline(TEXT(","), TEXT(""));
-	tempStr.ReplaceInline(TEXT("\""), TEXT(""));
-	tempStr.ReplaceInline(TEXT("'"), TEXT(""));
+	tempStr=tempStr.Replace(TEXT("."), TEXT(""));
+	tempStr=tempStr.Replace(TEXT("?"), TEXT(""));
+	tempStr=tempStr.Replace(TEXT("!"), TEXT(""));
+	tempStr=tempStr.Replace(TEXT(","), TEXT(""));
+	tempStr=tempStr.Replace(TEXT("\""), TEXT(""));
+	tempStr=tempStr.Replace(TEXT("'"), TEXT(""));
 	return tempStr;
 }

@@ -18,7 +18,6 @@ void UWidget_DialogueOption::NativeOnInitialized()
 void UWidget_DialogueOption::NativeConstruct()
 {
 	Super::NativeConstruct();
-	DialogueText->SetText(mText);
 }
 
 void UWidget_DialogueOption::OnDialogueBtnClicked()
@@ -29,6 +28,6 @@ void UWidget_DialogueOption::OnDialogueBtnClicked()
 void UWidget_DialogueOption::Init(UWidget_Dialogue* DialogueWidget, FText Text, int32 OptionIndex)
 {
 	mDialogueWidget = DialogueWidget;
-	mText = Text;
+	DialogueText->SetText(Text);
 	mOptionIndex = OptionIndex;
 }
