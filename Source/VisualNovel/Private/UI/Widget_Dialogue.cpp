@@ -4,13 +4,14 @@
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
+#include <DlgSystem/DlgManager.h>
 #include "Components/RichTextBlock.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Components/VerticalBox.h"
 #include "Components/Button.h"
 #include "Components/EditableText.h"
-#include <DlgSystem/DlgManager.h>
+#include "Animation/WidgetAnimation.h"
 
 UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -28,6 +29,10 @@ void UWidget_Dialogue::NativeOnInitialized()
 	ClickToContinueBtn->OnClicked.AddDynamic(this,&ThisClass::OnClickToContinueBtnClicked);
 	PlayerNameInput->OnTextChanged.AddDynamic(this,&ThisClass::OnPlayerNameInputChanged);
 	PlayerNameInput->OnTextCommitted.AddDynamic(this,&ThisClass::OnPlayerNameInputCommitted);
+
+	FWidgetAnimationDynamicEvent finishedDelegate;
+	finishedDelegate.BindDynamic(this, &ThisClass::CheckNotify);
+	BindToAnimationFinished(Anim_Notify, finishedDelegate);
 }
 
 void UWidget_Dialogue::NativeConstruct()
@@ -44,6 +49,15 @@ void UWidget_Dialogue::NativeConstruct()
 FName UWidget_Dialogue::GetParticipantName_Implementation() const
 {
 	return TEXT("Widget");
+}
+
+bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName, FName NameValue)
+{
+	if(ValueName== VALUENAME_NOTIFY)
+	{
+		Notify(FText::FromName(NameValue));
+	}
+	return false;
 }
 
 void UWidget_Dialogue::OnClickToContinueBtnClicked()
@@ -137,6 +151,17 @@ void UWidget_Dialogue::DelayTypeText()
 	mCurText += TEXT("</>");
 	mConsumedText=mConsumedText.RightChop(1);
 	DialogueText->SetText(FText::FromString(mCurText));
+}
+
+void UWidget_Dialogue::CheckNotify()
+{
+	if (mNotificationQueue.IsEmpty())
+	{
+		return;
+	}
+	NotifyTextBlock->SetText(FText::FromString(UBFL_VN::ToTargetText(mNotificationQueue[0])));
+	mNotificationQueue.RemoveAt(0);
+	PlayAnimation(Anim_Notify);
 }
 
 void UWidget_Dialogue::UpdateText()
@@ -256,4 +281,14 @@ void UWidget_Dialogue::ShowOptions()
 			dialogueOption->SetIsEnabled(mDialogueContext->IsOptionSatisfied(i));
 		}
 	}
+}
+
+void UWidget_Dialogue::Notify(FText NotifyText)
+{
+	mNotificationQueue.Add(NotifyText);
+	if (IsAnimationPlaying(Anim_Notify))
+	{
+		return;
+	}
+	CheckNotify();
 }

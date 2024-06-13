@@ -51,3 +51,4 @@ else \
 
 #define ISPHERIA TEXT("Ispheria")
 #define AFFECTION TEXT("mAffection")
+#define VALUENAME_NOTIFY TEXT("Notify")

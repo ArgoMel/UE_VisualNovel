@@ -1,0 +1,29 @@
+#pragma once
+#include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
+#include "Widget_HistoryEntry.generated.h"
+
+class URichTextBlock;
+
+UCLASS(Abstract)
+class VISUALNOVEL_API UWidget_HistoryEntry : public UUserWidget
+{
+	GENERATED_BODY()
+public:
+	UWidget_HistoryEntry(const FObjectInitializer& ObjectInitializer);
+protected:
+	virtual void NativeOnInitialized() override;
+	virtual void NativeConstruct() override;
+
+protected:
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<URichTextBlock> SpeakerName;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<URichTextBlock> Entry;
+
+public:
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Variable", meta = (ExposeOnSpawn = true))
+	FText mSpeakerName;
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Variable", meta = (ExposeOnSpawn = true))
+	FText mEntryText;
+};
