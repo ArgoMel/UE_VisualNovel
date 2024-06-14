@@ -1,6 +1,7 @@
 #include "UI/Widget_Dialogue.h"
 #include "UI/Widget_DialogueOption.h"
 #include "UI/Widget_Menu.h"
+#include "UI/Widget_Option.h"
 #include "Actor/Participant.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
@@ -39,8 +40,7 @@ void UWidget_Dialogue::NativeOnInitialized()
 void UWidget_Dialogue::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (IsValid(mDialogueContext)&&
-		mTargetText.IsEmpty())
+	if (IsValid(mDialogueContext))
 	{
 		UpdateText();
 	}
@@ -119,6 +119,17 @@ void UWidget_Dialogue::OnPlayerNameInputCommitted(const FText& Text,
 	ChooseOption(0);
 }
 
+void UWidget_Dialogue::OnShowUnselectableOptionChecked(bool Value)
+{
+	bShowUnselectableOption = Value;
+}
+
+void UWidget_Dialogue::OnTextSpeedChanged(float Value)
+{
+	mTextSpeed = Value;
+	UE_LOG(LogTemp, Log, TEXT("%f"), mTextSpeed);
+}
+
 void UWidget_Dialogue::DelayTypeText()
 {
 	if(mConsumedText.IsEmpty()||
@@ -170,6 +181,7 @@ void UWidget_Dialogue::UpdateText()
 	for (int32 i = 0; i < ButtonsVBox->GetChildrenCount();++i)
 	{
 		ButtonsVBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Collapsed);
+		ButtonsVBox->GetChildAt(i)->SetIsEnabled(true);
 	}
 
 	UObject* activeParicipant =
@@ -301,6 +313,12 @@ void UWidget_Dialogue::Init(UWidget_Menu* Menu, UDlgDialogue* Dialogue,
 	TArray<UObject*>& Participants)
 {
 	mMenuWidget = Menu;
+	if (IsValid(mMenuWidget))
+	{
+		mMenuWidget->GetOption()->OnShowUnselectableOptionChecked.AddDynamic(this,&ThisClass::OnShowUnselectableOptionChecked);
+		mMenuWidget->GetOption()->OnTextSpeedChanged.AddDynamic(this,&ThisClass::OnTextSpeedChanged);
+		mMenuWidget->GetOption()->ApplyOptionFirst(bShowUnselectableOption,mTextSpeed);
+	}
 	mDLGDialogue = Dialogue;
 	mParticipants = Participants;
 	mParticipants.AddUnique(this);

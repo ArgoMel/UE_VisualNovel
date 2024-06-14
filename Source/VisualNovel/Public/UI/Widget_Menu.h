@@ -6,6 +6,7 @@
 class UButton;
 class UWidgetSwitcher;
 class UWidget_History;
+class UWidget_Option;
 class UWidget_Dialogue;
 
 UCLASS(Abstract)
@@ -42,6 +43,8 @@ protected:
 	TObjectPtr<UWidgetSwitcher> MenuWS;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UWidget_History> History;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UWidget_Option> Option;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
@@ -75,4 +78,9 @@ public:
 	bool IsInGame();
 
 	void AddEntry(FText Name, FText EntryText);
+
+	UWidget_Option* GetOption()
+	{
+		return Option;
+	}
 };

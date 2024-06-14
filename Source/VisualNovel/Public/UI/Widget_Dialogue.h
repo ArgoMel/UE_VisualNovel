@@ -88,6 +88,10 @@ protected:
 	void OnPlayerNameInputChanged(const FText& Text);
 	UFUNCTION()
 	void OnPlayerNameInputCommitted(const FText& Text, ETextCommit::Type CommitMethod);
+	UFUNCTION()
+	void OnShowUnselectableOptionChecked(bool Value);
+	UFUNCTION()
+	void OnTextSpeedChanged(float Value);
 
 	UFUNCTION()
 	void DelayTypeText();
