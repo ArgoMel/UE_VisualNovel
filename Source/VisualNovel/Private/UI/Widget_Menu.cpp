@@ -23,6 +23,7 @@ void UWidget_Menu::NativeOnInitialized()
 	CodexBtn->OnClicked.AddDynamic(this, &ThisClass::OnQuitBtnClicked);
 	HistoryBtn->OnClicked.AddDynamic(this, &ThisClass::OnHistoryBtnClicked);
 	MenuBtn->OnClicked.AddDynamic(this, &ThisClass::OnMenuBtnClicked);
+	OptionBtn->OnClicked.AddDynamic(this, &ThisClass::OnOptionBtnClicked);
 	BackBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	QuitBtn->OnClicked.AddDynamic(this, &ThisClass::OnQuitBtnClicked);
 }
@@ -79,9 +80,27 @@ void UWidget_Menu::OnMenuBtnClicked()
 	UpdateButtonVisibility();
 }
 
+void UWidget_Menu::OnOptionBtnClicked()
+{
+	if(MenuWS->GetActiveWidgetIndex()==2)
+	{
+		OnBackBtnClicked();
+		return;
+	}
+	MenuWS->SetActiveWidgetIndex(2);
+	if(IsValid(mDialogueWidget))
+	{
+		mDialogueWidget->RemoveFromParent();
+	}
+	UpdateButtonVisibility();
+}
+
 void UWidget_Menu::OnBackBtnClicked()
 {
-	mDialogueWidget->AddToViewport(0);
+	if (IsValid(mDialogueWidget))
+	{
+		mDialogueWidget->AddToViewport(0);
+	}
 	MenuWS->SetActiveWidgetIndex(0);
 	UpdateButtonVisibility();
 }

@@ -32,6 +32,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> MenuBtn;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> OptionBtn;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> BackBtn;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> QuitBtn;
@@ -58,6 +60,8 @@ protected:
 	void OnHistoryBtnClicked();
 	UFUNCTION()
 	void OnMenuBtnClicked();
+	UFUNCTION()
+	void OnOptionBtnClicked();
 	UFUNCTION()
 	void OnBackBtnClicked();
 	UFUNCTION()

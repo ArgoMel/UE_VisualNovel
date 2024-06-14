@@ -39,7 +39,8 @@ void UWidget_Dialogue::NativeOnInitialized()
 void UWidget_Dialogue::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (IsValid(mDialogueContext))
+	if (IsValid(mDialogueContext)&&
+		mTargetText.IsEmpty())
 	{
 		UpdateText();
 	}
