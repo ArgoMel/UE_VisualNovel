@@ -58,16 +58,15 @@ void UWidget_Menu::OnStartBtnClicked()
 
 void UWidget_Menu::OnHistoryBtnClicked()
 {
-	if (!IsValid(mDialogueWidget))
-	{
-		return;
-	}
-	if(!mDialogueWidget->IsInViewport())
+	if(MenuWS->GetActiveWidgetIndex() == 1)
 	{
 		OnBackBtnClicked();
 		return;
 	}
-	mDialogueWidget->RemoveFromParent();
+	if (IsValid(mDialogueWidget))
+	{
+		mDialogueWidget->RemoveFromParent();
+	}
 	MenuWS->SetActiveWidgetIndex(1);
 	UpdateButtonVisibility();
 }
