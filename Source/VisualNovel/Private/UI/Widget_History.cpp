@@ -13,6 +13,11 @@ UWidget_History::UWidget_History(const FObjectInitializer& ObjectInitializer)
 
 void UWidget_History::AddEntry(FText Name, FText EntryText)
 {
+	if(mLatestNameText.EqualTo(Name)&&
+		mLatestEntryText.EqualTo(EntryText))
+	{
+		return;
+	}
 	if (!IsValid(mHistoryEntryClass))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UWidget_History::mHistoryEntryClass 클래스 없음"));
@@ -32,6 +37,8 @@ void UWidget_History::AddEntry(FText Name, FText EntryText)
 		UE_LOG(LogTemp, Warning, TEXT("UWidget_History::historyEntry 캐스팅 실패"));
 		return;
 	}
+	mLatestNameText = Name;
+	mLatestEntryText = EntryText;
 	historyEntry->UpdateEntry(Name, EntryText);
 	HistorySB->AddChild(historyEntry);
 	HistorySB->ScrollToEnd();

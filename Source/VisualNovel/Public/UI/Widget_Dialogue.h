@@ -106,6 +106,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void ShowOptions();
 	UFUNCTION(BlueprintCallable, Category = "Event")
+	void HideOptions();
+	UFUNCTION(BlueprintCallable, Category = "Event")
 	void Notify(FText NotifyText);
 
 	void Init(UWidget_Menu* Menu,UDlgDialogue* Dialogue, TArray<UObject*>& Participants);

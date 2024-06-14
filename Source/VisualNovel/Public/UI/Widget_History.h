@@ -12,6 +12,10 @@ class VISUALNOVEL_API UWidget_History : public UUserWidget
 public:
 	UWidget_History(const FObjectInitializer& ObjectInitializer);
 
+private:
+	FText mLatestNameText;
+	FText mLatestEntryText;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UScrollBox> HistorySB;

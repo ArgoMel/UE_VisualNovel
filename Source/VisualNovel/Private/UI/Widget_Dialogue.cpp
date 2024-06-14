@@ -178,11 +178,7 @@ void UWidget_Dialogue::CheckNotify()
 
 void UWidget_Dialogue::UpdateText()
 {
-	for (int32 i = 0; i < ButtonsVBox->GetChildrenCount();++i)
-	{
-		ButtonsVBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Collapsed);
-		ButtonsVBox->GetChildAt(i)->SetIsEnabled(true);
-	}
+	HideOptions();
 
 	UObject* activeParicipant =
 		Cast<UObject>(mDialogueContext->GetActiveNodeParticipant());
@@ -296,6 +292,15 @@ void UWidget_Dialogue::ShowOptions()
 		{
 			dialogueOption->SetIsEnabled(mDialogueContext->IsOptionSatisfied(i));
 		}
+	}
+}
+
+void UWidget_Dialogue::HideOptions()
+{
+	for (int32 i = 0; i < ButtonsVBox->GetChildrenCount(); ++i)
+	{
+		ButtonsVBox->GetChildAt(i)->SetVisibility(ESlateVisibility::Collapsed);
+		ButtonsVBox->GetChildAt(i)->SetIsEnabled(true);
 	}
 }
 
