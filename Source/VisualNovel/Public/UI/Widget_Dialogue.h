@@ -10,6 +10,7 @@ class UTextBlock;
 class UVerticalBox;
 class UButton;
 class UEditableText;
+class UWidget_Menu;
 class UDlgContext;
 class UDlgDialogue;
 
@@ -53,6 +54,12 @@ protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<UWidgetAnimation> Anim_Notify;
 
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
+	TArray<UObject*> mParticipants;
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
+	TObjectPtr<UDlgDialogue> mDLGDialogue;
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
+	TObjectPtr<UWidget_Menu> mMenuWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UDlgContext> mDialogueContext;
 
@@ -73,12 +80,6 @@ protected:
 	bool bShowUnselectableOption;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
 	bool bAskForPlayerName;
-
-public:
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
-	TArray<UObject*> mParticipants;
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
-	TObjectPtr<UDlgDialogue> mDLGDialogue;
 
 protected:
 	UFUNCTION()
@@ -102,4 +103,11 @@ public:
 	void ShowOptions();
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void Notify(FText NotifyText);
+
+	void Init(UWidget_Menu* Menu,UDlgDialogue* Dialogue, TArray<UObject*>& Participants);
+
+	UDlgContext* GetDialogueContext()
+	{
+		return mDialogueContext;
+	}
 };

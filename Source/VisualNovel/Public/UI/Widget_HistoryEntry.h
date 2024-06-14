@@ -22,8 +22,6 @@ protected:
 	TObjectPtr<URichTextBlock> Entry;
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Variable", meta = (ExposeOnSpawn = true))
-	FText mSpeakerName;
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Variable", meta = (ExposeOnSpawn = true))
-	FText mEntryText;
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void UpdateEntry(FText Name,FText EntryText);
 };

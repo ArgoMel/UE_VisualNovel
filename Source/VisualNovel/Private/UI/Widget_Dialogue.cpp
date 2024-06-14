@@ -1,5 +1,6 @@
 #include "UI/Widget_Dialogue.h"
 #include "UI/Widget_DialogueOption.h"
+#include "UI/Widget_Menu.h"
 #include "Actor/Participant.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
@@ -20,7 +21,7 @@ UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 	bShowUnselectableOption = true;
 	bAskForPlayerName = false;
 
-	GetClassAsset(mDialogueOptionClass, UUserWidget, "/Game/VN/WP_DialogueOption.WP_DialogueOption_C");
+	GetClassAsset(mDialogueOptionClass, UUserWidget, "/Game/VN/UI/WP_DialogueOption.WP_DialogueOption_C");
 }
 
 void UWidget_Dialogue::NativeOnInitialized()
@@ -38,8 +39,6 @@ void UWidget_Dialogue::NativeOnInitialized()
 void UWidget_Dialogue::NativeConstruct()
 {
 	Super::NativeConstruct();
-	mParticipants.Add(this);
-	mDialogueContext=UDlgManager::StartDialogue(mDLGDialogue, mParticipants);
 	if (IsValid(mDialogueContext))
 	{
 		UpdateText();
@@ -51,7 +50,8 @@ FName UWidget_Dialogue::GetParticipantName_Implementation() const
 	return TEXT("Widget");
 }
 
-bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName, FName NameValue)
+bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName, 
+	FName NameValue)
 {
 	if(ValueName== VALUENAME_NOTIFY)
 	{
@@ -159,7 +159,7 @@ void UWidget_Dialogue::CheckNotify()
 	{
 		return;
 	}
-	NotifyTextBlock->SetText(FText::FromString(UBFL_VN::ToTargetText(mNotificationQueue[0])));
+	NotifyTextBlock->SetText(UBFL_VN::ToTargetText(mNotificationQueue[0]));
 	mNotificationQueue.RemoveAt(0);
 	PlayAnimation(Anim_Notify);
 }
@@ -173,9 +173,10 @@ void UWidget_Dialogue::UpdateText()
 
 	UObject* activeParicipant =
 		Cast<UObject>(mDialogueContext->GetActiveNodeParticipant());
+	FText speakerName = FText::GetEmpty();
 	if (IsValid(activeParicipant))
 	{
-		FText speakerName =
+		speakerName =
 			IDlgDialogueParticipant::Execute_GetParticipantDisplayName(activeParicipant, FName());
 		SpeakerName->SetText(speakerName);
 		SpeakerBorder->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -187,7 +188,7 @@ void UWidget_Dialogue::UpdateText()
 
 	if(mTextSpeed==0.f)
 	{
-		mCurText = UBFL_VN::ToTargetText(
+		mCurText = UBFL_VN::ToTargetString(
 			mDialogueContext->GetActiveNodeText(),IsValid(activeParicipant));
 		mTargetText= mCurText;
 		DialogueText->SetText(FText::FromString(mCurText));
@@ -196,12 +197,14 @@ void UWidget_Dialogue::UpdateText()
 	else
 	{
 		mCurText.Empty();
-		mConsumedText= UBFL_VN::ToTargetText(
+		mConsumedText= UBFL_VN::ToTargetString(
 			mDialogueContext->GetActiveNodeText(), IsValid(activeParicipant));
 		mTargetText = mConsumedText;
 		DialogueText->SetText(FText::GetEmpty());
 		GetWorld()->GetTimerManager().SetTimer(mTypeTimer, this, &ThisClass::DelayTypeText, mTextSpeed, true);
 	}
+
+	mMenuWidget->AddEntry(UBFL_VN::ToTargetText(speakerName), FText::FromString(mTargetText));
 }
 
 void UWidget_Dialogue::ChooseOption(int32 OptionIndex)
@@ -258,18 +261,18 @@ void UWidget_Dialogue::ShowOptions()
 			UE_LOG(LogTemp, Warning, TEXT("UWidget_Dialogue::dialogueOption 캐스팅 실패"));
 			continue;
 		}
-		FString tempString;
+		FText tempText;
 		if (bShowUnselectableOption)
 		{
-			tempString=UBFL_VN::ToTargetText(
+			tempText =UBFL_VN::ToTargetText(
 				mDialogueContext->GetOptionTextFromAll(i), false);
 		}
 		else
 		{
-			tempString=UBFL_VN::ToTargetText(
+			tempText =UBFL_VN::ToTargetText(
 				mDialogueContext->GetOptionText(i), false);
 		}
-		dialogueOption->Init(this, FText::FromString(tempString), i);
+		dialogueOption->Init(this, tempText, i);
 		dialogueOption->SetVisibility(ESlateVisibility::Visible);
 		if (!canRecycle)
 		{
@@ -291,4 +294,17 @@ void UWidget_Dialogue::Notify(FText NotifyText)
 		return;
 	}
 	CheckNotify();
+}
+
+void UWidget_Dialogue::Init(UWidget_Menu* Menu, UDlgDialogue* Dialogue, 
+	TArray<UObject*>& Participants)
+{
+	mMenuWidget = Menu;
+	mDLGDialogue = Dialogue;
+	mParticipants = Participants;
+	mParticipants.AddUnique(this);
+	if(IsValid(mDLGDialogue))
+	{
+		mDialogueContext = UDlgManager::StartDialogue(mDLGDialogue, mParticipants);
+	}
 }

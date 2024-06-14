@@ -1,13 +1,16 @@
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
+#include "DlgSystem/DlgDialogue.h"
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
 
 TObjectPtr<UStringTable> UBFL_VN::mKeywordData;
+TObjectPtr<UDlgDialogue> UBFL_VN::mDialogue;
 
 UBFL_VN::UBFL_VN()
 {
-	GetObjectAsset(mKeywordData, UStringTable, "/Game/VN/ST_Keyword.ST_Keyword");
+	GetObjectAsset(mKeywordData, UStringTable, "/Game/VN/Data/ST_Keyword.ST_Keyword");
+	GetObjectAsset(mDialogue, UDlgDialogue, "/Game/VN/Dialogue/Dlg_Test.Dlg_Test");
 }
 
 bool UBFL_VN::GetKeyword(FString InText, FString& OutText)
@@ -15,37 +18,37 @@ bool UBFL_VN::GetKeyword(FString InText, FString& OutText)
 	return mKeywordData->GetStringTable()->GetSourceString(InText.ToUpper(), OutText);
 }
 
-FString UBFL_VN::ToTargetText(FText InText, bool AddQuotes)
+FString UBFL_VN::ToTargetString(FText InText, bool AddQuotes)
 {
 	FString processString = InText.ToString();
-	if(!processString.StartsWith(TEXT("<")))
+	if (!processString.StartsWith(TEXT("<")))
 	{
 		processString = TEXT("<Normal>") + processString;
 	}
 
-	if(AddQuotes)
+	if (AddQuotes)
 	{
 		int32 index = INDEX_NONE;
 		processString.FindChar('>', index);
-		processString.InsertAt(index+1, TEXT("\""));
-		processString+= TEXT("\"");
+		processString.InsertAt(index + 1, TEXT("\""));
+		processString += TEXT("\"");
 	}
 
 	TArray<FString> words;
-	processString.ParseIntoArray(words, TEXT(" "),true);
+	processString.ParseIntoArray(words, TEXT(" "), true);
 	processString.Empty();
 	FString lastTextStyle;
 	for (FString& curStr : words)
 	{
 		int32 index = INDEX_NONE;
 		curStr.FindChar('>', index);
-		if(index!=INDEX_NONE)
-		{			
-			lastTextStyle = curStr.Mid(0, index+1);
+		if (index != INDEX_NONE)
+		{
+			lastTextStyle = curStr.Mid(0, index + 1);
 		}
 		FString noSymbolStr = RemoveSymbolText(curStr);
 		FString keyword;
-		if(GetKeyword(noSymbolStr, keyword))
+		if (GetKeyword(noSymbolStr, keyword))
 		{
 			FString rSymbolStr;
 			FString lSymbolStr;
@@ -65,9 +68,14 @@ FString UBFL_VN::ToTargetText(FText InText, bool AddQuotes)
 	}
 
 	processString.ReplaceInline(TEXT("<"), TEXT("</><"));
-	processString=processString.RightChop(3);
-	processString= processString + TEXT("</>");
+	processString = processString.RightChop(3);
+	processString = processString + TEXT("</>");
 	return processString;
+}
+
+FText UBFL_VN::ToTargetText(FText InText, bool AddQuotes)
+{
+	return FText::FromString(ToTargetString(InText, AddQuotes));
 }
 
 FString UBFL_VN::RemoveSymbolText(FString InText)

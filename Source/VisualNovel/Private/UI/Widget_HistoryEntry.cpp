@@ -15,3 +15,9 @@ void UWidget_HistoryEntry::NativeConstruct()
 {
 	Super::NativeConstruct();
 }
+
+void UWidget_HistoryEntry::UpdateEntry(FText Name, FText EntryText)
+{
+	SpeakerName->SetText(Name);
+	Entry->SetText(EntryText);
+}
