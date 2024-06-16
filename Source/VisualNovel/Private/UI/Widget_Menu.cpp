@@ -18,9 +18,9 @@ void UWidget_Menu::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	StartBtn->OnClicked.AddDynamic(this, &ThisClass::OnStartBtnClicked);
-	SaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnQuitBtnClicked);
-	LoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnQuitBtnClicked);
-	CodexBtn->OnClicked.AddDynamic(this, &ThisClass::OnQuitBtnClicked);
+	SaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
+	LoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
+	CodexBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	HistoryBtn->OnClicked.AddDynamic(this, &ThisClass::OnHistoryBtnClicked);
 	MenuBtn->OnClicked.AddDynamic(this, &ThisClass::OnMenuBtnClicked);
 	OptionBtn->OnClicked.AddDynamic(this, &ThisClass::OnOptionBtnClicked);
@@ -51,7 +51,7 @@ void UWidget_Menu::OnStartBtnClicked()
 		UE_LOG(LogTemp, Warning, TEXT("UWidget_Menu::mDialogueWidget 캐스팅 실패"));
 		return;
 	}
-	mDialogueWidget->Init(this,UBFL_VN::mDialogue,mParicipants);
+	mDialogueWidget->Init(this,UBFL_VN::mDialogue);
 	mDialogueWidget->AddToViewport(0);
 	UpdateButtonVisibility();
 }
@@ -75,7 +75,7 @@ void UWidget_Menu::OnMenuBtnClicked()
 {
 	MenuWS->SetActiveWidgetIndex(0);
 	mDialogueWidget->RemoveFromParent();
-	mDialogueWidget->Init(this,nullptr, mParicipants);
+	mDialogueWidget->Init(this,nullptr);
 	UpdateButtonVisibility();
 }
 
@@ -127,7 +127,7 @@ void UWidget_Menu::UpdateButtonVisibility()
 		HistoryBtn->SetVisibility(ESlateVisibility::Collapsed);
 		MenuBtn->SetVisibility(ESlateVisibility::Collapsed);
 	}
-	if(MenuWS->ActiveWidgetIndex!=0)
+	if(MenuWS->GetActiveWidgetIndex()!=0)
 	{
 		BackBtn->SetVisibility(ESlateVisibility::Visible);
 	}

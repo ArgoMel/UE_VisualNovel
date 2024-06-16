@@ -51,10 +51,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mDialogueWidgetClass;
-	
-public:
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
-	TArray<UObject*> mParicipants;
 
 protected:
 	UFUNCTION()

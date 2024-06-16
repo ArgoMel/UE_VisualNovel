@@ -55,10 +55,6 @@ protected:
 	TObjectPtr<UWidgetAnimation> Anim_Notify;
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
-	TArray<UObject*> mParticipants;
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
-	TObjectPtr<UDlgDialogue> mDLGDialogue;
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
 	TObjectPtr<UWidget_Menu> mMenuWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UDlgContext> mDialogueContext;
@@ -66,19 +62,20 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mDialogueOptionClass;
 
+	UPROPERTY(BlueprintReadWrite, Category = "UpdateText")
+	FString mCurText;
+	UPROPERTY(BlueprintReadWrite, Category = "UpdateText")
+	FString mConsumedText;
+	UPROPERTY(BlueprintReadWrite, Category = "UpdateText")
+	FString mTargetText;
+	UPROPERTY(BlueprintReadWrite, Category = "UpdateText")
+	float mTextSpeed;
+
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	TArray<FText> mNotificationQueue;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
-	FString mCurText;
-	UPROPERTY(BlueprintReadWrite, Category = "Variable")
-	FString mConsumedText;
-	UPROPERTY(BlueprintReadWrite, Category = "Variable")
-	FString mTargetText;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
-	float mTextSpeed;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
 	bool bShowUnselectableOption;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	bool bAskForPlayerName;
 
 protected:
@@ -110,7 +107,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void Notify(FText NotifyText);
 
-	void Init(UWidget_Menu* Menu,UDlgDialogue* Dialogue, TArray<UObject*>& Participants);
+	UFUNCTION(BlueprintPure, Category = "Default")
+	void GetParticipants(UDlgDialogue* Dialogue, TArray<UObject*>& Participants);
+
+	void Init(UWidget_Menu* Menu,UDlgDialogue* Dialogue);
 
 	UDlgContext* GetDialogueContext()
 	{

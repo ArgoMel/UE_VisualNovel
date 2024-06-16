@@ -49,6 +49,7 @@ else \
 }
 #pragma endregion
 
-#define ISPHERIA TEXT("Ispheria")
+#define ParticipantName_Widget TEXT("Widget")
+
 #define AFFECTION TEXT("mAffection")
 #define VALUENAME_NOTIFY TEXT("Notify")

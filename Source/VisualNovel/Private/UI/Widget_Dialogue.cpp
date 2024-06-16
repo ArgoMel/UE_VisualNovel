@@ -2,7 +2,7 @@
 #include "UI/Widget_DialogueOption.h"
 #include "UI/Widget_Menu.h"
 #include "UI/Widget_Option.h"
-#include "Actor/Participant.h"
+#include "UI/Widget_Participant.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
@@ -14,11 +14,13 @@
 #include "Components/Button.h"
 #include "Components/EditableText.h"
 #include "Animation/WidgetAnimation.h"
+#include <Components/CanvasPanel.h>
 
 UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	mTextSpeed = 0.05f;
+
 	bShowUnselectableOption = true;
 	bAskForPlayerName = false;
 
@@ -108,13 +110,13 @@ void UWidget_Dialogue::OnPlayerNameInputCommitted(const FText& Text,
 	{
 		return;
 	}
-	AParticipant* participant=
-		Cast<AParticipant>(mDialogueContext->GetMutableParticipant(ISPHERIA));
-	if(!IsValid(participant))
-	{
-		return;
-	}
-	participant->mPlayerName=Text;
+	//AParticipant* participant=
+	//	Cast<AParticipant>(mDialogueContext->GetMutableParticipant(ISPHERIA));
+	//if(!IsValid(participant))
+	//{
+	//	return;
+	//}
+	//participant->mPlayerName=Text;
 	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
 	ChooseOption(0);
 }
@@ -314,8 +316,30 @@ void UWidget_Dialogue::Notify(FText NotifyText)
 	CheckNotify();
 }
 
-void UWidget_Dialogue::Init(UWidget_Menu* Menu, UDlgDialogue* Dialogue, 
+void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue, 
 	TArray<UObject*>& Participants)
+{
+	TMap<FName, UObject*> participantMap = { {ParticipantName_Widget,this}};
+	UCanvasPanel* canvas = Cast<UCanvasPanel>(GetRootWidget());
+	for(auto& child:canvas->GetAllChildren())
+	{
+		UWidget_Participant* paricipant=Cast<UWidget_Participant>(child);
+		if(IsValid(paricipant)) 
+		{
+			participantMap.Add(paricipant->GetParticipantName(), paricipant);
+		}
+	}
+	
+	for(auto& participantName: Dialogue->GetParticipantNames())
+	{
+		if(participantMap.Contains(participantName))
+		{
+			Participants.Add(participantMap.FindRef(participantName));
+		}
+	}
+}
+
+void UWidget_Dialogue::Init(UWidget_Menu* Menu, UDlgDialogue* Dialogue)
 {
 	mMenuWidget = Menu;
 	if (IsValid(mMenuWidget))
@@ -324,11 +348,10 @@ void UWidget_Dialogue::Init(UWidget_Menu* Menu, UDlgDialogue* Dialogue,
 		mMenuWidget->GetOption()->OnTextSpeedChanged.AddDynamic(this,&ThisClass::OnTextSpeedChanged);
 		mMenuWidget->GetOption()->ApplyOptionFirst(bShowUnselectableOption,mTextSpeed);
 	}
-	mDLGDialogue = Dialogue;
-	mParticipants = Participants;
-	mParticipants.AddUnique(this);
-	if(IsValid(mDLGDialogue))
+	if(IsValid(Dialogue))
 	{
-		mDialogueContext = UDlgManager::StartDialogue(mDLGDialogue, mParticipants);
+		TArray<UObject*> participants;
+		GetParticipants(Dialogue, participants);
+		mDialogueContext = UDlgManager::StartDialogue(Dialogue, participants);
 	}
 }
