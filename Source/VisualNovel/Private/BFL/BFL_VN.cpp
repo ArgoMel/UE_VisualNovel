@@ -97,3 +97,18 @@ FString UBFL_VN::RemoveSymbolText(FString InText)
 	tempStr=tempStr.Replace(TEXT("'"), TEXT(""));
 	return tempStr;
 }
+
+float UBFL_VN::FakeLerp(float CurValue, float TargetValue, float DelataTime, 
+	float Speed)
+{
+
+	if (FMath::IsNearlyEqual(CurValue, TargetValue))
+	{
+		return TargetValue;
+	}
+	if (CurValue < TargetValue)
+	{
+		return FMath::Min(Speed * DelataTime + CurValue, TargetValue);
+	}
+	return FMath::Max(-Speed * DelataTime + CurValue, TargetValue);
+}

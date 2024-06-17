@@ -29,4 +29,6 @@ public:
 	static FText ToTargetText(FText InText,bool AddQuotes=false);
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static FString RemoveSymbolText(FString InText);
+	UFUNCTION(BlueprintPure, Category = "VisualNovel")
+	static float FakeLerp(float CurValue,float TargetValue,float DelataTime,float Speed);
 };

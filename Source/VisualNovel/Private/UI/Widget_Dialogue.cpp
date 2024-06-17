@@ -88,7 +88,9 @@ void UWidget_Dialogue::OnClickToContinueBtnClicked()
 		}
 		else
 		{
+			mDialogueContext = nullptr;
 			RemoveFromParent();
+			mMenuWidget->UpdateButtonVisibility();
 		}
 	}
 }
@@ -110,13 +112,7 @@ void UWidget_Dialogue::OnPlayerNameInputCommitted(const FText& Text,
 	{
 		return;
 	}
-	//AParticipant* participant=
-	//	Cast<AParticipant>(mDialogueContext->GetMutableParticipant(ISPHERIA));
-	//if(!IsValid(participant))
-	//{
-	//	return;
-	//}
-	//participant->mPlayerName=Text;
+	mPlayerName = Text;
 	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
 	ChooseOption(0);
 }
@@ -220,6 +216,16 @@ void UWidget_Dialogue::UpdateText()
 
 void UWidget_Dialogue::ChooseOption(int32 OptionIndex)
 {
+	for(auto& participant : mParticipants)
+	{
+		UWidget_Participant* participantWidget=Cast<UWidget_Participant>(participant.Value);
+		if(!IsValid(participantWidget))
+		{
+			continue;
+		}
+		participantWidget->FinishAnimating();
+	}
+
 	if(bShowUnselectableOption)
 	{
 		mDialogueContext->ChooseOptionFromAll(OptionIndex);
@@ -319,22 +325,23 @@ void UWidget_Dialogue::Notify(FText NotifyText)
 void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue, 
 	TArray<UObject*>& Participants)
 {
-	TMap<FName, UObject*> participantMap = { {ParticipantName_Widget,this}};
+	mParticipants.Empty();
+	mParticipants.Add(PARTICIPANTNAME_WIDGET, this);
 	UCanvasPanel* canvas = Cast<UCanvasPanel>(GetRootWidget());
-	for(auto& child:canvas->GetAllChildren())
+	for (auto& child : canvas->GetAllChildren())
 	{
-		UWidget_Participant* paricipant=Cast<UWidget_Participant>(child);
-		if(IsValid(paricipant)) 
+		UWidget_Participant* paricipant = Cast<UWidget_Participant>(child);
+		if (IsValid(paricipant))
 		{
-			participantMap.Add(paricipant->GetParticipantName(), paricipant);
+			mParticipants.Add(paricipant->GetParticipantName(), paricipant);
 		}
 	}
-	
+
 	for(auto& participantName: Dialogue->GetParticipantNames())
 	{
-		if(participantMap.Contains(participantName))
+		if(mParticipants.Contains(participantName))
 		{
-			Participants.Add(participantMap.FindRef(participantName));
+			Participants.Add(mParticipants.FindRef(participantName));
 		}
 	}
 }

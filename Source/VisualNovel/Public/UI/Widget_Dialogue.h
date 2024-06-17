@@ -54,6 +54,8 @@ protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<UWidgetAnimation> Anim_Notify;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
+	TMap<FName, UObject*> mParticipants;
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
 	TObjectPtr<UWidget_Menu> mMenuWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
@@ -73,6 +75,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	TArray<FText> mNotificationQueue;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	FText mPlayerName;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	bool bShowUnselectableOption;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")

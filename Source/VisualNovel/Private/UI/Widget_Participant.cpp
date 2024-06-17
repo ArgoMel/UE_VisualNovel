@@ -9,69 +9,98 @@ UWidget_Participant::UWidget_Participant(const FObjectInitializer& ObjectInitial
 {
 	mParticipantName = EParticipantName::Yuri;
 
-	mCharacterAlignment = FVector2D(0.5,0.65);
-	mCharacterScale = 0.6f;
 	mTargetX = 0.;
 	mMoveSpeed = 5000.;
+	mTargetOpacity = 1.;
+	mFadeSpeed = 10.;
+	bWasIntroduced = false;
 }
 
 void UWidget_Participant::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+	mCharacterName = FName(UEnum::GetDisplayValueAsText(mParticipantName).ToString());
 }
 
 void UWidget_Participant::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-	FParticipantData data= UBFL_VN::GetParticipantData(mParticipantName);
-	CharacterImg->SetBrushFromTexture(data.CharacterTexture);
+	mCharacterName = FName(UEnum::GetDisplayValueAsText(mParticipantName).ToString());
+	mParticipantData = UBFL_VN::GetParticipantData(mParticipantName);
+	CharacterImg->SetBrushFromTexture(mParticipantData.Texture);
 	UCanvasPanelSlot* slot=Cast<UCanvasPanelSlot>(CharacterImg->Slot);
 	if(IsValid(slot))
 	{
 		slot->SetOffsets(FMargin(0.,0., 
-			data.CharacterTexture->GetSizeX()* mCharacterScale, 
-			data.CharacterTexture->GetSizeY()* mCharacterScale));
-		slot->SetAlignment(mCharacterAlignment);
+			mParticipantData.Texture->GetSizeX()* mParticipantData.Scale,
+			mParticipantData.Texture->GetSizeY()* mParticipantData.Scale));
+		slot->SetAlignment(mParticipantData.Alignment);
 	}
 }
 
 void UWidget_Participant::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	FVector2D translation= CharacterImg->GetRenderTransform().Translation;
-	if(FMath::IsNearlyEqual(translation.X,mTargetX))
-	{
-		return;
-	}
-	if(translation.X<mTargetX)
-	{
-		translation.X = FMath::Min(mMoveSpeed* InDeltaTime+ translation.X, mTargetX);
-	}
-	else
-	{
-		translation.X = FMath::Max(-mMoveSpeed* InDeltaTime+ translation.X, mTargetX);
-	}
+	float opacity =UBFL_VN::FakeLerp(
+		CharacterImg->GetRenderOpacity(), mTargetOpacity, InDeltaTime, mFadeSpeed);
+	CharacterImg->SetRenderOpacity(opacity);
+
+	FVector2D translation = CharacterImg->GetRenderTransform().Translation;
+	translation.X=UBFL_VN::FakeLerp(translation.X,mTargetX,InDeltaTime,mMoveSpeed);
 	CharacterImg->SetRenderTranslation(translation);
 }
 
 FName UWidget_Participant::GetParticipantName_Implementation() const
 {
-	return FName(UEnum::GetDisplayValueAsText(mParticipantName).ToString());
+	return mCharacterName;
 }
 
 FText UWidget_Participant::GetParticipantDisplayName_Implementation(FName ActiveSpeaker) const
 {
-	return UEnum::GetDisplayValueAsText(mParticipantName);
+	if(!bWasIntroduced)
+	{
+		return FText::FromString(PARTICIPANTNAME_UNKNOWN);
+	}
+	return FText::FromName(mCharacterName);
 }
 
-void UWidget_Participant::TestFunc()
+bool UWidget_Participant::ModifyNameValue_Implementation(FName ValueName, FName NameValue)
 {
-	FVector2D translation = CharacterImg->GetRenderTransform().Translation;
-	translation.X = mTargetX;
-	CharacterImg->SetRenderTranslation(translation);
+	if(ValueName==TEXT("PositionX"))
+	{
+		
+	}
+	else if (ValueName == TEXT("Expression"))
+	{
+		if(mParticipantData.Expressions.Contains(NameValue))
+		{
+			CharacterImg->SetBrushFromTexture(mParticipantData.Expressions.FindRef(NameValue));
+		}
+	}
+	return false;
 }
 
 void UWidget_Participant::Jump()
 {
 	PlayAnimation(JumpAnim);
+}
+
+void UWidget_Participant::ToggleOpacity()
+{
+	if(CharacterImg->GetRenderOpacity()==1.f)
+	{
+		mTargetOpacity = 0.f;
+	}
+	else
+	{
+		mTargetOpacity = 1.f;
+	}
+}
+
+void UWidget_Participant::FinishAnimating()
+{
+	FVector2D translation = CharacterImg->GetRenderTransform().Translation;
+	translation.X = mTargetX;
+	CharacterImg->SetRenderTranslation(translation);
+	StopAllAnimations();
 }

@@ -49,7 +49,8 @@ else \
 }
 #pragma endregion
 
-#define ParticipantName_Widget TEXT("Widget")
+#define PARTICIPANTNAME_WIDGET TEXT("Widget")
+#define PARTICIPANTNAME_UNKNOWN TEXT("???")
 
-#define AFFECTION TEXT("mAffection")
+#define VALUENAME_AFFECTION TEXT("mAffection")
 #define VALUENAME_NOTIFY TEXT("Notify")

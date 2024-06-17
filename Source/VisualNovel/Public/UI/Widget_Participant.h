@@ -20,6 +20,7 @@ protected:
 public:
 	FName GetParticipantName_Implementation() const;
 	FText GetParticipantDisplayName_Implementation(FName ActiveSpeaker) const;
+	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -28,27 +29,35 @@ protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<UWidgetAnimation> JumpAnim;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	FParticipantData mParticipantData;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	FName mCharacterName;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
 	EParticipantName mParticipantName;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Variable")
-	FVector2D mCharacterAlignment;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Variable")
-	float mCharacterScale;
-	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category = "Variable")
 	double mTargetX;
-	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category = "Variable")
 	double mMoveSpeed;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Variable")
+	double mTargetOpacity;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Variable")
+	double mFadeSpeed;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Variable")
+	bool bWasIntroduced;
 
 protected:
 	UFUNCTION()
-	void TestFunc();
-	UFUNCTION()
 	void Jump();
+	UFUNCTION()
+	void ToggleOpacity();
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void FinishAnimating();
+
 	FName GetParticipantName()
 	{
-		return FName(UEnum::GetDisplayValueAsText(mParticipantName).ToString());
+		return mCharacterName;
 	}
 };
