@@ -7,6 +7,7 @@
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
 #include <DlgSystem/DlgManager.h>
+#include "Components/Image.h"
 #include "Components/RichTextBlock.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
@@ -59,6 +60,10 @@ bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName,
 	if(ValueName== VALUENAME_NOTIFY)
 	{
 		Notify(FText::FromName(NameValue));
+	}
+	else if (ValueName == VALUENAME_CHANGE_BG)
+	{
+		BGImg->SetBrushFromTexture(UBFL_VN::GetBGImgData(NameValue).Texture);
 	}
 	return false;
 }

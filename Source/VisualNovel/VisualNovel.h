@@ -54,3 +54,4 @@ else \
 
 #define VALUENAME_AFFECTION TEXT("mAffection")
 #define VALUENAME_NOTIFY TEXT("Notify")
+#define VALUENAME_CHANGE_BG TEXT("ChangeBG")

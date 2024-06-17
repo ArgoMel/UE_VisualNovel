@@ -4,6 +4,7 @@
 #include <DlgSystem/DlgDialogueParticipant.h>
 #include "Widget_Dialogue.generated.h"
 
+class UImage;
 class URichTextBlock;
 class UBorder;
 class UTextBlock;
@@ -33,6 +34,9 @@ private:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UImage> BGImg;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<URichTextBlock> DialogueText;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -45,7 +49,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UVerticalBox> ButtonsVBox;
-
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> ClickToContinueBtn;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))

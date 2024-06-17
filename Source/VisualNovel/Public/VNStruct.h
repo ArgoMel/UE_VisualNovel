@@ -11,6 +11,19 @@ enum class EParticipantName : uint8
 };
 
 USTRUCT(BlueprintType)
+struct FBGImgData : public FTableRowBase
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TObjectPtr<UTexture2D> Texture;
+
+	FBGImgData()
+	{
+	}
+};
+
+USTRUCT(BlueprintType)
 struct FParticipantData : public FTableRowBase
 {
 	GENERATED_BODY()

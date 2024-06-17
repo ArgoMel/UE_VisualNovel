@@ -6,12 +6,14 @@
 
 TObjectPtr<UStringTable> UBFL_VN::mKeywordData;
 TObjectPtr<UDataTable> UBFL_VN::mParticipantData;
+TObjectPtr<UDataTable> UBFL_VN::mBGImgData;
 TObjectPtr<UDlgDialogue> UBFL_VN::mDialogue;
 
 UBFL_VN::UBFL_VN()
 {
 	GetObjectAsset(mKeywordData, UStringTable, "/Game/VN/Data/ST_Keyword.ST_Keyword");
 	GetObjectAsset(mParticipantData, UDataTable, "/Game/VN/Data/DT_ParticipantData.DT_ParticipantData");
+	GetObjectAsset(mBGImgData, UDataTable, "/Game/VN/Data/DT_BGImgData.DT_BGImgData");
 	GetObjectAsset(mDialogue, UDlgDialogue, "/Game/VN/Dialogue/Dlg_Test.Dlg_Test");
 }
 
@@ -23,6 +25,11 @@ bool UBFL_VN::GetKeyword(FString InText, FString& OutText)
 FParticipantData UBFL_VN::GetParticipantData(EParticipantName Name)
 {
 	return *mParticipantData->FindRow<FParticipantData>(*UEnum::GetDisplayValueAsText(Name).ToString(), TEXT(""), false);
+}
+
+FBGImgData UBFL_VN::GetBGImgData(FName Name)
+{
+	return *mBGImgData->FindRow<FBGImgData>(Name, TEXT(""), false);
 }
 
 FString UBFL_VN::ToTargetString(FText InText, bool AddQuotes)
