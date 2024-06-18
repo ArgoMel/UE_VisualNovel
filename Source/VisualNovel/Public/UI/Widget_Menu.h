@@ -49,9 +49,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> mDialogueWidgetClass;
-
 protected:
 	UFUNCTION()
 	void OnStartBtnClicked();
@@ -73,6 +70,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool IsInGame();
 
+	void Init(UWidget_Dialogue* DialogueWidget);
 	void AddEntry(FText Name, FText EntryText);
 
 	UWidget_Option* GetOption()

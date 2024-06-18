@@ -127,11 +127,13 @@ public:
 	void HideOptions();
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void Notify(FText NotifyText);
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void StartDialogue(UDlgDialogue* Dialogue);
 
 	UFUNCTION(BlueprintPure, Category = "Default")
 	void GetParticipants(UDlgDialogue* Dialogue, TArray<UObject*>& Participants);
 
-	void Init(UWidget_Menu* Menu,UDlgDialogue* Dialogue);
+	void Init(UWidget_Menu* Menu);
 	void ChangeBG(FName TextureName);
 
 	UDlgContext* GetDialogueContext()

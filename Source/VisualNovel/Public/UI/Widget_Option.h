@@ -6,6 +6,7 @@
 class UCheckBox;
 class USlider;
 class UProgressBar;
+class UPersistantData;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowUnselectableOptionChecked,bool, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTextSpeedChanged,float,Value);
@@ -28,10 +29,13 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UProgressBar> TextSpeedPB;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
+	TObjectPtr<UPersistantData> mPersistantData;
+
 public:
-	UPROPERTY(BlueprintAssignable, Category = "Hero")
+	UPROPERTY(BlueprintAssignable, Category = "Delegate")
 	FOnShowUnselectableOptionChecked OnShowUnselectableOptionChecked;
-	UPROPERTY(BlueprintAssignable, Category = "Hero")
+	UPROPERTY(BlueprintAssignable, Category = "Delegate")
 	FOnTextSpeedChanged OnTextSpeedChanged;
 
 protected:
@@ -41,5 +45,8 @@ protected:
 	void OnTextSpeedSliderChanged(float Value);
 
 public:
-	void ApplyOptionFirst(bool& ShowUnselectableOption, float& TextSpeed);
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void InitializeSavedOptions();
+
+	void Init(UPersistantData* PersistantData);
 };

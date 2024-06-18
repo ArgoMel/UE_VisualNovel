@@ -49,6 +49,8 @@ else \
 }
 #pragma endregion
 
+#define SLOTNAME_PERSISTANTDATA TEXT("PersistantData")
+
 #define PARTICIPANTNAME_WIDGET TEXT("Widget")
 #define PARTICIPANTNAME_UNKNOWN TEXT("???")
 

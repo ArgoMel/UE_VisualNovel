@@ -11,7 +11,7 @@
 UWidget_Menu::UWidget_Menu(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	GetClassAsset(mDialogueWidgetClass, UUserWidget, "/Game/VN/UI/WP_Dialogue.WP_Dialogue_C");
+
 }
 
 void UWidget_Menu::NativeOnInitialized()
@@ -36,22 +36,7 @@ void UWidget_Menu::NativeConstruct()
 
 void UWidget_Menu::OnStartBtnClicked()
 {
-	if (!IsValid(mDialogueWidgetClass))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UWidget_Menu::mDialogueWidgetClass 클래스 없음"));
-		return;
-	}
-	if (!IsValid(mDialogueWidget))
-	{
-		mDialogueWidget =
-			CreateWidget<UWidget_Dialogue>(GetOwningPlayer(), mDialogueWidgetClass);
-	}
-	if (!IsValid(mDialogueWidget))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UWidget_Menu::mDialogueWidget 캐스팅 실패"));
-		return;
-	}
-	mDialogueWidget->Init(this,UBFL_VN::mDialogue);
+	mDialogueWidget->StartDialogue(UBFL_VN::mDialogue);
 	mDialogueWidget->AddToViewport(0);
 	UpdateButtonVisibility();
 }
@@ -75,7 +60,7 @@ void UWidget_Menu::OnMenuBtnClicked()
 {
 	MenuWS->SetActiveWidgetIndex(0);
 	mDialogueWidget->RemoveFromParent();
-	mDialogueWidget->Init(this,nullptr);
+	mDialogueWidget->StartDialogue(nullptr);
 	UpdateButtonVisibility();
 }
 
@@ -96,7 +81,7 @@ void UWidget_Menu::OnOptionBtnClicked()
 
 void UWidget_Menu::OnBackBtnClicked()
 {
-	if (IsValid(mDialogueWidget))
+	if (IsInGame())
 	{
 		mDialogueWidget->AddToViewport(0);
 	}
@@ -144,6 +129,12 @@ bool UWidget_Menu::IsInGame()
 		return false;
 	}
 	return IsValid(mDialogueWidget->GetDialogueContext());
+}
+
+void UWidget_Menu::Init(UWidget_Dialogue* DialogueWidget)
+{
+	mDialogueWidget = DialogueWidget;
+	mDialogueWidget->Init(this);
 }
 
 void UWidget_Menu::AddEntry(FText Name, FText EntryText)

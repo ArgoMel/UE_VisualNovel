@@ -1,4 +1,5 @@
 #include "UI/Widget_Option.h"
+#include "Save/PersistantData.h"
 #include "Components/CheckBox.h"
 #include "Components/Slider.h"
 #include "Components/ProgressBar.h"
@@ -18,23 +19,28 @@ void UWidget_Option::NativeOnInitialized()
 void UWidget_Option::NativeConstruct()
 {
 	Super::NativeConstruct();
-	OnShowUnselectableOptionCBChecked(ShowUnselectableOptionCB->GetIsEnabled());
-	OnTextSpeedSliderChanged(TextSpeedSlider->GetValue());
 }
 
 void UWidget_Option::OnShowUnselectableOptionCBChecked(bool Value)
 {
+	mPersistantData->bShowUnselectableOption = Value;
 	OnShowUnselectableOptionChecked.Broadcast(Value);
 }
 
 void UWidget_Option::OnTextSpeedSliderChanged(float Value)
 {
+	mPersistantData->mTextSpeed = Value;
 	TextSpeedPB->SetPercent(Value);
 	OnTextSpeedChanged.Broadcast(TextSpeedSlider->GetMaxValue()-Value);
 }
 
-void UWidget_Option::ApplyOptionFirst(bool& ShowUnselectableOption, float& TextSpeed)
+void UWidget_Option::InitializeSavedOptions()
 {
-	ShowUnselectableOption = ShowUnselectableOptionCB->GetIsEnabled();
-	TextSpeed = TextSpeedSlider->GetMaxValue()-TextSpeedSlider->GetValue();
+	ShowUnselectableOptionCB->SetIsChecked(mPersistantData->bShowUnselectableOption);
+	TextSpeedSlider->SetValue(mPersistantData->mTextSpeed);	
+}
+
+void UWidget_Option::Init(UPersistantData* PersistantData)
+{
+	mPersistantData = PersistantData;
 }

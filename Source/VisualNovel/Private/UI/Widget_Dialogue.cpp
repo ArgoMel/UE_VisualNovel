@@ -357,6 +357,16 @@ void UWidget_Dialogue::Notify(FText NotifyText)
 	CheckNotify();
 }
 
+void UWidget_Dialogue::StartDialogue(UDlgDialogue* Dialogue)
+{
+	if (IsValid(Dialogue))
+	{
+		TArray<UObject*> participants;
+		GetParticipants(Dialogue, participants);
+		mDialogueContext = UDlgManager::StartDialogue(Dialogue, participants);
+	}
+}
+
 void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue, 
 	TArray<UObject*>& Participants)
 {
@@ -381,20 +391,13 @@ void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue,
 	}
 }
 
-void UWidget_Dialogue::Init(UWidget_Menu* Menu, UDlgDialogue* Dialogue)
+void UWidget_Dialogue::Init(UWidget_Menu* Menu)
 {
 	mMenuWidget = Menu;
 	if (IsValid(mMenuWidget))
 	{
 		mMenuWidget->GetOption()->OnShowUnselectableOptionChecked.AddUniqueDynamic(this,&ThisClass::OnShowUnselectableOptionChecked);
 		mMenuWidget->GetOption()->OnTextSpeedChanged.AddUniqueDynamic(this,&ThisClass::OnTextSpeedChanged);
-		mMenuWidget->GetOption()->ApplyOptionFirst(bShowUnselectableOption,mTextSpeed);
-	}
-	if(IsValid(Dialogue))
-	{
-		TArray<UObject*> participants;
-		GetParticipants(Dialogue, participants);
-		mDialogueContext = UDlgManager::StartDialogue(Dialogue, participants);
 	}
 }
 
