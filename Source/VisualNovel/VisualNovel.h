@@ -54,4 +54,7 @@ else \
 
 #define VALUENAME_AFFECTION TEXT("mAffection")
 #define VALUENAME_NOTIFY TEXT("Notify")
-#define VALUENAME_CHANGE_BG TEXT("ChangeBG")
+#define VALUENAME_CHANGE_BG_SLIDE TEXT("ChangeBG_Slide")
+#define VALUENAME_CHANGE_BG_FADE TEXT("ChangeBG_Fade")
+#define VALUENAME_CHANGE_BG_DESOLVE TEXT("ChangeBG_Desolve")
+#define VALUENAME_CHANGE_BG_WIPE TEXT("ChangeBG_Wipe")

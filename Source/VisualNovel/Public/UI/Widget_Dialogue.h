@@ -5,6 +5,7 @@
 #include "Widget_Dialogue.generated.h"
 
 class UImage;
+class UProgressBar;
 class URichTextBlock;
 class UBorder;
 class UTextBlock;
@@ -35,6 +36,8 @@ private:
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> BGImg;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UProgressBar> AnimPB;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<URichTextBlock> DialogueText;
@@ -51,11 +54,22 @@ protected:
 	TObjectPtr<UVerticalBox> ButtonsVBox;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> ClickToContinueBtn;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UBorder> PlayerNameBorder;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UEditableText> PlayerNameInput;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	TObjectPtr<UWidgetAnimation> Anim_Notify;
+	TObjectPtr<UWidgetAnimation> NotifyAnim;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	TObjectPtr<UWidgetAnimation> SlideAnim;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	TObjectPtr<UWidgetAnimation> FadeAnim;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	TObjectPtr<UWidgetAnimation> DesolveAnim;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	TObjectPtr<UWidgetAnimation> WipeAnim;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TMap<FName, UObject*> mParticipants;
@@ -118,6 +132,7 @@ public:
 	void GetParticipants(UDlgDialogue* Dialogue, TArray<UObject*>& Participants);
 
 	void Init(UWidget_Menu* Menu,UDlgDialogue* Dialogue);
+	void ChangeBG(FName TextureName);
 
 	UDlgContext* GetDialogueContext()
 	{

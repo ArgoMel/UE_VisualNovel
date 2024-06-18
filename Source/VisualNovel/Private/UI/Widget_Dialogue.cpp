@@ -8,6 +8,7 @@
 #include "DlgSystem/DlgContext.h"
 #include <DlgSystem/DlgManager.h>
 #include "Components/Image.h"
+#include "Components/ProgressBar.h"
 #include "Components/RichTextBlock.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
@@ -37,7 +38,7 @@ void UWidget_Dialogue::NativeOnInitialized()
 
 	FWidgetAnimationDynamicEvent finishedDelegate;
 	finishedDelegate.BindDynamic(this, &ThisClass::CheckNotify);
-	BindToAnimationFinished(Anim_Notify, finishedDelegate);
+	BindToAnimationFinished(NotifyAnim, finishedDelegate);
 }
 
 void UWidget_Dialogue::NativeConstruct()
@@ -45,6 +46,7 @@ void UWidget_Dialogue::NativeConstruct()
 	Super::NativeConstruct();
 	if (IsValid(mDialogueContext))
 	{
+		ChangeBG(TEXT("Modern-Dormroom1"));
 		UpdateText();
 	}
 }
@@ -61,16 +63,32 @@ bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName,
 	{
 		Notify(FText::FromName(NameValue));
 	}
-	else if (ValueName == VALUENAME_CHANGE_BG)
+	else if (ValueName == VALUENAME_CHANGE_BG_SLIDE)
 	{
-		BGImg->SetBrushFromTexture(UBFL_VN::GetBGImgData(NameValue).Texture);
+		ChangeBG(NameValue);
+		PlayAnimation(SlideAnim);
+	}
+	else if (ValueName == VALUENAME_CHANGE_BG_FADE)
+	{
+		ChangeBG(NameValue);
+		PlayAnimation(FadeAnim);
+	}
+	else if (ValueName == VALUENAME_CHANGE_BG_DESOLVE)
+	{
+		ChangeBG(NameValue);
+		PlayAnimation(DesolveAnim);
+	}
+	else if (ValueName == VALUENAME_CHANGE_BG_WIPE)
+	{
+		ChangeBG(NameValue);
+		PlayAnimation(WipeAnim);
 	}
 	return false;
 }
 
 void UWidget_Dialogue::OnClickToContinueBtnClicked()
 {
-	if(PlayerNameInput->IsVisible())
+	if(PlayerNameBorder->IsVisible())
 	{
 		return;
 	}
@@ -87,6 +105,16 @@ void UWidget_Dialogue::OnClickToContinueBtnClicked()
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if(optionNum ==1)
 	{
+		for (auto& participant : mParticipants)
+		{
+			UWidget_Participant* participantWidget = Cast<UWidget_Participant>(participant.Value);
+			if (!IsValid(participantWidget))
+			{
+				continue;
+			}
+			participantWidget->FinishAnimating();
+		}
+		StopAllAnimations();
 		if (mDialogueContext->ChooseOption(0))
 		{
 			UpdateText();
@@ -118,6 +146,7 @@ void UWidget_Dialogue::OnPlayerNameInputCommitted(const FText& Text,
 		return;
 	}
 	mPlayerName = Text;
+	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);
 	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
 	ChooseOption(0);
 }
@@ -176,7 +205,7 @@ void UWidget_Dialogue::CheckNotify()
 	}
 	NotifyTextBlock->SetText(UBFL_VN::ToTargetText(mNotificationQueue[0]));
 	mNotificationQueue.RemoveAt(0);
-	PlayAnimation(Anim_Notify);
+	PlayAnimation(NotifyAnim);
 }
 
 void UWidget_Dialogue::UpdateText()
@@ -221,16 +250,16 @@ void UWidget_Dialogue::UpdateText()
 
 void UWidget_Dialogue::ChooseOption(int32 OptionIndex)
 {
-	for(auto& participant : mParticipants)
+	for (auto& participant : mParticipants)
 	{
-		UWidget_Participant* participantWidget=Cast<UWidget_Participant>(participant.Value);
-		if(!IsValid(participantWidget))
+		UWidget_Participant* participantWidget = Cast<UWidget_Participant>(participant.Value);
+		if (!IsValid(participantWidget))
 		{
 			continue;
 		}
 		participantWidget->FinishAnimating();
 	}
-
+	StopAllAnimations();
 	if(bShowUnselectableOption)
 	{
 		mDialogueContext->ChooseOptionFromAll(OptionIndex);
@@ -246,6 +275,7 @@ void UWidget_Dialogue::ShowOptions()
 {
 	if(bAskForPlayerName)
 	{
+		PlayerNameBorder->SetVisibility(ESlateVisibility::Visible);
 		PlayerNameInput->SetVisibility(ESlateVisibility::Visible);
 		return;
 	}
@@ -320,7 +350,7 @@ void UWidget_Dialogue::HideOptions()
 void UWidget_Dialogue::Notify(FText NotifyText)
 {
 	mNotificationQueue.Add(NotifyText);
-	if (IsAnimationPlaying(Anim_Notify))
+	if (IsAnimationPlaying(NotifyAnim))
 	{
 		return;
 	}
@@ -356,8 +386,8 @@ void UWidget_Dialogue::Init(UWidget_Menu* Menu, UDlgDialogue* Dialogue)
 	mMenuWidget = Menu;
 	if (IsValid(mMenuWidget))
 	{
-		mMenuWidget->GetOption()->OnShowUnselectableOptionChecked.AddDynamic(this,&ThisClass::OnShowUnselectableOptionChecked);
-		mMenuWidget->GetOption()->OnTextSpeedChanged.AddDynamic(this,&ThisClass::OnTextSpeedChanged);
+		mMenuWidget->GetOption()->OnShowUnselectableOptionChecked.AddUniqueDynamic(this,&ThisClass::OnShowUnselectableOptionChecked);
+		mMenuWidget->GetOption()->OnTextSpeedChanged.AddUniqueDynamic(this,&ThisClass::OnTextSpeedChanged);
 		mMenuWidget->GetOption()->ApplyOptionFirst(bShowUnselectableOption,mTextSpeed);
 	}
 	if(IsValid(Dialogue))
@@ -366,4 +396,13 @@ void UWidget_Dialogue::Init(UWidget_Menu* Menu, UDlgDialogue* Dialogue)
 		GetParticipants(Dialogue, participants);
 		mDialogueContext = UDlgManager::StartDialogue(Dialogue, participants);
 	}
+}
+
+void UWidget_Dialogue::ChangeBG(FName TextureName)
+{
+	FProgressBarStyle style = AnimPB->GetWidgetStyle();
+	style.BackgroundImage.SetResourceObject(BGImg->GetBrush().GetResourceObject());
+	style.FillImage.SetResourceObject(UBFL_VN::GetBGImgData(TextureName).Texture);
+	AnimPB->SetWidgetStyle(style);
+	BGImg->SetBrushFromTexture(UBFL_VN::GetBGImgData(TextureName).Texture);
 }
