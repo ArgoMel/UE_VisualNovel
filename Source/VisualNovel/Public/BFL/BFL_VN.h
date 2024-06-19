@@ -27,11 +27,11 @@ public:
 	static FBGImgData GetBGImgData(FName Name);
 
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
-	static FString ToTargetString(FText InText,bool AddQuotes=false);
+	static FString ToTargetString(FText InText,bool AddQuotes=false,
+		bool UseSmallStyle = false);
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
-	static FText ToTargetText(FText InText,bool AddQuotes=false);
+	static FText ToTargetText(FText InText,bool AddQuotes=false,
+		bool UseSmallStyle = false);
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static FString RemoveSymbolText(FString InText);
-	UFUNCTION(BlueprintPure, Category = "VisualNovel")
-	static float FakeLerp(float CurValue,float TargetValue,float DelataTime,float Speed);
 };

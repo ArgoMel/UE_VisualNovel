@@ -6,6 +6,7 @@
 class UButton;
 class UTextBlock;
 class UWidget_Codex;
+class UWidget_Dialogue;
 class UDlgDialogue;
 
 UCLASS(Abstract)
@@ -27,6 +28,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Codex> mCodexWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
+	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UDlgDialogue> mCodexEntry;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
@@ -41,7 +44,7 @@ public:
 	UFUNCTION()
 	void OnCodexBtnClicked();
 
-	void Init(UWidget_Codex* Codex, UDlgDialogue* Dialogue);
+	void Init(UWidget_Codex* Codex, UWidget_Dialogue* Dialogue,UDlgDialogue* CodexEntry);
 
 	FText GetCodexText();
 };

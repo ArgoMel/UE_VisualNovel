@@ -203,7 +203,7 @@ void UWidget_Dialogue::CheckNotify()
 	{
 		return;
 	}
-	NotifyTextBlock->SetText(UBFL_VN::ToTargetText(mNotificationQueue[0]));
+	NotifyTextBlock->SetText(UBFL_VN::ToTargetText(mNotificationQueue[0],false,true));
 	mNotificationQueue.RemoveAt(0);
 	PlayAnimation(NotifyAnim);
 }

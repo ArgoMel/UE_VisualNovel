@@ -48,6 +48,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> OptionBtn;	//항상 존재
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> GalleryBtn;	//시작 메뉴에만
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> BackBtn;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> QuitBtn;	//시작 메뉴에만

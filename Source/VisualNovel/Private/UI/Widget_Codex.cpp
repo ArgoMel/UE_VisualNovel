@@ -29,7 +29,7 @@ void UWidget_Codex::NativeConstruct()
 	Super::NativeConstruct();
 }
 
-void UWidget_Codex::CreateCodexButtons()
+void UWidget_Codex::CreateCodexButtons(UWidget_Dialogue* Dialogue)
 {
 	UAssetManager& manager = UAssetManager::Get();
 	TArray<FPrimaryAssetId> outAssets;
@@ -54,7 +54,12 @@ void UWidget_Codex::CreateCodexButtons()
 		{
 			continue;
 		}
-		codexBtn->Init(this,dialogue);
+		UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
+		if (!IsValid(gameInstance))
+		{
+			return;
+		}
+		codexBtn->Init(this, Dialogue, dialogue);
 		codexBtn->UpdateCodexDetails();
 		BtnSB->AddChild(codexBtn);
 		mCodexBtns.Add(asset.PrimaryAssetName, codexBtn);

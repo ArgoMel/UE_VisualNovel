@@ -39,7 +39,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Event")
-	void CreateCodexButtons();
+	void CreateCodexButtons(UWidget_Dialogue* Dialogue);
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void ShowCodexDetail(FText CodexName,TArray<FText> CodexDetails, 
 		UWidget_CodexBtn* CodexBtn);

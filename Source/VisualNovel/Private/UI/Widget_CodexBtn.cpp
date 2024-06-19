@@ -25,20 +25,10 @@ void UWidget_CodexBtn::NativeConstruct()
 	Super::NativeConstruct();
 }
 
-void UWidget_CodexBtn::OnCodexBtnClicked()
-{
-	mCodexWidget->ShowCodexDetail(CodexText->GetText(), mCodexDetails, this);
-}
-
 void UWidget_CodexBtn::UpdateCodexDetails()
 {
-	UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
-	if (!IsValid(gameInstance))
-	{
-		return;
-	}
 	TArray<UObject*> participants;
-	gameInstance->GetDialogueWidget()->GetParticipants(mCodexEntry, participants);
+	mDialogueWidget->GetParticipants(mCodexEntry, participants);
 	UDlgContext* context =UDlgManager::StartDialogue(mCodexEntry, participants);
 	CodexText->SetText(context->GetActiveNodeText());
 	mCodexDetails.Empty();
@@ -55,10 +45,17 @@ void UWidget_CodexBtn::AddToCodexDetail(UDlgContext* CodexContext)
 	AddToCodexDetail(CodexContext);
 }
 
-void UWidget_CodexBtn::Init(UWidget_Codex* Codex, UDlgDialogue* Dialogue)
+void UWidget_CodexBtn::OnCodexBtnClicked()
+{
+	mCodexWidget->ShowCodexDetail(CodexText->GetText(), mCodexDetails, this);
+}
+
+void UWidget_CodexBtn::Init(UWidget_Codex* Codex, UWidget_Dialogue* Dialogue, 
+	UDlgDialogue* CodexEntry)
 {
 	mCodexWidget = Codex;
-	mCodexEntry = Dialogue;
+	mDialogueWidget = Dialogue;
+	mCodexEntry = CodexEntry;
 }
 
 FText UWidget_CodexBtn::GetCodexText()

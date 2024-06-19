@@ -30,6 +30,7 @@ void UWidget_Menu::NativeOnInitialized()
 	QuickLoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	MenuBtn->OnClicked.AddDynamic(this, &ThisClass::OnMenuBtnClicked);
 	OptionBtn->OnClicked.AddDynamic(this, &ThisClass::OnOptionBtnClicked);
+	GalleryBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	BackBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	QuitBtn->OnClicked.AddDynamic(this, &ThisClass::OnQuitBtnClicked);
 }
@@ -130,6 +131,7 @@ void UWidget_Menu::UpdateButtonVisibility()
 		QuickSaveBtn->SetVisibility(ESlateVisibility::Visible);
 		QuickLoadBtn->SetVisibility(ESlateVisibility::Visible);
 		MenuBtn->SetVisibility(ESlateVisibility::Visible);
+		GalleryBtn->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	else
 	{
@@ -142,6 +144,7 @@ void UWidget_Menu::UpdateButtonVisibility()
 		QuickSaveBtn->SetVisibility(ESlateVisibility::Collapsed);
 		QuickLoadBtn->SetVisibility(ESlateVisibility::Collapsed);
 		MenuBtn->SetVisibility(ESlateVisibility::Collapsed);
+		GalleryBtn->SetVisibility(ESlateVisibility::Visible);
 	}
 	if(MenuWS->GetActiveWidgetIndex()!=0)
 	{
@@ -174,7 +177,7 @@ void UWidget_Menu::Init(UWidget_Dialogue* DialogueWidget)
 {
 	mDialogueWidget = DialogueWidget;
 	mDialogueWidget->Init(this);
-	Codex->CreateCodexButtons();
+	Codex->CreateCodexButtons(mDialogueWidget);
 }
 
 void UWidget_Menu::AddEntry(FText Name, FText EntryText)

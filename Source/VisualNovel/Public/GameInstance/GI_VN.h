@@ -46,7 +46,15 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	void ShowMenu();
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	void ShowDialogue();
 
+	void CreateMenu();
+
+	UWidget_Menu* GetMenuWidget()
+	{
+		return mMenuWidget;
+	}
 	UWidget_Dialogue* GetDialogueWidget()
 	{
 		return mDialogueWidget;

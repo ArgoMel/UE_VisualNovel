@@ -32,7 +32,8 @@ FBGImgData UBFL_VN::GetBGImgData(FName Name)
 	return *mBGImgData->FindRow<FBGImgData>(Name, TEXT(""), false);
 }
 
-FString UBFL_VN::ToTargetString(FText InText, bool AddQuotes)
+FString UBFL_VN::ToTargetString(FText InText, bool AddQuotes, 
+	bool UseSmallStyle)
 {
 	FString processString = InText.ToString();
 	if (!processString.StartsWith(TEXT("<")))
@@ -81,15 +82,21 @@ FString UBFL_VN::ToTargetString(FText InText, bool AddQuotes)
 		processString += TEXT(" ");
 	}
 
+	if(UseSmallStyle)
+	{
+		processString.ReplaceInline(TEXT(">"), TEXT("Small>"));
+	}
+
 	processString.ReplaceInline(TEXT("<"), TEXT("</><"));
 	processString = processString.RightChop(3);
 	processString = processString + TEXT("</>");
 	return processString;
 }
 
-FText UBFL_VN::ToTargetText(FText InText, bool AddQuotes)
+FText UBFL_VN::ToTargetText(FText InText, bool AddQuotes, 
+	bool UseSmallStyle)
 {
-	return FText::FromString(ToTargetString(InText, AddQuotes));
+	return FText::FromString(ToTargetString(InText, AddQuotes, UseSmallStyle));
 }
 
 FString UBFL_VN::RemoveSymbolText(FString InText)
@@ -103,19 +110,4 @@ FString UBFL_VN::RemoveSymbolText(FString InText)
 	tempStr=tempStr.Replace(TEXT("\""), TEXT(""));
 	tempStr=tempStr.Replace(TEXT("'"), TEXT(""));
 	return tempStr;
-}
-
-float UBFL_VN::FakeLerp(float CurValue, float TargetValue, float DelataTime, 
-	float Speed)
-{
-
-	if (FMath::IsNearlyEqual(CurValue, TargetValue))
-	{
-		return TargetValue;
-	}
-	if (CurValue < TargetValue)
-	{
-		return FMath::Min(Speed * DelataTime + CurValue, TargetValue);
-	}
-	return FMath::Max(-Speed * DelataTime + CurValue, TargetValue);
 }

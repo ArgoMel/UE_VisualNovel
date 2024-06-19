@@ -71,6 +71,16 @@ bool UGI_VN::ModifyNameValue_Implementation(FName ValueName, FName NameValue)
 
 void UGI_VN::ShowMenu()
 {
+	mMenuWidget->AddToViewport(1);
+}
+
+void UGI_VN::ShowDialogue()
+{
+	mDialogueWidget->AddToViewport(0);
+}
+
+void UGI_VN::CreateMenu()
+{
 	if (!IsValid(mDialogueWidgetClass))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UGI_VN::mDialogueWidgetClass 클래스 없음"));
@@ -100,6 +110,4 @@ void UGI_VN::ShowMenu()
 	mOptionWidget = mMenuWidget->GetOption();
 	mOptionWidget->Init(mPersistantData);
 	mOptionWidget->InitializeSavedOptions();
-
-	mMenuWidget->AddToViewport(1);
 }

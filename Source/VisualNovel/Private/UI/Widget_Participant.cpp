@@ -10,9 +10,9 @@ UWidget_Participant::UWidget_Participant(const FObjectInitializer& ObjectInitial
 	mParticipantName = EParticipantName::Yuri;
 
 	mTargetX = 0.;
-	mMoveSpeed = 5000.;
+	mMoveSpeed = 2000.;
 	mTargetOpacity = 1.;
-	mFadeSpeed = 10.;
+	mFadeSpeed = 4.;
 	bWasIntroduced = false;
 }
 
@@ -41,12 +41,12 @@ void UWidget_Participant::NativePreConstruct()
 void UWidget_Participant::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	float opacity =UBFL_VN::FakeLerp(
+	float opacity = FMath::FInterpConstantTo(
 		CharacterImg->GetRenderOpacity(), mTargetOpacity, InDeltaTime, mFadeSpeed);
 	CharacterImg->SetRenderOpacity(opacity);
 
 	FVector2D translation = CharacterImg->GetRenderTransform().Translation;
-	translation.X=UBFL_VN::FakeLerp(translation.X,mTargetX,InDeltaTime,mMoveSpeed);
+	translation.X= FMath::FInterpConstantTo(translation.X,mTargetX,InDeltaTime,mMoveSpeed);
 	CharacterImg->SetRenderTranslation(translation);
 }
 
