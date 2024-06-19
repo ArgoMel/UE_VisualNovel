@@ -3,10 +3,12 @@
 #include "Blueprint/UserWidget.h"
 #include "Widget_Menu.generated.h"
 
+class UImage;
 class UButton;
 class UWidgetSwitcher;
 class UWidget_History;
 class UWidget_Option;
+class UWidget_Codex;
 class UWidget_Dialogue;
 
 UCLASS(Abstract)
@@ -21,23 +23,34 @@ protected:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> StartBtn;
+	TObjectPtr<UImage> BGImg;
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> SaveBtn;
+	TObjectPtr<UButton> StartBtn;	//시작 메뉴에만
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> LoadBtn;
+	TObjectPtr<UButton> HistoryBtn;	// 게임 중에만
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> CodexBtn;
+	TObjectPtr<UButton> CodexBtn;	// 게임 중에만
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> HistoryBtn;
+	TObjectPtr<UButton> SkipBtn;	// 게임 중에만
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> MenuBtn;
+	TObjectPtr<UButton> AutoBtn;	// 게임 중에만
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> OptionBtn;
+	TObjectPtr<UButton> SaveBtn;	// 게임 중에만
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> LoadBtn;	//항상 존재
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> QuickSaveBtn;	// 게임 중에만
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> QuickLoadBtn;	// 게임 중에만
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> MenuBtn;	// 게임 중에만
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> OptionBtn;	//항상 존재
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> BackBtn;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> QuitBtn;
+	TObjectPtr<UButton> QuitBtn;	//시작 메뉴에만
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> MenuWS;
@@ -45,6 +58,8 @@ protected:
 	TObjectPtr<UWidget_History> History;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UWidget_Option> Option;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UWidget_Codex> Codex;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
@@ -54,6 +69,8 @@ protected:
 	void OnStartBtnClicked();
 	UFUNCTION()
 	void OnHistoryBtnClicked();
+	UFUNCTION()
+	void OnCodexBtnClicked();
 	UFUNCTION()
 	void OnMenuBtnClicked();
 	UFUNCTION()

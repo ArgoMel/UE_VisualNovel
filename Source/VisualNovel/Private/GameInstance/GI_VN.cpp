@@ -33,6 +33,23 @@ void UGI_VN::Shutdown()
 	UGameplayStatics::SaveGameToSlot(mPersistantData, SLOTNAME_PERSISTANTDATA,0);
 }
 
+FName UGI_VN::GetParticipantName_Implementation() const
+{
+	return PARTICIPANTNAME_GAMEINSTANCE;
+}
+
+bool UGI_VN::CheckCondition_Implementation(const UDlgContext* Context, 
+	FName ConditionName) const
+{
+	return mTriggeredFlags.Contains(ConditionName);
+}
+
+bool UGI_VN::OnDialogueEvent_Implementation(UDlgContext* Context, FName EventName)
+{
+	mTriggeredFlags.AddUnique(EventName);
+	return false;
+}
+
 void UGI_VN::ShowMenu()
 {
 	if (!IsValid(mDialogueWidgetClass))

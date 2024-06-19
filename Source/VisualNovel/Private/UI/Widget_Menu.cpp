@@ -1,9 +1,11 @@
 #include "UI/Widget_Menu.h"
 #include "UI/Widget_Dialogue.h"
 #include "UI/Widget_History.h"
+#include "UI/Widget_Codex.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
+#include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include <Kismet/KismetSystemLibrary.h>
@@ -18,10 +20,14 @@ void UWidget_Menu::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	StartBtn->OnClicked.AddDynamic(this, &ThisClass::OnStartBtnClicked);
+	HistoryBtn->OnClicked.AddDynamic(this, &ThisClass::OnHistoryBtnClicked);
+	CodexBtn->OnClicked.AddDynamic(this, &ThisClass::OnCodexBtnClicked);
+	SkipBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
+	AutoBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	SaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	LoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
-	CodexBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
-	HistoryBtn->OnClicked.AddDynamic(this, &ThisClass::OnHistoryBtnClicked);
+	QuickSaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
+	QuickLoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	MenuBtn->OnClicked.AddDynamic(this, &ThisClass::OnMenuBtnClicked);
 	OptionBtn->OnClicked.AddDynamic(this, &ThisClass::OnOptionBtnClicked);
 	BackBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
@@ -43,7 +49,7 @@ void UWidget_Menu::OnStartBtnClicked()
 
 void UWidget_Menu::OnHistoryBtnClicked()
 {
-	if(MenuWS->GetActiveWidgetIndex() == 1)
+	if (MenuWS->GetActiveWidgetIndex() == 1)
 	{
 		OnBackBtnClicked();
 		return;
@@ -53,6 +59,22 @@ void UWidget_Menu::OnHistoryBtnClicked()
 		mDialogueWidget->RemoveFromParent();
 	}
 	MenuWS->SetActiveWidgetIndex(1);
+	UpdateButtonVisibility();
+}
+
+void UWidget_Menu::OnCodexBtnClicked()
+{
+	if (MenuWS->GetActiveWidgetIndex() == 3)
+	{
+		OnBackBtnClicked();
+		return;
+	}
+	if (IsValid(mDialogueWidget))
+	{
+		mDialogueWidget->RemoveFromParent();
+	}
+	Codex->UpdateText();
+	MenuWS->SetActiveWidgetIndex(3);
 	UpdateButtonVisibility();
 }
 
@@ -96,20 +118,29 @@ void UWidget_Menu::OnQuitBtnClicked()
 
 void UWidget_Menu::UpdateButtonVisibility()
 {
-	if(IsInGame())
+	bool isInGame = IsInGame();
+	if(isInGame)
 	{
 		StartBtn->SetVisibility(ESlateVisibility::Collapsed);
-		SaveBtn->SetVisibility(ESlateVisibility::Visible);
-		CodexBtn->SetVisibility(ESlateVisibility::Visible);
 		HistoryBtn->SetVisibility(ESlateVisibility::Visible);
+		CodexBtn->SetVisibility(ESlateVisibility::Visible);
+		SkipBtn->SetVisibility(ESlateVisibility::Visible);
+		AutoBtn->SetVisibility(ESlateVisibility::Visible);
+		SaveBtn->SetVisibility(ESlateVisibility::Visible);
+		QuickSaveBtn->SetVisibility(ESlateVisibility::Visible);
+		QuickLoadBtn->SetVisibility(ESlateVisibility::Visible);
 		MenuBtn->SetVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{
 		StartBtn->SetVisibility(ESlateVisibility::Visible);
-		SaveBtn->SetVisibility(ESlateVisibility::Collapsed);
-		CodexBtn->SetVisibility(ESlateVisibility::Collapsed);
 		HistoryBtn->SetVisibility(ESlateVisibility::Collapsed);
+		CodexBtn->SetVisibility(ESlateVisibility::Collapsed);
+		SkipBtn->SetVisibility(ESlateVisibility::Collapsed);
+		AutoBtn->SetVisibility(ESlateVisibility::Collapsed);
+		SaveBtn->SetVisibility(ESlateVisibility::Collapsed);
+		QuickSaveBtn->SetVisibility(ESlateVisibility::Collapsed);
+		QuickLoadBtn->SetVisibility(ESlateVisibility::Collapsed);
 		MenuBtn->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	if(MenuWS->GetActiveWidgetIndex()!=0)
@@ -119,6 +150,14 @@ void UWidget_Menu::UpdateButtonVisibility()
 	else
 	{
 		BackBtn->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	if (isInGame&& MenuWS->GetActiveWidgetIndex() == 0)
+	{
+		BGImg->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else
+	{
+		BGImg->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -135,6 +174,7 @@ void UWidget_Menu::Init(UWidget_Dialogue* DialogueWidget)
 {
 	mDialogueWidget = DialogueWidget;
 	mDialogueWidget->Init(this);
+	Codex->CreateCodexButtons();
 }
 
 void UWidget_Menu::AddEntry(FText Name, FText EntryText)

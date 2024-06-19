@@ -49,9 +49,12 @@ else \
 }
 #pragma endregion
 
+#define PRIMARY_ASSET_TYPE_CODEX FName(TEXT("Codex"))
+
 #define SLOTNAME_PERSISTANTDATA TEXT("PersistantData")
 
 #define PARTICIPANTNAME_WIDGET TEXT("Widget")
+#define PARTICIPANTNAME_GAMEINSTANCE TEXT("GameInstance")
 #define PARTICIPANTNAME_UNKNOWN TEXT("???")
 
 #define VALUENAME_AFFECTION TEXT("mAffection")

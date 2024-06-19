@@ -53,7 +53,7 @@ void UWidget_Dialogue::NativeConstruct()
 
 FName UWidget_Dialogue::GetParticipantName_Implementation() const
 {
-	return TEXT("Widget");
+	return PARTICIPANTNAME_WIDGET;
 }
 
 bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName, 
@@ -370,15 +370,18 @@ void UWidget_Dialogue::StartDialogue(UDlgDialogue* Dialogue)
 void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue, 
 	TArray<UObject*>& Participants)
 {
-	mParticipants.Empty();
-	mParticipants.Add(PARTICIPANTNAME_WIDGET, this);
-	UCanvasPanel* canvas = Cast<UCanvasPanel>(GetRootWidget());
-	for (auto& child : canvas->GetAllChildren())
+	if(mParticipants.IsEmpty())
 	{
-		UWidget_Participant* paricipant = Cast<UWidget_Participant>(child);
-		if (IsValid(paricipant))
+		mParticipants.Add(PARTICIPANTNAME_WIDGET, this);
+		mParticipants.Add(PARTICIPANTNAME_GAMEINSTANCE, GetGameInstance());
+		UCanvasPanel* canvas = Cast<UCanvasPanel>(GetRootWidget());
+		for (auto& child : canvas->GetAllChildren())
 		{
-			mParticipants.Add(paricipant->GetParticipantName(), paricipant);
+			UWidget_Participant* paricipant = Cast<UWidget_Participant>(child);
+			if (IsValid(paricipant))
+			{
+				mParticipants.Add(paricipant->GetParticipantName(), paricipant);
+			}
 		}
 	}
 

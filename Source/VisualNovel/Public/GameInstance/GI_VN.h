@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include <DlgSystem/DlgDialogueParticipant.h>
 #include "GI_VN.generated.h"
 
 class UPersistantData;
@@ -10,6 +11,7 @@ class UWidget_Dialogue;
 
 UCLASS()
 class VISUALNOVEL_API UGI_VN : public UGameInstance
+	, public IDlgDialogueParticipant
 {
 	GENERATED_BODY()
 public:
@@ -17,11 +19,14 @@ public:
 protected:
 	virtual void Init() override;
 	virtual void Shutdown() override;
+public:
+	FName GetParticipantName_Implementation() const;
+	bool CheckCondition_Implementation(const UDlgContext* Context, FName ConditionName) const;
+	bool OnDialogueEvent_Implementation(UDlgContext* Context, FName EventName);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UPersistantData> mPersistantData;
-
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Menu> mMenuWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
@@ -34,7 +39,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mDialogueWidgetClass;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	TArray<FName> mTriggeredFlags;
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	void ShowMenu();
+
+	UWidget_Dialogue* GetDialogueWidget()
+	{
+		return mDialogueWidget;
+	}
 };
