@@ -23,6 +23,7 @@ public:
 	FName GetParticipantName_Implementation() const;
 	bool CheckCondition_Implementation(const UDlgContext* Context, FName ConditionName) const;
 	bool OnDialogueEvent_Implementation(UDlgContext* Context, FName EventName);
+	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")

@@ -94,4 +94,8 @@ public:
 	{
 		return Option;
 	}
+	UWidget_Codex* GetCodex()
+	{
+		return Codex;
+	}
 };

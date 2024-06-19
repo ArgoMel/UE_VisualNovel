@@ -73,7 +73,7 @@ void UWidget_Menu::OnCodexBtnClicked()
 	{
 		mDialogueWidget->RemoveFromParent();
 	}
-	Codex->UpdateText();
+	Codex->UpdateRecentCodexDetail();
 	MenuWS->SetActiveWidgetIndex(3);
 	UpdateButtonVisibility();
 }

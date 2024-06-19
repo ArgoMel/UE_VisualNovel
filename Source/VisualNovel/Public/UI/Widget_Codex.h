@@ -25,22 +25,24 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UScrollBox> DetailSB;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
+	TObjectPtr<UWidget_CodexBtn> mLastClickedBtn;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mCodexBtnClass;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mCodexDetailClass;
 
 public:
-	UPROPERTY(BlueprintReadWrite, Category = "Ref")
-	TObjectPtr<UWidget_CodexBtn> mRecentCodexBtn;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	TMap<FName, UWidget_CodexBtn*> mCodexBtns;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void CreateCodexButtons();
 	UFUNCTION(BlueprintCallable, Category = "Event")
-	void ShowCodexDetail(UDlgDialogue* Codex);
-	UFUNCTION(BlueprintCallable, Category = "Event")
-	void AddToCodexDetail(UDlgContext* CodexContext,int32 Index=0);
+	void ShowCodexDetail(FText CodexName,TArray<FText> CodexDetails, 
+		UWidget_CodexBtn* CodexBtn);
 
-	void UpdateText();
+	void UpdateRecentCodexDetail();
 };

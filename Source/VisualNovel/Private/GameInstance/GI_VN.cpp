@@ -2,6 +2,8 @@
 #include "UI/Widget_Menu.h"
 #include "UI/Widget_Dialogue.h"
 #include "UI/Widget_Option.h"
+#include "UI/Widget_Codex.h"
+#include "UI/Widget_CodexBtn.h"
 #include "Save/PersistantData.h"
 #include "../VisualNovel.h"
 #include <Kismet/GameplayStatics.h>
@@ -47,6 +49,23 @@ bool UGI_VN::CheckCondition_Implementation(const UDlgContext* Context,
 bool UGI_VN::OnDialogueEvent_Implementation(UDlgContext* Context, FName EventName)
 {
 	mTriggeredFlags.AddUnique(EventName);
+	return false;
+}
+
+bool UGI_VN::ModifyNameValue_Implementation(FName ValueName, FName NameValue)
+{
+	if(ValueName.ToString().StartsWith(TEXT("CDX_")))
+	{
+		if(!mTriggeredFlags.Contains(NameValue))
+		{
+			mTriggeredFlags.Add(NameValue);
+			UWidget_Codex* codex = mMenuWidget->GetCodex();
+			UWidget_CodexBtn* codexBtn = codex->mCodexBtns.FindRef(ValueName);
+			codexBtn->UpdateCodexDetails();
+			FString notify = FString::Printf(TEXT("%s 정보 갱신!"), *codexBtn->GetCodexText().ToString());
+			mDialogueWidget->Notify(FText::FromString(notify));
+		}
+	}
 	return false;
 }
 

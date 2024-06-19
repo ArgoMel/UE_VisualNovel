@@ -29,11 +29,19 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UDlgDialogue> mCodexEntry;
 
-protected:
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	TArray<FText> mCodexDetails;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void UpdateCodexDetails();
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void AddToCodexDetail(UDlgContext* CodexContext);
+
 	UFUNCTION()
 	void OnCodexBtnClicked();
 
-public:
-	void Init(UWidget_Codex* Codex,UDlgDialogue* Dialogue);
-	void SetText(FText Text);
+	void Init(UWidget_Codex* Codex, UDlgDialogue* Dialogue);
+
+	FText GetCodexText();
 };

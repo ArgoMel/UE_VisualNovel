@@ -1,5 +1,11 @@
 #include "UI/Widget_CodexBtn.h"
 #include "UI/Widget_Codex.h"
+#include "UI/Widget_Dialogue.h"
+#include "GameInstance/GI_VN.h"
+#include <BFL/BFL_VN.h>
+#include "DlgSystem/DlgDialogue.h"
+#include <DlgSystem/DlgManager.h>
+#include "DlgSystem/DlgContext.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 
@@ -21,8 +27,32 @@ void UWidget_CodexBtn::NativeConstruct()
 
 void UWidget_CodexBtn::OnCodexBtnClicked()
 {
-	mCodexWidget->mRecentCodexBtn = this;
-	mCodexWidget->ShowCodexDetail(mCodexEntry);
+	mCodexWidget->ShowCodexDetail(CodexText->GetText(), mCodexDetails, this);
+}
+
+void UWidget_CodexBtn::UpdateCodexDetails()
+{
+	UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
+	if (!IsValid(gameInstance))
+	{
+		return;
+	}
+	TArray<UObject*> participants;
+	gameInstance->GetDialogueWidget()->GetParticipants(mCodexEntry, participants);
+	UDlgContext* context =UDlgManager::StartDialogue(mCodexEntry, participants);
+	CodexText->SetText(context->GetActiveNodeText());
+	mCodexDetails.Empty();
+	AddToCodexDetail(context);
+}
+
+void UWidget_CodexBtn::AddToCodexDetail(UDlgContext* CodexContext)
+{
+	if (!CodexContext->ChooseOption(0))
+	{
+		return;
+	}
+	mCodexDetails.Add(UBFL_VN::ToTargetText(CodexContext->GetActiveNodeText()));
+	AddToCodexDetail(CodexContext);
 }
 
 void UWidget_CodexBtn::Init(UWidget_Codex* Codex, UDlgDialogue* Dialogue)
@@ -31,7 +61,7 @@ void UWidget_CodexBtn::Init(UWidget_Codex* Codex, UDlgDialogue* Dialogue)
 	mCodexEntry = Dialogue;
 }
 
-void UWidget_CodexBtn::SetText(FText Text)
+FText UWidget_CodexBtn::GetCodexText()
 {
-	CodexText->SetText(Text);
+	return CodexText->GetText();
 }

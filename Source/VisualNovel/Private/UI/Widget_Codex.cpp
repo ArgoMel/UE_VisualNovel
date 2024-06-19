@@ -27,7 +27,6 @@ void UWidget_Codex::NativeOnInitialized()
 void UWidget_Codex::NativeConstruct()
 {
 	Super::NativeConstruct();
-	UpdateText();
 }
 
 void UWidget_Codex::CreateCodexButtons()
@@ -56,90 +55,53 @@ void UWidget_Codex::CreateCodexButtons()
 			continue;
 		}
 		codexBtn->Init(this,dialogue);
+		codexBtn->UpdateCodexDetails();
 		BtnSB->AddChild(codexBtn);
+		mCodexBtns.Add(asset.PrimaryAssetName, codexBtn);
 	}
 }
 
-void UWidget_Codex::ShowCodexDetail(UDlgDialogue* Codex)
+void UWidget_Codex::ShowCodexDetail(FText CodexName, TArray<FText> CodexDetails, 
+	UWidget_CodexBtn* CodexBtn)
 {
-	UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
-	if (!IsValid(gameInstance))
-	{
-		return;
-	}
-	TArray<UObject*> participants;
-	gameInstance->GetDialogueWidget()->GetParticipants(Codex, participants);
-	UDlgContext* context = UDlgManager::StartDialogue(Codex, participants);
-	TitleText->SetText(context->GetActiveNodeText());
-	AddToCodexDetail(context,0);
-}
-
-void UWidget_Codex::AddToCodexDetail(UDlgContext* CodexContext, int32 Index)
-{
-	if(!CodexContext->ChooseOption(0))
-	{
-		for(int32 i=Index;i< DetailSB->GetChildrenCount();++i)
-		{
-			DetailSB->GetChildAt(i)->SetVisibility(ESlateVisibility::Collapsed);
-		}
-		return;
-	}
-	UWidget_CodexDetail* codexDetail = nullptr;
-	if(Index>=DetailSB->GetChildrenCount())
-	{
-		if (!IsValid(mCodexDetailClass))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s::%s 클래스 없음"),
-				*GetFName().ToString(), *mCodexDetailClass->GetFName().ToString());
-			return;
-		}
-		codexDetail=
-			CreateWidget<UWidget_CodexDetail>(GetOwningPlayer(), mCodexDetailClass);
-		DetailSB->AddChild(codexDetail);
-	}
-	else
-	{
-		codexDetail =
-			Cast<UWidget_CodexDetail>(DetailSB->GetChildAt(Index));
-	}
-	codexDetail->SetVisibility(ESlateVisibility::HitTestInvisible);
-	codexDetail->Init(UBFL_VN::ToTargetText(CodexContext->GetActiveNodeText()));
-	AddToCodexDetail(CodexContext, Index + 1);
-}
-
-void UWidget_Codex::UpdateText()
-{
-	UAssetManager& manager = UAssetManager::Get();
-	TArray<FPrimaryAssetId> outAssets;
-	manager.GetPrimaryAssetIdList(PRIMARY_ASSET_TYPE_CODEX, outAssets);
-
+	TitleText->SetText(CodexName);
+	mLastClickedBtn = CodexBtn;
 	int32 index = 0;
-	for (auto& asset : outAssets)
+	for(auto& codexDetail:CodexDetails)
 	{
-		UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
-		if (!IsValid(dialogue))
+		UWidget_CodexDetail* codexDetailWidget = nullptr;
+		if(index >= DetailSB->GetChildrenCount())
 		{
-			continue;
+			if (!IsValid(mCodexDetailClass))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s::%s 클래스 없음"),
+					*GetFName().ToString(), *mCodexDetailClass->GetFName().ToString());
+				return;
+			}
+			codexDetailWidget =
+				CreateWidget<UWidget_CodexDetail>(GetOwningPlayer(), mCodexDetailClass);
+			DetailSB->AddChild(codexDetailWidget);
 		}
-		UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
-		if (!IsValid(gameInstance))
+		else
 		{
-			continue;
+			codexDetailWidget =
+				Cast<UWidget_CodexDetail>(DetailSB->GetChildAt(index));
 		}
-		TArray<UObject*> participants;
-		gameInstance->GetDialogueWidget()->GetParticipants(dialogue, participants);
-		UDlgContext* context = UDlgManager::StartDialogue(dialogue, participants);
-		UWidget_CodexBtn* codexBtn =
-			Cast<UWidget_CodexBtn>(BtnSB->GetChildAt(index));
-		if (!IsValid(codexBtn))
-		{
-			continue;
-		}
-		codexBtn->SetText(context->GetActiveNodeText());
-		if(codexBtn==mRecentCodexBtn)
-		{
-			ShowCodexDetail(dialogue);
-		}
+		codexDetailWidget->Init(codexDetail);
+		codexDetailWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 		++index;
 	}
+	for (int32 i = CodexDetails.Num(); i < DetailSB->GetChildrenCount();++i)
+	{
+		DetailSB->GetChildAt(i)->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void UWidget_Codex::UpdateRecentCodexDetail()
+{
+	if(!IsValid(mLastClickedBtn))
+	{
+		return;
+	}
+	mLastClickedBtn->OnCodexBtnClicked();
 }
