@@ -111,3 +111,8 @@ void UGI_VN::CreateMenu()
 	mOptionWidget->Init(mPersistantData);
 	mOptionWidget->InitializeSavedOptions();
 }
+
+void UGI_VN::ToggleGameAndMenu()
+{
+	mMenuWidget->ToggleMenuWidget();
+}

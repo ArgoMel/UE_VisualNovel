@@ -15,8 +15,8 @@
 #include "Components/VerticalBox.h"
 #include "Components/Button.h"
 #include "Components/EditableText.h"
+#include "Components/VerticalBoxSlot.h"
 #include "Animation/WidgetAnimation.h"
-#include <Components/CanvasPanel.h>
 
 UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -308,11 +308,6 @@ void UWidget_Dialogue::ShowOptions()
 			dialogueOption =
 				CreateWidget<UWidget_DialogueOption>(GetOwningPlayer(), mDialogueOptionClass);
 		}
-		if (!IsValid(dialogueOption))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("UWidget_Dialogue::dialogueOption 캐스팅 실패"));
-			continue;
-		}
 		FText tempText;
 		if (bShowUnselectableOption)
 		{
@@ -329,6 +324,11 @@ void UWidget_Dialogue::ShowOptions()
 		if (!canRecycle)
 		{
 			ButtonsVBox->AddChild(dialogueOption);
+			UVerticalBoxSlot* slot = Cast<UVerticalBoxSlot>(dialogueOption->Slot);
+			if (IsValid(slot))
+			{
+				slot->SetPadding(FMargin(0.f, 5.f, 0.f, 5.f));
+			}
 		}
 
 		if (bShowUnselectableOption)
@@ -364,6 +364,10 @@ void UWidget_Dialogue::StartDialogue(UDlgDialogue* Dialogue)
 		TArray<UObject*> participants;
 		GetParticipants(Dialogue, participants);
 		mDialogueContext = UDlgManager::StartDialogue(Dialogue, participants);
+	}
+	else
+	{
+		mDialogueContext = nullptr;
 	}
 }
 
@@ -411,4 +415,21 @@ void UWidget_Dialogue::ChangeBG(FName TextureName)
 	style.FillImage.SetResourceObject(UBFL_VN::GetBGImgData(TextureName).Texture);
 	AnimPB->SetWidgetStyle(style);
 	BGImg->SetBrushFromTexture(UBFL_VN::GetBGImgData(TextureName).Texture);
+}
+
+void UWidget_Dialogue::SetDialogueVisible(bool Visible)
+{
+	ClickToContinueBtn->SetIsEnabled(Visible);
+	for (int32 i = 0; i < ButtonsVBox->GetChildrenCount();++i)
+	{
+		ButtonsVBox->GetChildAt(i)->SetIsEnabled(Visible);
+	}
+	if(Visible)
+	{
+		PlayAnimationReverse(FadeDialogueAnim);
+	}
+	else
+	{
+		PlayAnimationForward(FadeDialogueAnim);
+	}
 }

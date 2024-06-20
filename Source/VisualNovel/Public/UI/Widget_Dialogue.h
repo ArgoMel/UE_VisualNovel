@@ -40,6 +40,8 @@ protected:
 	TObjectPtr<UProgressBar> AnimPB;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UBorder> DialogueBorder;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<URichTextBlock> DialogueText;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -70,6 +72,8 @@ protected:
 	TObjectPtr<UWidgetAnimation> DesolveAnim;
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<UWidgetAnimation> WipeAnim;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	TObjectPtr<UWidgetAnimation> FadeDialogueAnim;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TMap<FName, UObject*> mParticipants;
@@ -135,6 +139,7 @@ public:
 
 	void Init(UWidget_Menu* Menu);
 	void ChangeBG(FName TextureName);
+	void SetDialogueVisible(bool Visible);
 
 	UDlgContext* GetDialogueContext()
 	{

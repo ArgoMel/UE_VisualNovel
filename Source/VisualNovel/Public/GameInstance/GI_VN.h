@@ -50,6 +50,7 @@ public:
 	void ShowDialogue();
 
 	void CreateMenu();
+	void ToggleGameAndMenu();
 
 	UWidget_Menu* GetMenuWidget()
 	{

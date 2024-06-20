@@ -21,6 +21,9 @@ protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 
+private:
+	int32 mNextWigetIndex;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> BGImg;
@@ -63,6 +66,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UWidget_Codex> Codex;
 
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	TObjectPtr<UWidgetAnimation> FadeBtnAnim;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	TObjectPtr<UWidgetAnimation> FadeBlackAnim;
+
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
 
@@ -82,15 +90,25 @@ protected:
 	UFUNCTION()
 	void OnQuitBtnClicked();
 
+	UFUNCTION()
+	void StartGame();
+	UFUNCTION()
+	void OpenMenu();
+	UFUNCTION()
+	void QuitGame();
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void UpdateButtonVisibility();
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void ToggleMenuWidget();
 
 	UFUNCTION(BlueprintPure)
 	bool IsInGame();
 
 	void Init(UWidget_Dialogue* DialogueWidget);
 	void AddEntry(FText Name, FText EntryText);
+	void ChangeScene(int32 Index);
 
 	UWidget_Option* GetOption()
 	{

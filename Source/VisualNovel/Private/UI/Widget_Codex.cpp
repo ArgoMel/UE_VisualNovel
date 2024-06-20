@@ -11,6 +11,7 @@
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include <Engine/AssetManager.h>
+#include <Components/ScrollBoxSlot.h>
 
 UWidget_Codex::UWidget_Codex(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -94,6 +95,11 @@ void UWidget_Codex::ShowCodexDetail(FText CodexName, TArray<FText> CodexDetails,
 		}
 		codexDetailWidget->Init(codexDetail);
 		codexDetailWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+		UScrollBoxSlot* slot = Cast<UScrollBoxSlot>(codexDetailWidget->Slot);
+		if (IsValid(slot))
+		{
+			slot->SetPadding(FMargin(0.f, 0.f, 0.f, 35.f));
+		}
 		++index;
 	}
 	for (int32 i = CodexDetails.Num(); i < DetailSB->GetChildrenCount();++i)

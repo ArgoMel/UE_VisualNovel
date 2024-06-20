@@ -2,6 +2,7 @@
 #include "UI/Widget_HistoryEntry.h"
 #include "../VisualNovel.h"
 #include "Components/ScrollBox.h"
+#include <Components/ScrollBoxSlot.h>
 
 UWidget_History::UWidget_History(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -42,4 +43,9 @@ void UWidget_History::AddEntry(FText Name, FText EntryText)
 	historyEntry->UpdateEntry(Name, EntryText);
 	HistorySB->AddChild(historyEntry);
 	HistorySB->ScrollToEnd();
+	UScrollBoxSlot* slot = Cast<UScrollBoxSlot>(historyEntry->Slot);
+	if (IsValid(slot))
+	{
+		slot->SetPadding(FMargin(0.f, 0.f, 0.f, 35.f));
+	}
 }

@@ -9,11 +9,12 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include <Kismet/KismetSystemLibrary.h>
+#include "Animation/WidgetAnimation.h"
 
 UWidget_Menu::UWidget_Menu(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-
+	mNextWigetIndex = 0;
 }
 
 void UWidget_Menu::NativeOnInitialized()
@@ -43,9 +44,10 @@ void UWidget_Menu::NativeConstruct()
 
 void UWidget_Menu::OnStartBtnClicked()
 {
-	mDialogueWidget->StartDialogue(UBFL_VN::mDialogue);
-	mDialogueWidget->AddToViewport(0);
-	UpdateButtonVisibility();
+	ChangeScene(0);
+	FTimerHandle fadeTimer;
+	GetWorld()->GetTimerManager().SetTimer(fadeTimer,this,
+		&ThisClass::StartGame, FadeBlackAnim->GetEndTime() * 0.5f);
 }
 
 void UWidget_Menu::OnHistoryBtnClicked()
@@ -55,11 +57,11 @@ void UWidget_Menu::OnHistoryBtnClicked()
 		OnBackBtnClicked();
 		return;
 	}
+	MenuWS->SetActiveWidgetIndex(1);
 	if (IsValid(mDialogueWidget))
 	{
 		mDialogueWidget->RemoveFromParent();
 	}
-	MenuWS->SetActiveWidgetIndex(1);
 	UpdateButtonVisibility();
 }
 
@@ -70,21 +72,20 @@ void UWidget_Menu::OnCodexBtnClicked()
 		OnBackBtnClicked();
 		return;
 	}
+	MenuWS->SetActiveWidgetIndex(3);
 	if (IsValid(mDialogueWidget))
 	{
 		mDialogueWidget->RemoveFromParent();
 	}
-	Codex->UpdateRecentCodexDetail();
-	MenuWS->SetActiveWidgetIndex(3);
 	UpdateButtonVisibility();
 }
 
 void UWidget_Menu::OnMenuBtnClicked()
 {
-	MenuWS->SetActiveWidgetIndex(0);
-	mDialogueWidget->RemoveFromParent();
-	mDialogueWidget->StartDialogue(nullptr);
-	UpdateButtonVisibility();
+	ChangeScene(0);
+	FTimerHandle fadeTimer;
+	GetWorld()->GetTimerManager().SetTimer(fadeTimer, this,
+		&ThisClass::OpenMenu, FadeBlackAnim->GetEndTime() * 0.5f);
 }
 
 void UWidget_Menu::OnOptionBtnClicked()
@@ -95,7 +96,7 @@ void UWidget_Menu::OnOptionBtnClicked()
 		return;
 	}
 	MenuWS->SetActiveWidgetIndex(2);
-	if(IsValid(mDialogueWidget))
+	if (IsValid(mDialogueWidget))
 	{
 		mDialogueWidget->RemoveFromParent();
 	}
@@ -104,17 +105,41 @@ void UWidget_Menu::OnOptionBtnClicked()
 
 void UWidget_Menu::OnBackBtnClicked()
 {
+	MenuWS->SetActiveWidgetIndex(0);
 	if (IsInGame())
 	{
 		mDialogueWidget->AddToViewport(0);
 	}
-	MenuWS->SetActiveWidgetIndex(0);
 	UpdateButtonVisibility();
 }
 
 void UWidget_Menu::OnQuitBtnClicked()
 {
-	UKismetSystemLibrary::QuitGame(GetWorld(), GetOwningPlayer(),EQuitPreference::Quit,false);
+	ChangeScene(0);
+	FTimerHandle fadeTimer;
+	GetWorld()->GetTimerManager().SetTimer(fadeTimer, this,
+		&ThisClass::QuitGame, FadeBlackAnim->GetEndTime() * 0.5f);
+}
+
+void UWidget_Menu::StartGame()
+{
+	MenuWS->SetActiveWidgetIndex(mNextWigetIndex);
+	mDialogueWidget->StartDialogue(UBFL_VN::mDialogue);
+	mDialogueWidget->AddToViewport(0);
+	UpdateButtonVisibility();
+}
+
+void UWidget_Menu::OpenMenu()
+{
+	MenuWS->SetActiveWidgetIndex(mNextWigetIndex);
+	mDialogueWidget->StartDialogue(nullptr);
+	mDialogueWidget->RemoveFromParent();
+	UpdateButtonVisibility();
+}
+
+void UWidget_Menu::QuitGame()
+{
+	UKismetSystemLibrary::QuitGame(GetWorld(), GetOwningPlayer(), EQuitPreference::Quit, false);
 }
 
 void UWidget_Menu::UpdateButtonVisibility()
@@ -164,6 +189,25 @@ void UWidget_Menu::UpdateButtonVisibility()
 	}
 }
 
+void UWidget_Menu::ToggleMenuWidget()
+{
+	if (IsInGame() &&
+		IsInViewport())
+	{
+		PlayAnimationForward(FadeBtnAnim);
+		FTimerHandle fadeTimer;
+		GetWorld()->GetTimerManager().SetTimer(fadeTimer, this,
+			&ThisClass::RemoveFromParent, FadeBtnAnim->GetEndTime());
+		mDialogueWidget->SetDialogueVisible(false);
+	}
+	else
+	{
+		AddToViewport(1);
+		PlayAnimationReverse(FadeBtnAnim);
+		mDialogueWidget->SetDialogueVisible(true);
+	}
+}
+
 bool UWidget_Menu::IsInGame()
 {
 	if(!IsValid(mDialogueWidget))
@@ -183,4 +227,10 @@ void UWidget_Menu::Init(UWidget_Dialogue* DialogueWidget)
 void UWidget_Menu::AddEntry(FText Name, FText EntryText)
 {
 	History->AddEntry(Name, EntryText);
+}
+
+void UWidget_Menu::ChangeScene(int32 Index)
+{
+	mNextWigetIndex = Index;
+	PlayAnimationForward(FadeBlackAnim);
 }
