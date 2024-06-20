@@ -3,6 +3,7 @@
 #include "UI/Widget_Menu.h"
 #include "UI/Widget_Option.h"
 #include "UI/Widget_Participant.h"
+#include "GameInstance/GI_VN.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
@@ -15,6 +16,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/Button.h"
 #include "Components/EditableText.h"
+#include <Components/CanvasPanel.h>
 #include "Components/VerticalBoxSlot.h"
 #include "Animation/WidgetAnimation.h"
 
@@ -25,6 +27,14 @@ UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 
 	bShowUnselectableOption = true;
 	bAskForPlayerName = false;
+
+	mSkipSpeed = 0.001f;
+	bSkipModeActive = false;
+	bCancelSkipOnOptions = false;
+
+	mAutoSpeed = 0.5f;
+	bAutoModeActive = false;
+	bCancelAutoOnOptions = false;
 
 	GetClassAsset(mDialogueOptionClass, UUserWidget, "/Game/VN/UI/WP_DialogueOption.WP_DialogueOption_C");
 }
@@ -94,10 +104,10 @@ void UWidget_Dialogue::OnClickToContinueBtnClicked()
 	}
 	if(mCurText!=mTargetText)
 	{
-		mTypeTimer.Invalidate();
+		GetWorld()->GetTimerManager().ClearTimer(mTypeTimer);
 		mCurText = mTargetText;
 		DialogueText->SetText(FText::FromString(mCurText));
-		ShowOptions();
+		OnTextFinishedTyping();
 		return;
 	}
 
@@ -121,9 +131,7 @@ void UWidget_Dialogue::OnClickToContinueBtnClicked()
 		}
 		else
 		{
-			mDialogueContext = nullptr;
-			RemoveFromParent();
-			mMenuWidget->UpdateButtonVisibility();
+			mMenuWidget->OnMenuBtnClicked();
 		}
 	}
 }
@@ -145,7 +153,9 @@ void UWidget_Dialogue::OnPlayerNameInputCommitted(const FText& Text,
 	{
 		return;
 	}
-	mPlayerName = Text;
+
+	UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
+	gameInstance->mPlayerName = FName(Text.ToString());
 	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);
 	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
 	ChooseOption(0);
@@ -167,7 +177,7 @@ void UWidget_Dialogue::DelayTypeText()
 	if(mConsumedText.IsEmpty()||
 		mCurText == mTargetText)
 	{
-		ShowOptions();
+		OnTextFinishedTyping();
 		return;
 	}
 	if (mCurText.EndsWith(TEXT(">")))
@@ -208,6 +218,22 @@ void UWidget_Dialogue::CheckNotify()
 	PlayAnimation(NotifyAnim);
 }
 
+void UWidget_Dialogue::SkipTextTyping()
+{
+	if (bSkipModeActive)
+	{
+		ChooseOption();
+	}
+}
+
+void UWidget_Dialogue::AutoTextTyping()
+{
+	if (bAutoModeActive)
+	{
+		ChooseOption();
+	}
+}
+
 void UWidget_Dialogue::UpdateText()
 {
 	HideOptions();
@@ -227,13 +253,14 @@ void UWidget_Dialogue::UpdateText()
 		SpeakerBorder->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
-	if(mTextSpeed==0.f)
+	if(mTextSpeed==0.f||
+		bSkipModeActive)
 	{
 		mCurText = UBFL_VN::ToTargetString(
 			mDialogueContext->GetActiveNodeText(),IsValid(activeParicipant));
 		mTargetText= mCurText;
 		DialogueText->SetText(FText::FromString(mCurText));
-		ShowOptions();
+		OnTextFinishedTyping();
 	}
 	else
 	{
@@ -260,18 +287,26 @@ void UWidget_Dialogue::ChooseOption(int32 OptionIndex)
 		participantWidget->FinishAnimating();
 	}
 	StopAllAnimations();
+	bool canChoose = false;
 	if(bShowUnselectableOption)
 	{
-		mDialogueContext->ChooseOptionFromAll(OptionIndex);
+		canChoose =mDialogueContext->ChooseOptionFromAll(OptionIndex);
 	}
 	else
 	{
-		mDialogueContext->ChooseOption(OptionIndex);
+		canChoose =mDialogueContext->ChooseOption(OptionIndex);
 	}
-	UpdateText();
+	if(canChoose)
+	{
+		UpdateText();
+	}
+	else
+	{
+		mMenuWidget->OnMenuBtnClicked();
+	}
 }
 
-void UWidget_Dialogue::ShowOptions()
+void UWidget_Dialogue::OnTextFinishedTyping()
 {
 	if(bAskForPlayerName)
 	{
@@ -279,22 +314,32 @@ void UWidget_Dialogue::ShowOptions()
 		PlayerNameInput->SetVisibility(ESlateVisibility::Visible);
 		return;
 	}
-	if(!mTypeTimer.IsValid())
-	{
-		return;
-	}
 	GetWorld()->GetTimerManager().ClearTimer(mTypeTimer);
-	if (!IsValid(mDialogueOptionClass))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UWidget_Dialogue::mDialogueOptionClass 클래스 없음"));
-		return;
-	}
 	int32 optionNum = bShowUnselectableOption ?
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
-	if (optionNum < 2)
+	if (optionNum ==1)	//선택지가 없는경우
 	{
+		FTimerHandle tempTimer;
+		if (bSkipModeActive)
+		{
+			bSkipModeActive =
+				mDialogueContext->IsOptionConnectedToVisitedNode(0, false, !bShowUnselectableOption);
+		}
+		if(bSkipModeActive)
+		{
+			GetWorld()->GetTimerManager().SetTimer(tempTimer, this, &ThisClass::SkipTextTyping, mSkipSpeed);
+		}		
+		else if (bAutoModeActive)
+		{
+			float delay = mTextSpeed==0.f? 
+				mDialogueContext->GetActiveNodeText().ToString().Len() * 0.01f : 
+				mAutoSpeed;
+			GetWorld()->GetTimerManager().SetTimer(tempTimer,this,&ThisClass::AutoTextTyping, delay);
+		}
 		return;
 	}
+	bSkipModeActive = !bCancelSkipOnOptions;
+	bAutoModeActive = !bCancelAutoOnOptions;
 	for (int32 i = 0; i < optionNum; ++i)
 	{
 		UWidget_DialogueOption* dialogueOption = nullptr;
@@ -432,4 +477,43 @@ void UWidget_Dialogue::SetDialogueVisible(bool Visible)
 	{
 		PlayAnimationForward(FadeDialogueAnim);
 	}
+}
+
+void UWidget_Dialogue::ToggleSkipMode()
+{
+	bSkipModeActive = !bSkipModeActive;
+	int32 optionNum = bShowUnselectableOption ?
+		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
+	if (bSkipModeActive&&
+		mDialogueContext->IsOptionConnectedToVisitedNode(0, false, !bShowUnselectableOption)&&
+		optionNum ==1)
+	{
+		ChooseOption();
+	}
+}
+
+void UWidget_Dialogue::ToggleAutoMode()
+{
+	bAutoModeActive = !bAutoModeActive;
+	int32 optionNum = bShowUnselectableOption ?
+		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
+	if (bAutoModeActive&&
+		mCurText==mTargetText&&
+		optionNum ==1)
+	{
+		ChooseOption();
+	}
+}
+
+void UWidget_Dialogue::Ending()
+{
+	mDialogueContext = nullptr;
+	Reset();
+}
+
+void UWidget_Dialogue::Reset()
+{
+	RemoveFromParent();
+	bSkipModeActive = false;
+	bAutoModeActive = false;
 }

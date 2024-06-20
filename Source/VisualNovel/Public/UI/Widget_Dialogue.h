@@ -77,7 +77,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TMap<FName, UObject*> mParticipants;
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Menu> mMenuWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UDlgContext> mDialogueContext;
@@ -97,11 +97,25 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	TArray<FText> mNotificationQueue;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
-	FText mPlayerName;
-	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	bool bShowUnselectableOption;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	bool bAskForPlayerName;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Skip")
+	float mSkipSpeed;
+	UPROPERTY(BlueprintReadWrite, Category = "Skip")
+	bool bCancelSkipOnOptions;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Auto")
+	float mAutoSpeed;
+	UPROPERTY(BlueprintReadWrite, Category = "Auto")
+	bool bAutoModeActive;
+	UPROPERTY(BlueprintReadWrite, Category = "Auto")
+	bool bCancelAutoOnOptions;
+
+public:
+	UPROPERTY(BlueprintReadWrite, Category = "Skip")
+	bool bSkipModeActive;
 
 protected:
 	UFUNCTION()
@@ -119,6 +133,10 @@ protected:
 	void DelayTypeText();
 	UFUNCTION()
 	void CheckNotify();
+	UFUNCTION()
+	void SkipTextTyping();
+	UFUNCTION()
+	void AutoTextTyping();
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Event")
@@ -126,7 +144,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void ChooseOption(int32 OptionIndex=0);
 	UFUNCTION(BlueprintCallable, Category = "Event")
-	void ShowOptions();
+	void OnTextFinishedTyping();
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void HideOptions();
 	UFUNCTION(BlueprintCallable, Category = "Event")
@@ -140,6 +158,10 @@ public:
 	void Init(UWidget_Menu* Menu);
 	void ChangeBG(FName TextureName);
 	void SetDialogueVisible(bool Visible);
+	void ToggleSkipMode();
+	void ToggleAutoMode();
+	void Ending();
+	void Reset();
 
 	UDlgContext* GetDialogueContext()
 	{

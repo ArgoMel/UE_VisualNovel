@@ -44,6 +44,10 @@ protected:
 	TArray<FName> mTriggeredFlags;
 
 public:
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	FName mPlayerName;
+
+public:
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	void ShowMenu();
 	UFUNCTION(BlueprintCallable, Category = "Default")

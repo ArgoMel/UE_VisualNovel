@@ -23,8 +23,8 @@ void UWidget_Menu::NativeOnInitialized()
 	StartBtn->OnClicked.AddDynamic(this, &ThisClass::OnStartBtnClicked);
 	HistoryBtn->OnClicked.AddDynamic(this, &ThisClass::OnHistoryBtnClicked);
 	CodexBtn->OnClicked.AddDynamic(this, &ThisClass::OnCodexBtnClicked);
-	SkipBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
-	AutoBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
+	SkipBtn->OnClicked.AddDynamic(this, &ThisClass::OnSkipBtnClicked);
+	AutoBtn->OnClicked.AddDynamic(this, &ThisClass::OnAutoBtnClicked);
 	SaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	LoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	QuickSaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
@@ -52,32 +52,25 @@ void UWidget_Menu::OnStartBtnClicked()
 
 void UWidget_Menu::OnHistoryBtnClicked()
 {
-	if (MenuWS->GetActiveWidgetIndex() == 1)
-	{
-		OnBackBtnClicked();
-		return;
-	}
-	MenuWS->SetActiveWidgetIndex(1);
-	if (IsValid(mDialogueWidget))
-	{
-		mDialogueWidget->RemoveFromParent();
-	}
-	UpdateButtonVisibility();
+	SwitchWidget(1);
 }
 
 void UWidget_Menu::OnCodexBtnClicked()
 {
-	if (MenuWS->GetActiveWidgetIndex() == 3)
+	if(SwitchWidget(2))
 	{
-		OnBackBtnClicked();
-		return;
+		Codex->UpdateRecentCodexDetail();
 	}
-	MenuWS->SetActiveWidgetIndex(3);
-	if (IsValid(mDialogueWidget))
-	{
-		mDialogueWidget->RemoveFromParent();
-	}
-	UpdateButtonVisibility();
+}
+
+void UWidget_Menu::OnSkipBtnClicked()
+{
+	mDialogueWidget->ToggleSkipMode();
+}
+
+void UWidget_Menu::OnAutoBtnClicked()
+{
+	mDialogueWidget->ToggleAutoMode();
 }
 
 void UWidget_Menu::OnMenuBtnClicked()
@@ -90,17 +83,7 @@ void UWidget_Menu::OnMenuBtnClicked()
 
 void UWidget_Menu::OnOptionBtnClicked()
 {
-	if(MenuWS->GetActiveWidgetIndex()==2)
-	{
-		OnBackBtnClicked();
-		return;
-	}
-	MenuWS->SetActiveWidgetIndex(2);
-	if (IsValid(mDialogueWidget))
-	{
-		mDialogueWidget->RemoveFromParent();
-	}
-	UpdateButtonVisibility();
+	SwitchWidget(2);
 }
 
 void UWidget_Menu::OnBackBtnClicked()
@@ -132,14 +115,29 @@ void UWidget_Menu::StartGame()
 void UWidget_Menu::OpenMenu()
 {
 	MenuWS->SetActiveWidgetIndex(mNextWigetIndex);
-	mDialogueWidget->StartDialogue(nullptr);
-	mDialogueWidget->RemoveFromParent();
+	mDialogueWidget->Ending();
 	UpdateButtonVisibility();
 }
 
 void UWidget_Menu::QuitGame()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), GetOwningPlayer(), EQuitPreference::Quit, false);
+}
+
+bool UWidget_Menu::SwitchWidget(int32 Index)
+{
+	if (MenuWS->GetActiveWidgetIndex() == Index)
+	{
+		OnBackBtnClicked();
+		return false;
+	}
+	MenuWS->SetActiveWidgetIndex(Index);
+	if (IsValid(mDialogueWidget))
+	{
+		mDialogueWidget->Reset();
+	}
+	UpdateButtonVisibility();
+	return true;
 }
 
 void UWidget_Menu::UpdateButtonVisibility()

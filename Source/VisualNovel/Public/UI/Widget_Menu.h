@@ -82,7 +82,9 @@ protected:
 	UFUNCTION()
 	void OnCodexBtnClicked();
 	UFUNCTION()
-	void OnMenuBtnClicked();
+	void OnSkipBtnClicked();
+	UFUNCTION()
+	void OnAutoBtnClicked();
 	UFUNCTION()
 	void OnOptionBtnClicked();
 	UFUNCTION()
@@ -97,7 +99,12 @@ protected:
 	UFUNCTION()
 	void QuitGame();
 
+	bool SwitchWidget(int32 Index);
+
 public:
+	UFUNCTION()
+	void OnMenuBtnClicked();
+
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void UpdateButtonVisibility();
 	UFUNCTION(BlueprintCallable, Category = "Event")
