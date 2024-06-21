@@ -27,6 +27,7 @@ UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 
 	bShowUnselectableOption = true;
 	bAskForPlayerName = false;
+	bShowPreviouslyPickedChoices = true;
 
 	mSkipSpeed = 0.001f;
 	bSkipModeActive = false;
@@ -338,8 +339,14 @@ void UWidget_Dialogue::OnTextFinishedTyping()
 		}
 		return;
 	}
-	bSkipModeActive = !bCancelSkipOnOptions;
-	bAutoModeActive = !bCancelAutoOnOptions;
+	if(bCancelSkipOnOptions)
+	{
+		bSkipModeActive = false;
+	}
+	if (bCancelAutoOnOptions)
+	{
+		bAutoModeActive = false;
+	}
 	for (int32 i = 0; i < optionNum; ++i)
 	{
 		UWidget_DialogueOption* dialogueOption = nullptr;
@@ -380,6 +387,9 @@ void UWidget_Dialogue::OnTextFinishedTyping()
 		{
 			dialogueOption->SetIsEnabled(mDialogueContext->IsOptionSatisfied(i));
 		}
+
+		dialogueOption->SetPreviouslyPickedChoice(bShowPreviouslyPickedChoices, 
+			mDialogueContext->IsOptionConnectedToVisitedNode(i, false, !bShowUnselectableOption));
 	}
 }
 
@@ -446,11 +456,6 @@ void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue,
 void UWidget_Dialogue::Init(UWidget_Menu* Menu)
 {
 	mMenuWidget = Menu;
-	if (IsValid(mMenuWidget))
-	{
-		mMenuWidget->GetOption()->OnShowUnselectableOptionChecked.AddUniqueDynamic(this,&ThisClass::OnShowUnselectableOptionChecked);
-		mMenuWidget->GetOption()->OnTextSpeedChanged.AddUniqueDynamic(this,&ThisClass::OnTextSpeedChanged);
-	}
 }
 
 void UWidget_Dialogue::ChangeBG(FName TextureName)

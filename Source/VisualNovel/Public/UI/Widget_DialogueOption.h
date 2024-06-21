@@ -5,6 +5,7 @@
 
 class UButton;
 class URichTextBlock;
+class UCheckBox;
 class UWidget_Dialogue;
 
 UCLASS(Abstract)
@@ -22,6 +23,8 @@ protected:
 	TObjectPtr<UButton> DialogueBtn;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<URichTextBlock> DialogueText;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCheckBox> DialogueCB;
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Ref", meta = (ExposeOnSpawn = true))
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
@@ -35,4 +38,5 @@ protected:
 
 public:
 	void Init(UWidget_Dialogue* DialogueContext,FText Text,int32 OptionIndex);
+	void SetPreviouslyPickedChoice(bool UseCB,bool WasChoice);
 };

@@ -108,7 +108,7 @@ void UGI_VN::CreateMenu()
 		UGameplayStatics::GetPlayerController(GetWorld(), 0), mMenuWidgetClass);
 	mMenuWidget->Init(mDialogueWidget);
 	mOptionWidget = mMenuWidget->GetOption();
-	mOptionWidget->Init(mPersistantData);
+	mOptionWidget->Init(mDialogueWidget,mPersistantData);
 	mOptionWidget->InitializeSavedOptions();
 }
 

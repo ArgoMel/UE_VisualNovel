@@ -15,4 +15,14 @@ public:
 	float mTextSpeed;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	bool bShowUnselectableOption;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Skip")
+	float mSkipSpeed;
+	UPROPERTY(BlueprintReadWrite, Category = "Skip")
+	bool bCancelSkipOnOptions;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Auto")
+	float mAutoSpeed;
+	UPROPERTY(BlueprintReadWrite, Category = "Auto")
+	bool bCancelAutoOnOptions;
 };

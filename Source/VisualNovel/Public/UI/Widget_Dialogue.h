@@ -91,15 +91,26 @@ protected:
 	FString mConsumedText;
 	UPROPERTY(BlueprintReadWrite, Category = "UpdateText")
 	FString mTargetText;
-	UPROPERTY(BlueprintReadWrite, Category = "UpdateText")
-	float mTextSpeed;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	TArray<FText> mNotificationQueue;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
-	bool bShowUnselectableOption;
-	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	bool bAskForPlayerName;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	bool bShowPreviouslyPickedChoices;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Skip")
+	bool bSkipModeActive;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Auto")
+	bool bAutoModeActive;
+
+public:
+	UPROPERTY(BlueprintReadWrite, Category = "UpdateText")
+	float mTextSpeed;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	bool bShowUnselectableOption;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Skip")
 	float mSkipSpeed;
@@ -109,13 +120,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Auto")
 	float mAutoSpeed;
 	UPROPERTY(BlueprintReadWrite, Category = "Auto")
-	bool bAutoModeActive;
-	UPROPERTY(BlueprintReadWrite, Category = "Auto")
 	bool bCancelAutoOnOptions;
-
-public:
-	UPROPERTY(BlueprintReadWrite, Category = "Skip")
-	bool bSkipModeActive;
 
 protected:
 	UFUNCTION()
