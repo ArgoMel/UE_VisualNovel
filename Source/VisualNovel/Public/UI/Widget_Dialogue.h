@@ -15,6 +15,7 @@ class UEditableText;
 class UWidget_Menu;
 class UDlgContext;
 class UDlgDialogue;
+class UPersistantData;
 
 UCLASS(Abstract)
 class VISUALNOVEL_API UWidget_Dialogue : public UUserWidget
@@ -81,6 +82,8 @@ protected:
 	TObjectPtr<UWidget_Menu> mMenuWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UDlgContext> mDialogueContext;
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
+	TObjectPtr<UPersistantData> mPersistantData;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mDialogueOptionClass;
@@ -96,8 +99,6 @@ protected:
 	TArray<FText> mNotificationQueue;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	bool bAskForPlayerName;
-	UPROPERTY(BlueprintReadWrite, Category = "Variable")
-	bool bShowPreviouslyPickedChoices;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Skip")
 	bool bSkipModeActive;
@@ -111,6 +112,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	bool bShowUnselectableOption;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	bool bShowPreviouslyPickedChoices;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Skip")
 	float mSkipSpeed;
@@ -160,7 +163,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Default")
 	void GetParticipants(UDlgDialogue* Dialogue, TArray<UObject*>& Participants);
 
-	void Init(UWidget_Menu* Menu);
+	void Init(UWidget_Menu* Menu, UPersistantData* PersistantData);
 	void ChangeBG(FName TextureName);
 	void SetDialogueVisible(bool Visible);
 	void ToggleSkipMode();

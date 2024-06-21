@@ -1,5 +1,5 @@
 #pragma once
-#include "CoreMinimal.h"
+#include "VNStruct.h"
 #include "GameFramework/SaveGame.h"
 #include "PersistantData.generated.h"
 
@@ -12,9 +12,16 @@ public:
 	
 public:
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	TArray<FName> mTriggeredFlags;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	TMap<FString, FStringArray> mUnlockedGalleryImgs;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	float mTextSpeed;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	bool bShowUnselectableOption;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	bool bShowPreviouslyPickedChoices;
+
 
 	UPROPERTY(BlueprintReadWrite, Category = "Skip")
 	float mSkipSpeed;

@@ -1,7 +1,9 @@
 #include "UI/Widget_Menu.h"
 #include "UI/Widget_Dialogue.h"
 #include "UI/Widget_History.h"
+#include "UI/Widget_Option.h"
 #include "UI/Widget_Codex.h"
+#include "UI/Widget_Gallery.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
@@ -31,7 +33,7 @@ void UWidget_Menu::NativeOnInitialized()
 	QuickLoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	MenuBtn->OnClicked.AddDynamic(this, &ThisClass::OnMenuBtnClicked);
 	OptionBtn->OnClicked.AddDynamic(this, &ThisClass::OnOptionBtnClicked);
-	GalleryBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
+	GalleryBtn->OnClicked.AddDynamic(this, &ThisClass::OnGalleryBtnClicked);
 	BackBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	QuitBtn->OnClicked.AddDynamic(this, &ThisClass::OnQuitBtnClicked);
 }
@@ -84,6 +86,11 @@ void UWidget_Menu::OnMenuBtnClicked()
 void UWidget_Menu::OnOptionBtnClicked()
 {
 	SwitchWidget(2);
+}
+
+void UWidget_Menu::OnGalleryBtnClicked()
+{
+	SwitchWidget(4);
 }
 
 void UWidget_Menu::OnBackBtnClicked()
@@ -189,8 +196,11 @@ void UWidget_Menu::UpdateButtonVisibility()
 
 void UWidget_Menu::ToggleMenuWidget()
 {
-	if (IsInGame() &&
-		IsInViewport())
+	if (!IsInGame())
+	{
+		return;
+	}
+	if (IsInViewport())
 	{
 		PlayAnimationForward(FadeBtnAnim);
 		FTimerHandle fadeTimer;
@@ -215,11 +225,15 @@ bool UWidget_Menu::IsInGame()
 	return IsValid(mDialogueWidget->GetDialogueContext());
 }
 
-void UWidget_Menu::Init(UWidget_Dialogue* DialogueWidget)
+void UWidget_Menu::Init(UWidget_Dialogue* DialogueWidget, 
+	UPersistantData* PersistantData)
 {
 	mDialogueWidget = DialogueWidget;
-	mDialogueWidget->Init(this);
+	mDialogueWidget->Init(this, PersistantData);
+	Option->Init(mDialogueWidget, PersistantData);
+	Option->InitializeSavedOptions();
 	Codex->CreateCodexButtons(mDialogueWidget);
+	Gallery->CreateGalleryMenu(PersistantData);
 }
 
 void UWidget_Menu::AddEntry(FText Name, FText EntryText)
@@ -231,4 +245,9 @@ void UWidget_Menu::ChangeScene(int32 Index)
 {
 	mNextWigetIndex = Index;
 	PlayAnimationForward(FadeBlackAnim);
+}
+
+void UWidget_Menu::UpdateGallery(FString TextureName)
+{
+	Gallery->UpdateGallery(TextureName);
 }

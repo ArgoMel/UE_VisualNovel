@@ -14,6 +14,7 @@ void UWidget_Option::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	ShowUnselectableOptionCB->OnCheckStateChanged.AddDynamic(this,&ThisClass::OnShowUnselectableOptionCBChecked);
+	ShowPreviouslyPickedChoicesCB->OnCheckStateChanged.AddDynamic(this,&ThisClass::OnShowPreviouslyPickedChoicesCBChecked);
 	TextSpeedSlider->OnValueChanged.AddDynamic(this,&ThisClass::OnTextSpeedSliderChanged);
 
 	SkipSpeedSlider->OnValueChanged.AddDynamic(this,&ThisClass::OnSkipSpeedSliderChanged);
@@ -32,6 +33,12 @@ void UWidget_Option::OnShowUnselectableOptionCBChecked(bool Value)
 {
 	mPersistantData->bShowUnselectableOption = Value;
 	mDialogueWidget->bShowUnselectableOption=Value;
+}
+
+void UWidget_Option::OnShowPreviouslyPickedChoicesCBChecked(bool Value)
+{
+	mPersistantData->bShowPreviouslyPickedChoices = Value;
+	mDialogueWidget->bShowPreviouslyPickedChoices = Value;
 }
 
 void UWidget_Option::OnTextSpeedSliderChanged(float Value)

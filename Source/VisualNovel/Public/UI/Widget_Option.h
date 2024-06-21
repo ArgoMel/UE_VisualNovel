@@ -23,6 +23,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCheckBox> ShowUnselectableOptionCB;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCheckBox> ShowPreviouslyPickedChoicesCB;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<USlider> TextSpeedSlider;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UProgressBar> TextSpeedPB;
@@ -49,6 +51,8 @@ protected:
 protected:
 	UFUNCTION()
 	void OnShowUnselectableOptionCBChecked(bool Value);
+	UFUNCTION()
+	void OnShowPreviouslyPickedChoicesCBChecked(bool Value);
 	UFUNCTION()
 	void OnTextSpeedSliderChanged(float Value);
 	UFUNCTION()

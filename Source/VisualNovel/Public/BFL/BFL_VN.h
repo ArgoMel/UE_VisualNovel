@@ -14,7 +14,6 @@ public:
 protected:
 	static TObjectPtr<UStringTable> mKeywordData;
 	static TObjectPtr<UDataTable> mParticipantData;
-	static TObjectPtr<UDataTable> mBGImgData;
 public:
 	static TObjectPtr<UDlgDialogue> mDialogue;
 
@@ -23,8 +22,6 @@ public:
 	static bool GetKeyword(FString InText,FString& OutText);
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static FParticipantData GetParticipantData(EParticipantName Name);
-	UFUNCTION(BlueprintPure, Category = "VisualNovel")
-	static FBGImgData GetBGImgData(FName Name);
 
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static FString ToTargetString(FText InText,bool AddQuotes=false,

@@ -22,7 +22,6 @@ protected:
 public:
 	FName GetParticipantName_Implementation() const;
 	bool CheckCondition_Implementation(const UDlgContext* Context, FName ConditionName) const;
-	bool OnDialogueEvent_Implementation(UDlgContext* Context, FName EventName);
 	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
 
 protected:
@@ -30,8 +29,6 @@ protected:
 	TObjectPtr<UPersistantData> mPersistantData;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Menu> mMenuWidget;
-	UPROPERTY(BlueprintReadWrite, Category = "Ref")
-	TObjectPtr<UWidget_Option> mOptionWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
 

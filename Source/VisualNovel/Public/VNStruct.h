@@ -11,15 +11,24 @@ enum class EParticipantName : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FBGImgData : public FTableRowBase
+struct FStringArray
 {
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TObjectPtr<UTexture2D> Texture;
+	TArray<FString> Strings;
 
-	FBGImgData()
+	FStringArray()
 	{
+		
+	}
+	FStringArray(FString String)
+	{
+		Strings.Add(String);
+	}
+	FStringArray(TArray<FString>& Array)
+	{
+		Strings = Array;
 	}
 };
 

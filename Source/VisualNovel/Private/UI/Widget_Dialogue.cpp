@@ -4,6 +4,7 @@
 #include "UI/Widget_Option.h"
 #include "UI/Widget_Participant.h"
 #include "GameInstance/GI_VN.h"
+#include "Save/PersistantData.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
@@ -19,6 +20,7 @@
 #include <Components/CanvasPanel.h>
 #include "Components/VerticalBoxSlot.h"
 #include "Animation/WidgetAnimation.h"
+#include <Engine/AssetManager.h>
 
 UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -57,7 +59,7 @@ void UWidget_Dialogue::NativeConstruct()
 	Super::NativeConstruct();
 	if (IsValid(mDialogueContext))
 	{
-		ChangeBG(TEXT("Modern-Dormroom1"));
+		ChangeBG(VN_START_BG);
 		UpdateText();
 	}
 }
@@ -316,6 +318,10 @@ void UWidget_Dialogue::OnTextFinishedTyping()
 		return;
 	}
 	GetWorld()->GetTimerManager().ClearTimer(mTypeTimer);
+	if(!IsValid(mDialogueContext))
+	{
+		return;
+	}
 	int32 optionNum = bShowUnselectableOption ?
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if (optionNum ==1)	//선택지가 없는경우
@@ -453,18 +459,39 @@ void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue,
 	}
 }
 
-void UWidget_Dialogue::Init(UWidget_Menu* Menu)
+void UWidget_Dialogue::Init(UWidget_Menu* Menu, UPersistantData* PersistantData)
 {
 	mMenuWidget = Menu;
+	mPersistantData = PersistantData;
 }
 
 void UWidget_Dialogue::ChangeBG(FName TextureName)
 {
+	UAssetManager& manager = UAssetManager::Get();
+	FPrimaryAssetId asset= FPrimaryAssetId(PRIMARY_ASSET_TYPE_GALLERY, TextureName);
+	UTexture2D* galleryTex = Cast<UTexture2D>(manager.GetPrimaryAssetObject(asset));
+
 	FProgressBarStyle style = AnimPB->GetWidgetStyle();
 	style.BackgroundImage.SetResourceObject(BGImg->GetBrush().GetResourceObject());
-	style.FillImage.SetResourceObject(UBFL_VN::GetBGImgData(TextureName).Texture);
+	style.FillImage.SetResourceObject(galleryTex);
 	AnimPB->SetWidgetStyle(style);
-	BGImg->SetBrushFromTexture(UBFL_VN::GetBGImgData(TextureName).Texture);
+	BGImg->SetBrushFromTexture(galleryTex);
+
+	FString assetName;
+	FString assetCode;
+	TextureName.ToString().Split(
+		TEXT("_"), &assetName, &assetCode, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+	FStringArray codes=mPersistantData->mUnlockedGalleryImgs.FindRef(assetName);
+	if (!mPersistantData->mUnlockedGalleryImgs.Contains(assetName))
+	{
+		mPersistantData->mUnlockedGalleryImgs.Add(assetName, FStringArray(assetCode));
+		mMenuWidget->UpdateGallery(assetName);
+	}
+	else if(!mPersistantData->mUnlockedGalleryImgs.Find(assetName)->Strings.Contains(assetCode))
+	{
+		mPersistantData->mUnlockedGalleryImgs.Find(assetName)->Strings.Add(assetCode);
+		mMenuWidget->UpdateGallery(assetName);
+	}
 }
 
 void UWidget_Dialogue::SetDialogueVisible(bool Visible)

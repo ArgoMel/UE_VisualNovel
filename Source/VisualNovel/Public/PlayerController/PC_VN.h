@@ -19,6 +19,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UGI_VN> mGameInstance;
 
+public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMouseRightClicked);
+	UPROPERTY(BlueprintAssignable, Category = "Delegate")
+	FOnMouseRightClicked OnMouseRightClicked;
+
 protected:
 	UFUNCTION()
 	void ToggleGameAndMenu();

@@ -9,7 +9,9 @@ class UWidgetSwitcher;
 class UWidget_History;
 class UWidget_Option;
 class UWidget_Codex;
+class UWidget_Gallery;
 class UWidget_Dialogue;
+class UPersistantData;
 
 UCLASS(Abstract)
 class VISUALNOVEL_API UWidget_Menu : public UUserWidget
@@ -65,6 +67,8 @@ protected:
 	TObjectPtr<UWidget_Option> Option;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UWidget_Codex> Codex;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UWidget_Gallery> Gallery;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<UWidgetAnimation> FadeBtnAnim;
@@ -87,6 +91,8 @@ protected:
 	void OnAutoBtnClicked();
 	UFUNCTION()
 	void OnOptionBtnClicked();
+	UFUNCTION()
+	void OnGalleryBtnClicked();
 	UFUNCTION()
 	void OnBackBtnClicked();
 	UFUNCTION()
@@ -113,9 +119,10 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool IsInGame();
 
-	void Init(UWidget_Dialogue* DialogueWidget);
+	void Init(UWidget_Dialogue* DialogueWidget, UPersistantData* PersistantData);
 	void AddEntry(FText Name, FText EntryText);
 	void ChangeScene(int32 Index);
+	void UpdateGallery(FString TextureName);
 
 	UWidget_Option* GetOption()
 	{

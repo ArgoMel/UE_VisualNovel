@@ -30,4 +30,5 @@ void APC_VN::ToggleGameAndMenu()
 		return;
 	}
 	mGameInstance->ToggleGameAndMenu();
+	OnMouseRightClicked.Broadcast();
 }

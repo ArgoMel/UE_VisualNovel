@@ -1,7 +1,6 @@
 #include "GameInstance/GI_VN.h"
 #include "UI/Widget_Menu.h"
 #include "UI/Widget_Dialogue.h"
-#include "UI/Widget_Option.h"
 #include "UI/Widget_Codex.h"
 #include "UI/Widget_CodexBtn.h"
 #include "Save/PersistantData.h"
@@ -27,11 +26,13 @@ void UGI_VN::Init()
 		mPersistantData = Cast<UPersistantData>(
 			UGameplayStatics::CreateSaveGameObject(UPersistantData::StaticClass()));
 	}
+	mTriggeredFlags = mPersistantData->mTriggeredFlags;
 }
 
 void UGI_VN::Shutdown()
 {
 	Super::Shutdown();
+	mPersistantData->mTriggeredFlags= mTriggeredFlags;
 	UGameplayStatics::SaveGameToSlot(mPersistantData, SLOTNAME_PERSISTANTDATA,0);
 }
 
@@ -44,12 +45,6 @@ bool UGI_VN::CheckCondition_Implementation(const UDlgContext* Context,
 	FName ConditionName) const
 {
 	return mTriggeredFlags.Contains(ConditionName);
-}
-
-bool UGI_VN::OnDialogueEvent_Implementation(UDlgContext* Context, FName EventName)
-{
-	mTriggeredFlags.AddUnique(EventName);
-	return false;
 }
 
 bool UGI_VN::ModifyNameValue_Implementation(FName ValueName, FName NameValue)
@@ -106,10 +101,7 @@ void UGI_VN::CreateMenu()
 	}
 	mMenuWidget = CreateWidget<UWidget_Menu>(
 		UGameplayStatics::GetPlayerController(GetWorld(), 0), mMenuWidgetClass);
-	mMenuWidget->Init(mDialogueWidget);
-	mOptionWidget = mMenuWidget->GetOption();
-	mOptionWidget->Init(mDialogueWidget,mPersistantData);
-	mOptionWidget->InitializeSavedOptions();
+	mMenuWidget->Init(mDialogueWidget,mPersistantData);
 }
 
 void UGI_VN::ToggleGameAndMenu()

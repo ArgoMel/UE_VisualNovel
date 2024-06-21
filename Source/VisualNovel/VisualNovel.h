@@ -50,6 +50,7 @@ else \
 #pragma endregion
 
 #define PRIMARY_ASSET_TYPE_CODEX FName(TEXT("Codex"))
+#define PRIMARY_ASSET_TYPE_GALLERY FName(TEXT("GalleryImg"))
 
 #define SLOTNAME_PERSISTANTDATA TEXT("PersistantData")
 
@@ -57,9 +58,10 @@ else \
 #define PARTICIPANTNAME_GAMEINSTANCE TEXT("GameInstance")
 #define PARTICIPANTNAME_UNKNOWN TEXT("???")
 
-#define VALUENAME_AFFECTION TEXT("mAffection")
 #define VALUENAME_NOTIFY TEXT("Notify")
 #define VALUENAME_CHANGE_BG_SLIDE TEXT("ChangeBG_Slide")
 #define VALUENAME_CHANGE_BG_FADE TEXT("ChangeBG_Fade")
 #define VALUENAME_CHANGE_BG_DESOLVE TEXT("ChangeBG_Desolve")
 #define VALUENAME_CHANGE_BG_WIPE TEXT("ChangeBG_Wipe")
+
+#define VN_START_BG TEXT("TX_Modern-Dormroom_001")
