@@ -45,4 +45,5 @@ public:
 		UWidget_CodexBtn* CodexBtn);
 
 	void UpdateRecentCodexDetail();
+	void UpdateAllCodex();
 };

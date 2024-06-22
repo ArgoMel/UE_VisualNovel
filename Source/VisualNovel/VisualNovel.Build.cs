@@ -14,6 +14,7 @@ public class VisualNovel : ModuleRules
 			"InputCore", 
 			"EnhancedInput",
             "DlgSystem"
+            //"VictoryBPLibrary"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] 

@@ -12,8 +12,6 @@ public:
 	
 public:
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
-	TArray<FName> mTriggeredFlags;
-	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	TMap<FString, FStringArray> mUnlockedGalleryImgs;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	float mTextSpeed;

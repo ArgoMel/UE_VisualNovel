@@ -80,6 +80,11 @@ bool UWidget_Participant::ModifyNameValue_Implementation(FName ValueName, FName 
 	return false;
 }
 
+void UWidget_Participant::OnNewGame_Implementation()
+{
+	bWasIntroduced = false;
+}
+
 void UWidget_Participant::Jump()
 {
 	PlayAnimation(JumpAnim);

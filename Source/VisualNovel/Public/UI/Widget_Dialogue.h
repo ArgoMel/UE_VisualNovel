@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interface/Interface_VNSave.h"
 #include <DlgSystem/DlgDialogueParticipant.h>
 #include "Widget_Dialogue.generated.h"
 
@@ -20,6 +21,7 @@ class UPersistantData;
 UCLASS(Abstract)
 class VISUALNOVEL_API UWidget_Dialogue : public UUserWidget
 	,public IDlgDialogueParticipant
+	, public IInterface_VNSave
 {
 	GENERATED_BODY()
 public:
@@ -30,6 +32,8 @@ protected:
 public:
 	FName GetParticipantName_Implementation() const;
 	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
+public:
+	void OnNewGame_Implementation();
 
 private:
 	FTimerHandle mTypeTimer;

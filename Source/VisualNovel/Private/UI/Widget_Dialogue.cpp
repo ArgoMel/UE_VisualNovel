@@ -62,6 +62,11 @@ void UWidget_Dialogue::NativeConstruct()
 		ChangeBG(VN_START_BG);
 		UpdateText();
 	}
+	if (IsValid(PlayerNameInput))
+	{
+		UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
+		PlayerNameInput->SetText(FText::FromName(gameInstance->mPlayerName));
+	}
 }
 
 FName UWidget_Dialogue::GetParticipantName_Implementation() const
@@ -97,6 +102,19 @@ bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName,
 		PlayAnimation(WipeAnim);
 	}
 	return false;
+}
+
+void UWidget_Dialogue::OnNewGame_Implementation()
+{
+	for (auto& child : mParticipants)
+	{
+		UWidget_Participant* paricipant = Cast<UWidget_Participant>(child.Value);
+		if (!IsValid(paricipant))
+		{
+			continue;
+		}
+		IInterface_VNSave::Execute_OnNewGame(paricipant);
+	}
 }
 
 void UWidget_Dialogue::OnClickToContinueBtnClicked()

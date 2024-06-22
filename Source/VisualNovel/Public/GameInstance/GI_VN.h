@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include <DlgSystem/DlgDialogueParticipant.h>
+#include "Interface/Interface_VNSave.h"
 #include "GI_VN.generated.h"
 
 class UPersistantData;
@@ -12,6 +13,7 @@ class UWidget_Dialogue;
 UCLASS()
 class VISUALNOVEL_API UGI_VN : public UGameInstance
 	, public IDlgDialogueParticipant
+	, public IInterface_VNSave
 {
 	GENERATED_BODY()
 public:
@@ -23,6 +25,8 @@ public:
 	FName GetParticipantName_Implementation() const;
 	bool CheckCondition_Implementation(const UDlgContext* Context, FName ConditionName) const;
 	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
+public:
+	void OnNewGame_Implementation();
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")

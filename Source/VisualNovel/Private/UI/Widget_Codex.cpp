@@ -116,3 +116,16 @@ void UWidget_Codex::UpdateRecentCodexDetail()
 	}
 	mLastClickedBtn->OnCodexBtnClicked();
 }
+
+void UWidget_Codex::UpdateAllCodex()
+{
+	for (int32 i = 0; i < BtnSB->GetChildrenCount();++i)
+	{
+		UWidget_CodexBtn* codexBtn=Cast<UWidget_CodexBtn>(BtnSB->GetChildAt(i));
+		if(!IsValid(codexBtn))
+		{
+			continue;
+		}
+		codexBtn->UpdateCodexDetails();
+	}
+}

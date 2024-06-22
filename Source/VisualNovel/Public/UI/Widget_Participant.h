@@ -2,6 +2,7 @@
 #include "VNStruct.h"
 #include "Blueprint/UserWidget.h"
 #include <DlgSystem/DlgDialogueParticipant.h>
+#include "Interface/Interface_VNSave.h"
 #include "Widget_Participant.generated.h"
 
 class UImage;
@@ -9,6 +10,7 @@ class UImage;
 UCLASS(Abstract)
 class VISUALNOVEL_API UWidget_Participant : public UUserWidget
 	, public IDlgDialogueParticipant
+	, public IInterface_VNSave
 {
 	GENERATED_BODY()
 public:
@@ -21,6 +23,8 @@ public:
 	FName GetParticipantName_Implementation() const;
 	FText GetParticipantDisplayName_Implementation(FName ActiveSpeaker) const;
 	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
+public:
+	void OnNewGame_Implementation();
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))

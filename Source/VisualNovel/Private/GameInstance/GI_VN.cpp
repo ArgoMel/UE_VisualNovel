@@ -26,13 +26,11 @@ void UGI_VN::Init()
 		mPersistantData = Cast<UPersistantData>(
 			UGameplayStatics::CreateSaveGameObject(UPersistantData::StaticClass()));
 	}
-	mTriggeredFlags = mPersistantData->mTriggeredFlags;
 }
 
 void UGI_VN::Shutdown()
 {
 	Super::Shutdown();
-	mPersistantData->mTriggeredFlags= mTriggeredFlags;
 	UGameplayStatics::SaveGameToSlot(mPersistantData, SLOTNAME_PERSISTANTDATA,0);
 }
 
@@ -62,6 +60,12 @@ bool UGI_VN::ModifyNameValue_Implementation(FName ValueName, FName NameValue)
 		}
 	}
 	return false;
+}
+
+void UGI_VN::OnNewGame_Implementation()
+{
+	mTriggeredFlags.Empty();
+	mPlayerName= PARTICIPANTNAME_UNKNOWN;
 }
 
 void UGI_VN::ShowMenu()

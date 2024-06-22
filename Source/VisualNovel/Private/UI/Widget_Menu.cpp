@@ -4,6 +4,7 @@
 #include "UI/Widget_Option.h"
 #include "UI/Widget_Codex.h"
 #include "UI/Widget_Gallery.h"
+#include "Interface/Interface_VNSave.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
@@ -46,6 +47,10 @@ void UWidget_Menu::NativeConstruct()
 
 void UWidget_Menu::OnStartBtnClicked()
 {
+	IInterface_VNSave::Execute_OnNewGame(GetGameInstance());
+	IInterface_VNSave::Execute_OnNewGame(History);
+	IInterface_VNSave::Execute_OnNewGame(mDialogueWidget);
+	Codex->UpdateAllCodex();
 	ChangeScene(0);
 	FTimerHandle fadeTimer;
 	GetWorld()->GetTimerManager().SetTimer(fadeTimer,this,
@@ -59,7 +64,7 @@ void UWidget_Menu::OnHistoryBtnClicked()
 
 void UWidget_Menu::OnCodexBtnClicked()
 {
-	if(SwitchWidget(2))
+	if(SwitchWidget(3))
 	{
 		Codex->UpdateRecentCodexDetail();
 	}

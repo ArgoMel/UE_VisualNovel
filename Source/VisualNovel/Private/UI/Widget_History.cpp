@@ -9,7 +9,12 @@ UWidget_History::UWidget_History(const FObjectInitializer& ObjectInitializer)
 {
 	GetClassAsset(mHistoryEntryClass, UUserWidget, "/Game/VN/UI/WP_HistoryEntry.WP_HistoryEntry_C");
 
-	mMaxHistoryLength = 5;
+	mMaxHistoryLength = 150;
+}
+
+void UWidget_History::OnNewGame_Implementation()
+{
+	HistorySB->ClearChildren();
 }
 
 void UWidget_History::AddEntry(FText Name, FText EntryText)
