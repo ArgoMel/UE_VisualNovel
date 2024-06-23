@@ -14,8 +14,6 @@ public:
 protected:
 	static TObjectPtr<UStringTable> mKeywordData;
 	static TObjectPtr<UDataTable> mParticipantData;
-public:
-	static TObjectPtr<UDlgDialogue> mDialogue;
 
 public:
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")

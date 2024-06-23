@@ -51,6 +51,7 @@ else \
 
 #define PRIMARY_ASSET_TYPE_CODEX FName(TEXT("Codex"))
 #define PRIMARY_ASSET_TYPE_GALLERY FName(TEXT("GalleryImg"))
+#define PRIMARY_ASSET_TYPE_SCRIPT FName(TEXT("Script"))
 
 #define SLOTNAME_PERSISTANTDATA TEXT("PersistantData")
 
@@ -63,5 +64,7 @@ else \
 #define VALUENAME_CHANGE_BG_FADE TEXT("ChangeBG_Fade")
 #define VALUENAME_CHANGE_BG_DESOLVE TEXT("ChangeBG_Desolve")
 #define VALUENAME_CHANGE_BG_WIPE TEXT("ChangeBG_Wipe")
+#define VALUENAME_CHANGE_SCRIPT TEXT("ChangeScript")
 
 #define VN_START_BG TEXT("TX_Modern-Dormroom_001")
+#define VN_START_SCRIPT TEXT("Dlg_Test")

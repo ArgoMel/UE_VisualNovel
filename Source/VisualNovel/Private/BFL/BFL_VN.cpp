@@ -6,13 +6,11 @@
 
 TObjectPtr<UStringTable> UBFL_VN::mKeywordData;
 TObjectPtr<UDataTable> UBFL_VN::mParticipantData;
-TObjectPtr<UDlgDialogue> UBFL_VN::mDialogue;
 
 UBFL_VN::UBFL_VN()
 {
 	GetObjectAsset(mKeywordData, UStringTable, "/Game/VN/Data/ST_Keyword.ST_Keyword");
 	GetObjectAsset(mParticipantData, UDataTable, "/Game/VN/Data/DT_ParticipantData.DT_ParticipantData");
-	GetObjectAsset(mDialogue, UDlgDialogue, "/Game/VN/Dialogue/Dlg_Test.Dlg_Test");
 }
 
 bool UBFL_VN::GetKeyword(FString InText, FString& OutText)

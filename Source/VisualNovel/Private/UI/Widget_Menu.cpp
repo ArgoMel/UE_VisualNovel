@@ -5,7 +5,6 @@
 #include "UI/Widget_Codex.h"
 #include "UI/Widget_Gallery.h"
 #include "Interface/Interface_VNSave.h"
-#include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
 #include "Components/Image.h"
@@ -13,6 +12,7 @@
 #include "Components/WidgetSwitcher.h"
 #include <Kismet/KismetSystemLibrary.h>
 #include "Animation/WidgetAnimation.h"
+#include <Engine/AssetManager.h>
 
 UWidget_Menu::UWidget_Menu(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -119,7 +119,10 @@ void UWidget_Menu::OnQuitBtnClicked()
 void UWidget_Menu::StartGame()
 {
 	MenuWS->SetActiveWidgetIndex(mNextWigetIndex);
-	mDialogueWidget->StartDialogue(UBFL_VN::mDialogue);
+	UAssetManager& manager = UAssetManager::Get();
+	FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_SCRIPT, VN_START_SCRIPT);
+	UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
+	mDialogueWidget->StartDialogue(dialogue);
 	mDialogueWidget->AddToViewport(0);
 	UpdateButtonVisibility();
 }

@@ -60,7 +60,6 @@ void UWidget_Dialogue::NativeConstruct()
 	if (IsValid(mDialogueContext))
 	{
 		ChangeBG(VN_START_BG);
-		UpdateText();
 	}
 	if (IsValid(PlayerNameInput))
 	{
@@ -100,6 +99,13 @@ bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName,
 	{
 		ChangeBG(NameValue);
 		PlayAnimation(WipeAnim);
+	}
+	else if (ValueName == VALUENAME_CHANGE_SCRIPT)
+	{
+		UAssetManager& manager = UAssetManager::Get();
+		FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_SCRIPT, NameValue);
+		UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
+		StartDialogue(dialogue);
 	}
 	return false;
 }
@@ -443,6 +449,7 @@ void UWidget_Dialogue::StartDialogue(UDlgDialogue* Dialogue)
 		TArray<UObject*> participants;
 		GetParticipants(Dialogue, participants);
 		mDialogueContext = UDlgManager::StartDialogue(Dialogue, participants);
+		UpdateText();
 	}
 	else
 	{
