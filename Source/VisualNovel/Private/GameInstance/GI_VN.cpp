@@ -4,6 +4,7 @@
 #include "UI/Widget_Codex.h"
 #include "UI/Widget_CodexBtn.h"
 #include "Save/PersistantData.h"
+#include "Save/SG_VN.h"
 #include "../VisualNovel.h"
 #include <Kismet/GameplayStatics.h>
 
@@ -32,6 +33,7 @@ void UGI_VN::Shutdown()
 {
 	Super::Shutdown();
 	UGameplayStatics::SaveGameToSlot(mPersistantData, SLOTNAME_PERSISTANTDATA,0);
+	mMenuWidget->OnQSaveBtnClicked();
 }
 
 FName UGI_VN::GetParticipantName_Implementation() const
@@ -65,7 +67,21 @@ bool UGI_VN::ModifyNameValue_Implementation(FName ValueName, FName NameValue)
 void UGI_VN::OnNewGame_Implementation()
 {
 	mTriggeredFlags.Empty();
-	mPlayerName= PARTICIPANTNAME_UNKNOWN;
+	mPlayerName= PARTICIPANTNAME_DEFAULT;
+}
+
+void UGI_VN::OnSaveGame_Implementation(USG_VN* SaveGame)
+{
+	SaveGame->mTriggeredFlags= mTriggeredFlags;
+	SaveGame->mPlayerName = mPlayerName;
+	IInterface_VNSave::Execute_OnSaveGame(mDialogueWidget, SaveGame);	
+}
+
+void UGI_VN::OnLoadGame_Implementation(USG_VN* SaveGame)
+{
+	mTriggeredFlags = SaveGame->mTriggeredFlags;
+	mPlayerName = SaveGame->mPlayerName;
+	IInterface_VNSave::Execute_OnLoadGame(mDialogueWidget, SaveGame);
 }
 
 void UGI_VN::ShowMenu()

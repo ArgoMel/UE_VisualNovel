@@ -4,6 +4,7 @@
 #include "UI/Widget_Option.h"
 #include "UI/Widget_Codex.h"
 #include "UI/Widget_Gallery.h"
+#include "Save/SG_VN.h"
 #include "Interface/Interface_VNSave.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
@@ -13,6 +14,7 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include "Animation/WidgetAnimation.h"
 #include <Engine/AssetManager.h>
+#include <Kismet/GameplayStatics.h>
 
 UWidget_Menu::UWidget_Menu(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -30,8 +32,8 @@ void UWidget_Menu::NativeOnInitialized()
 	AutoBtn->OnClicked.AddDynamic(this, &ThisClass::OnAutoBtnClicked);
 	SaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	LoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
-	QuickSaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
-	QuickLoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
+	QSaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnQSaveBtnClicked);
+	QLoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnQLoadBtnClicked);
 	MenuBtn->OnClicked.AddDynamic(this, &ThisClass::OnMenuBtnClicked);
 	OptionBtn->OnClicked.AddDynamic(this, &ThisClass::OnOptionBtnClicked);
 	GalleryBtn->OnClicked.AddDynamic(this, &ThisClass::OnGalleryBtnClicked);
@@ -80,6 +82,28 @@ void UWidget_Menu::OnAutoBtnClicked()
 	mDialogueWidget->ToggleAutoMode();
 }
 
+void UWidget_Menu::OnQSaveBtnClicked()
+{
+	USG_VN* saveData = Cast<USG_VN>(
+		UGameplayStatics::CreateSaveGameObject(USG_VN::StaticClass()));
+	IInterface_VNSave::Execute_OnSaveGame(GetGameInstance(), saveData);
+	IInterface_VNSave::Execute_OnSaveGame(History, saveData);
+	UGameplayStatics::SaveGameToSlot(saveData, SLOTNAME_QUICK_SAVE, 0);
+}
+
+void UWidget_Menu::OnQLoadBtnClicked()
+{
+	if (!UGameplayStatics::DoesSaveGameExist(SLOTNAME_QUICK_SAVE, 0))
+	{
+		return;
+	}
+	USG_VN* saveData = Cast<USG_VN>(
+		UGameplayStatics::LoadGameFromSlot(SLOTNAME_QUICK_SAVE, 0));
+	IInterface_VNSave::Execute_OnLoadGame(GetGameInstance(), saveData);
+	IInterface_VNSave::Execute_OnLoadGame(History, saveData);
+	Codex->UpdateAllCodex();
+}
+
 void UWidget_Menu::OnMenuBtnClicked()
 {
 	ChangeScene(0);
@@ -103,7 +127,7 @@ void UWidget_Menu::OnBackBtnClicked()
 	MenuWS->SetActiveWidgetIndex(0);
 	if (IsInGame())
 	{
-		mDialogueWidget->AddToViewport(0);
+		mDialogueWidget->Resume();
 	}
 	UpdateButtonVisibility();
 }
@@ -166,8 +190,7 @@ void UWidget_Menu::UpdateButtonVisibility()
 		SkipBtn->SetVisibility(ESlateVisibility::Visible);
 		AutoBtn->SetVisibility(ESlateVisibility::Visible);
 		SaveBtn->SetVisibility(ESlateVisibility::Visible);
-		QuickSaveBtn->SetVisibility(ESlateVisibility::Visible);
-		QuickLoadBtn->SetVisibility(ESlateVisibility::Visible);
+		QSaveBtn->SetVisibility(ESlateVisibility::Visible);
 		MenuBtn->SetVisibility(ESlateVisibility::Visible);
 		GalleryBtn->SetVisibility(ESlateVisibility::Collapsed);
 	}
@@ -179,8 +202,7 @@ void UWidget_Menu::UpdateButtonVisibility()
 		SkipBtn->SetVisibility(ESlateVisibility::Collapsed);
 		AutoBtn->SetVisibility(ESlateVisibility::Collapsed);
 		SaveBtn->SetVisibility(ESlateVisibility::Collapsed);
-		QuickSaveBtn->SetVisibility(ESlateVisibility::Collapsed);
-		QuickLoadBtn->SetVisibility(ESlateVisibility::Collapsed);
+		QSaveBtn->SetVisibility(ESlateVisibility::Collapsed);
 		MenuBtn->SetVisibility(ESlateVisibility::Collapsed);
 		GalleryBtn->SetVisibility(ESlateVisibility::Visible);
 	}
@@ -204,7 +226,8 @@ void UWidget_Menu::UpdateButtonVisibility()
 
 void UWidget_Menu::ToggleMenuWidget()
 {
-	if (!IsInGame())
+	if (!IsInGame()|| 
+		MenuWS->GetActiveWidgetIndex() != 0)
 	{
 		return;
 	}
@@ -230,7 +253,7 @@ bool UWidget_Menu::IsInGame()
 	{
 		return false;
 	}
-	return IsValid(mDialogueWidget->GetDialogueContext());
+	return !mDialogueWidget->GetDialogueName().IsNone();
 }
 
 void UWidget_Menu::Init(UWidget_Dialogue* DialogueWidget, 

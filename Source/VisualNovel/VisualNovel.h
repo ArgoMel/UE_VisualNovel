@@ -54,10 +54,12 @@ else \
 #define PRIMARY_ASSET_TYPE_SCRIPT FName(TEXT("Script"))
 
 #define SLOTNAME_PERSISTANTDATA TEXT("PersistantData")
+#define SLOTNAME_QUICK_SAVE TEXT("QuickSave")
 
 #define PARTICIPANTNAME_WIDGET TEXT("Widget")
 #define PARTICIPANTNAME_GAMEINSTANCE TEXT("GameInstance")
 #define PARTICIPANTNAME_UNKNOWN TEXT("???")
+#define PARTICIPANTNAME_DEFAULT TEXT("Argo")
 
 #define VALUENAME_NOTIFY TEXT("Notify")
 #define VALUENAME_CHANGE_BG_SLIDE TEXT("ChangeBG_Slide")
@@ -68,3 +70,4 @@ else \
 
 #define VN_START_BG TEXT("TX_Modern-Dormroom_001")
 #define VN_START_SCRIPT TEXT("Dlg_Test")
+#define VN_START_EXPRESSION TEXT("Happy")

@@ -34,6 +34,8 @@ public:
 	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
 public:
 	void OnNewGame_Implementation();
+	void OnSaveGame_Implementation(USG_VN* SaveGame);
+	void OnLoadGame_Implementation(USG_VN* SaveGame);
 
 private:
 	FTimerHandle mTypeTimer;
@@ -110,6 +112,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Auto")
 	bool bAutoModeActive;
 
+	UPROPERTY(BlueprintReadWrite, Category = "VNSave")
+	FName mCurDialogueName;
+
 public:
 	UPROPERTY(BlueprintReadWrite, Category = "UpdateText")
 	float mTextSpeed;
@@ -174,9 +179,10 @@ public:
 	void ToggleAutoMode();
 	void Ending();
 	void Reset();
+	void Resume();
 
-	UDlgContext* GetDialogueContext()
+	FName GetDialogueName()
 	{
-		return mDialogueContext;
+		return mCurDialogueName;
 	}
 };

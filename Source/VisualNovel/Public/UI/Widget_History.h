@@ -15,6 +15,8 @@ public:
 	UWidget_History(const FObjectInitializer& ObjectInitializer);
 public:
 	void OnNewGame_Implementation();
+	void OnSaveGame_Implementation(USG_VN* SaveGame);
+	void OnLoadGame_Implementation(USG_VN* SaveGame);
 
 private:
 	FText mLatestNameText;

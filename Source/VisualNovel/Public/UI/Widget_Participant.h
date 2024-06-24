@@ -6,6 +6,7 @@
 #include "Widget_Participant.generated.h"
 
 class UImage;
+class USG_VN;
 
 UCLASS(Abstract)
 class VISUALNOVEL_API UWidget_Participant : public UUserWidget
@@ -25,6 +26,8 @@ public:
 	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
 public:
 	void OnNewGame_Implementation();
+	void OnSaveGame_Implementation(USG_VN* SaveGame);
+	void OnLoadGame_Implementation(USG_VN* SaveGame);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -55,6 +58,8 @@ protected:
 	void Jump();
 	UFUNCTION()
 	void ToggleOpacity();
+
+	void SetParticipantData(EParticipantName ParticipantName);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Event")

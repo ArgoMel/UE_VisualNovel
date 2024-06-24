@@ -27,6 +27,8 @@ public:
 	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
 public:
 	void OnNewGame_Implementation();
+	void OnSaveGame_Implementation(USG_VN* SaveGame);
+	void OnLoadGame_Implementation(USG_VN* SaveGame);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
@@ -42,7 +44,7 @@ protected:
 	TSubclassOf<UUserWidget> mDialogueWidgetClass;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
-	TArray<FName> mTriggeredFlags;
+	TSet<FName> mTriggeredFlags;
 
 public:
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")

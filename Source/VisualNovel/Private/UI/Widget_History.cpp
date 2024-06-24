@@ -1,5 +1,6 @@
 #include "UI/Widget_History.h"
 #include "UI/Widget_HistoryEntry.h"
+#include "Save/SG_VN.h"
 #include "../VisualNovel.h"
 #include "Components/ScrollBox.h"
 #include <Components/ScrollBoxSlot.h>
@@ -15,6 +16,29 @@ UWidget_History::UWidget_History(const FObjectInitializer& ObjectInitializer)
 void UWidget_History::OnNewGame_Implementation()
 {
 	HistorySB->ClearChildren();
+}
+
+void UWidget_History::OnSaveGame_Implementation(USG_VN* SaveGame)
+{
+	SaveGame->mHistory.Empty();
+	for (int32 i = 0; i < HistorySB->GetChildrenCount();++i)
+	{
+		UWidget_HistoryEntry*  historyEntry = 
+			Cast<UWidget_HistoryEntry>(HistorySB->GetChildAt(i));
+		SaveGame->mHistory.Add(historyEntry->GetEntryString());
+	}
+}
+
+void UWidget_History::OnLoadGame_Implementation(USG_VN* SaveGame)
+{
+	HistorySB->ClearChildren();
+	for (int32 i = 0; i < SaveGame->mHistory.Num(); ++i)
+	{
+		FString leftStr;
+		FString rightStr;
+		SaveGame->mHistory[i].Split(TEXT("|"), &leftStr, &rightStr);
+		AddEntry(FText::FromString(leftStr), FText::FromString(rightStr));
+	}
 }
 
 void UWidget_History::AddEntry(FText Name, FText EntryText)

@@ -45,9 +45,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> LoadBtn;	//항상 존재
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> QuickSaveBtn;	// 게임 중에만
+	TObjectPtr<UButton> QSaveBtn;	// 게임 중에만
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> QuickLoadBtn;	// 게임 중에만
+	TObjectPtr<UButton> QLoadBtn;	//항상 존재
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> MenuBtn;	// 게임 중에만
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -90,6 +90,8 @@ protected:
 	UFUNCTION()
 	void OnAutoBtnClicked();
 	UFUNCTION()
+	void OnQLoadBtnClicked();
+	UFUNCTION()
 	void OnOptionBtnClicked();
 	UFUNCTION()
 	void OnGalleryBtnClicked();
@@ -108,6 +110,8 @@ protected:
 	bool SwitchWidget(int32 Index);
 
 public:
+	UFUNCTION()
+	void OnQSaveBtnClicked();
 	UFUNCTION()
 	void OnMenuBtnClicked();
 

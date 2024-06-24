@@ -5,6 +5,7 @@
 #include "UI/Widget_Participant.h"
 #include "GameInstance/GI_VN.h"
 #include "Save/PersistantData.h"
+#include "Save/SG_VN.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
@@ -123,6 +124,44 @@ void UWidget_Dialogue::OnNewGame_Implementation()
 	}
 }
 
+void UWidget_Dialogue::OnSaveGame_Implementation(USG_VN* SaveGame)
+{
+	if(!IsValid(mDialogueContext))
+	{
+		return;
+	}
+	SaveGame->mCurDialogueName = mCurDialogueName;
+	SaveGame->mCurBG = BGImg->GetBrush().GetResourceName();
+	SaveGame->mActiveNodeIndex = mDialogueContext->GetActiveNodeIndex();
+	SaveGame->bAskForPlayerName = bAskForPlayerName;
+	SaveGame->mVisitedNodes = mDialogueContext->GetVisitedNodeIndices();
+	for (auto& participant : mParticipants)
+	{
+		UWidget_Participant* paricipantWidget = Cast<UWidget_Participant>(participant.Value);
+		if (IsValid(paricipantWidget))
+		{
+			IInterface_VNSave::Execute_OnSaveGame(paricipantWidget, SaveGame);
+		}
+	}
+}
+
+void UWidget_Dialogue::OnLoadGame_Implementation(USG_VN* SaveGame)
+{
+	UAssetManager& manager = UAssetManager::Get();
+	FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_SCRIPT, SaveGame->mCurDialogueName);
+	UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
+	TArray<UObject*> participants;
+	GetParticipants(dialogue, participants);
+	mDialogueContext = UDlgManager::ResumeDialogueFromNodeIndex(dialogue, participants, 
+		SaveGame->mActiveNodeIndex, SaveGame->mVisitedNodes,false);
+	mCurDialogueName = SaveGame->mCurDialogueName;
+	ChangeBG(SaveGame->mCurBG);
+	bAskForPlayerName = SaveGame->bAskForPlayerName;
+	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);
+	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
+	UpdateText();
+}
+
 void UWidget_Dialogue::OnClickToContinueBtnClicked()
 {
 	if(PlayerNameBorder->IsVisible())
@@ -238,6 +277,7 @@ void UWidget_Dialogue::CheckNotify()
 {
 	if (mNotificationQueue.IsEmpty())
 	{
+		NotifyTextBlock->SetText(FText::GetEmpty());
 		return;
 	}
 	NotifyTextBlock->SetText(UBFL_VN::ToTargetText(mNotificationQueue[0],false,true));
@@ -339,6 +379,7 @@ void UWidget_Dialogue::OnTextFinishedTyping()
 	{
 		PlayerNameBorder->SetVisibility(ESlateVisibility::Visible);
 		PlayerNameInput->SetVisibility(ESlateVisibility::Visible);
+		PlayerNameInput->SetFocus();
 		return;
 	}
 	GetWorld()->GetTimerManager().ClearTimer(mTypeTimer);
@@ -446,6 +487,7 @@ void UWidget_Dialogue::StartDialogue(UDlgDialogue* Dialogue)
 {
 	if (IsValid(Dialogue))
 	{
+		mCurDialogueName = Dialogue->GetFName();
 		TArray<UObject*> participants;
 		GetParticipants(Dialogue, participants);
 		mDialogueContext = UDlgManager::StartDialogue(Dialogue, participants);
@@ -453,7 +495,7 @@ void UWidget_Dialogue::StartDialogue(UDlgDialogue* Dialogue)
 	}
 	else
 	{
-		mDialogueContext = nullptr;
+		mCurDialogueName = TEXT("");
 	}
 }
 
@@ -564,7 +606,8 @@ void UWidget_Dialogue::ToggleAutoMode()
 
 void UWidget_Dialogue::Ending()
 {
-	mDialogueContext = nullptr;
+	//크레딧 재생
+	mCurDialogueName = TEXT("");
 	Reset();
 }
 
@@ -573,4 +616,14 @@ void UWidget_Dialogue::Reset()
 	RemoveFromParent();
 	bSkipModeActive = false;
 	bAutoModeActive = false;
+
+}
+
+void UWidget_Dialogue::Resume()
+{
+	AddToViewport(0);
+	if (!NotifyTextBlock->GetText().IsEmpty())
+	{
+		PlayAnimation(NotifyAnim);
+	}
 }

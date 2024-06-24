@@ -24,4 +24,6 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void UpdateEntry(FText Name,FText EntryText);
+
+	FString GetEntryString();
 };

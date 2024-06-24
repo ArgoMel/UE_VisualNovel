@@ -1,4 +1,5 @@
 #include "UI/Widget_Participant.h"
+#include "Save/SG_VN.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "Components/Image.h"
@@ -25,17 +26,7 @@ void UWidget_Participant::NativeOnInitialized()
 void UWidget_Participant::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-	mCharacterName = FName(UEnum::GetDisplayValueAsText(mParticipantName).ToString());
-	mParticipantData = UBFL_VN::GetParticipantData(mParticipantName);
-	CharacterImg->SetBrushFromTexture(mParticipantData.Texture);
-	UCanvasPanelSlot* slot=Cast<UCanvasPanelSlot>(CharacterImg->Slot);
-	if(IsValid(slot))
-	{
-		slot->SetOffsets(FMargin(0.,0., 
-			mParticipantData.Texture->GetSizeX()* mParticipantData.Scale,
-			mParticipantData.Texture->GetSizeY()* mParticipantData.Scale));
-		slot->SetAlignment(mParticipantData.Alignment);
-	}
+	SetParticipantData(mParticipantName);
 }
 
 void UWidget_Participant::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -85,6 +76,26 @@ void UWidget_Participant::OnNewGame_Implementation()
 	bWasIntroduced = false;
 }
 
+void UWidget_Participant::OnSaveGame_Implementation(USG_VN* SaveGame)
+{
+	FCharacterSaveInfo info;
+	info.Expression = CharacterImg->GetBrush().GetResourceName();
+	info.Position = CharacterImg->GetRenderTransform().Translation;
+	info.ParticipantName = mParticipantName;
+	info.Opacity = mTargetOpacity;
+	info.bIntroduced = bWasIntroduced;
+	SaveGame->mCharacterInfo.Add(GetFName(), info);
+}
+
+void UWidget_Participant::OnLoadGame_Implementation(USG_VN* SaveGame)
+{
+	FCharacterSaveInfo* info=SaveGame->mCharacterInfo.Find(GetFName());
+	SetParticipantData(info->ParticipantName);
+	CharacterImg->SetRenderTranslation(info->Position);
+	mTargetOpacity=info->Opacity;
+	bWasIntroduced=info->bIntroduced;
+}
+
 void UWidget_Participant::Jump()
 {
 	PlayAnimation(JumpAnim);
@@ -99,6 +110,23 @@ void UWidget_Participant::ToggleOpacity()
 	else
 	{
 		mTargetOpacity = 1.f;
+	}
+}
+
+void UWidget_Participant::SetParticipantData(EParticipantName ParticipantName)
+{
+	mParticipantName = ParticipantName;
+	mCharacterName = FName(UEnum::GetDisplayValueAsText(mParticipantName).ToString());
+	mParticipantData = UBFL_VN::GetParticipantData(mParticipantName);
+	UTexture2D* defaultTex = mParticipantData.Expressions.FindRef(VN_START_EXPRESSION);
+	CharacterImg->SetBrushFromTexture(defaultTex);
+	UCanvasPanelSlot* slot = Cast<UCanvasPanelSlot>(CharacterImg->Slot);
+	if (IsValid(slot))
+	{
+		slot->SetOffsets(FMargin(0., 0.,
+			defaultTex->GetSizeX() * mParticipantData.Scale,
+			defaultTex->GetSizeY() * mParticipantData.Scale));
+		slot->SetAlignment(mParticipantData.Alignment);
 	}
 }
 
