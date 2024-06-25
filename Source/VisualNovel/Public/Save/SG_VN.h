@@ -31,5 +31,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "GameInstance")
 	TSet<FName> mTriggeredFlags;
 	UPROPERTY(BlueprintReadWrite, Category = "GameInstance")
+	FDateTime mSaveTime;
+	UPROPERTY(BlueprintReadWrite, Category = "GameInstance")
 	FName mPlayerName;
 };

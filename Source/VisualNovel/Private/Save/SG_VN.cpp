@@ -8,5 +8,6 @@ USG_VN::USG_VN()
 	mActiveNodeIndex = 0;
 	bAskForPlayerName = false;
 
+	mSaveTime = FDateTime::Now();
 	mPlayerName = PARTICIPANTNAME_DEFAULT;
 }

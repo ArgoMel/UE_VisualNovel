@@ -36,18 +36,18 @@ void UWidget_Codex::CreateCodexButtons(UWidget_Dialogue* Dialogue)
 	TArray<FPrimaryAssetId> outAssets;
 	manager.GetPrimaryAssetIdList(PRIMARY_ASSET_TYPE_CODEX, outAssets);
 
+	if (!IsValid(mCodexBtnClass))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s::%s 클래스 없음"),
+			*GetFName().ToString(), *mCodexBtnClass->GetFName().ToString());
+		return;
+	}
 	for (auto& asset : outAssets)
 	{
 		UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
 		if (!IsValid(dialogue))
 		{
 			continue;
-		}
-		if (!IsValid(mCodexBtnClass))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s::%s 클래스 없음"), 
-				*GetFName().ToString(),*mCodexBtnClass->GetFName().ToString());
-			return;
 		}
 		UWidget_CodexBtn* codexBtn = 
 			CreateWidget<UWidget_CodexBtn>(GetOwningPlayer(), mCodexBtnClass);

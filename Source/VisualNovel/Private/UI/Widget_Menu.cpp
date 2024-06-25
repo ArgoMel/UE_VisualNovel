@@ -4,8 +4,10 @@
 #include "UI/Widget_Option.h"
 #include "UI/Widget_Codex.h"
 #include "UI/Widget_Gallery.h"
+#include "UI/Widget_SaveLoad.h"
 #include "Save/SG_VN.h"
 #include "Interface/Interface_VNSave.h"
+#include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
 #include "Components/Image.h"
@@ -30,8 +32,8 @@ void UWidget_Menu::NativeOnInitialized()
 	CodexBtn->OnClicked.AddDynamic(this, &ThisClass::OnCodexBtnClicked);
 	SkipBtn->OnClicked.AddDynamic(this, &ThisClass::OnSkipBtnClicked);
 	AutoBtn->OnClicked.AddDynamic(this, &ThisClass::OnAutoBtnClicked);
-	SaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
-	LoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
+	SaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnSaveBtnClicked);
+	LoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnLoadBtnClicked);
 	QSaveBtn->OnClicked.AddDynamic(this, &ThisClass::OnQSaveBtnClicked);
 	QLoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnQLoadBtnClicked);
 	MenuBtn->OnClicked.AddDynamic(this, &ThisClass::OnMenuBtnClicked);
@@ -82,26 +84,38 @@ void UWidget_Menu::OnAutoBtnClicked()
 	mDialogueWidget->ToggleAutoMode();
 }
 
+void UWidget_Menu::OnSaveBtnClicked()
+{
+	if (MenuWS->GetActiveWidgetIndex() == 5&&
+		SaveLoad->GetIsSaveMode())
+	{
+		OnBackBtnClicked();
+		return;
+	}
+	SwitchWidget(5,true);
+	SaveLoad->SetSaving(true);
+}
+
+void UWidget_Menu::OnLoadBtnClicked()
+{
+	if (MenuWS->GetActiveWidgetIndex() == 5 &&
+		!SaveLoad->GetIsSaveMode())
+	{
+		OnBackBtnClicked();
+		return;
+	}
+	SwitchWidget(5, true);
+	SaveLoad->SetSaving(false);
+}
+
 void UWidget_Menu::OnQSaveBtnClicked()
 {
-	USG_VN* saveData = Cast<USG_VN>(
-		UGameplayStatics::CreateSaveGameObject(USG_VN::StaticClass()));
-	IInterface_VNSave::Execute_OnSaveGame(GetGameInstance(), saveData);
-	IInterface_VNSave::Execute_OnSaveGame(History, saveData);
-	UGameplayStatics::SaveGameToSlot(saveData, SLOTNAME_QUICK_SAVE, 0);
+	Save(SLOTNAME_QUICK_SAVE);
 }
 
 void UWidget_Menu::OnQLoadBtnClicked()
 {
-	if (!UGameplayStatics::DoesSaveGameExist(SLOTNAME_QUICK_SAVE, 0))
-	{
-		return;
-	}
-	USG_VN* saveData = Cast<USG_VN>(
-		UGameplayStatics::LoadGameFromSlot(SLOTNAME_QUICK_SAVE, 0));
-	IInterface_VNSave::Execute_OnLoadGame(GetGameInstance(), saveData);
-	IInterface_VNSave::Execute_OnLoadGame(History, saveData);
-	Codex->UpdateAllCodex();
+	Load(SLOTNAME_QUICK_SAVE);
 }
 
 void UWidget_Menu::OnMenuBtnClicked()
@@ -147,7 +161,8 @@ void UWidget_Menu::StartGame()
 	FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_SCRIPT, VN_START_SCRIPT);
 	UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
 	mDialogueWidget->StartDialogue(dialogue);
-	mDialogueWidget->AddToViewport(0);
+	mDialogueWidget->ChangeBG(VN_START_BG);
+	mDialogueWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	UpdateButtonVisibility();
 }
 
@@ -163,9 +178,10 @@ void UWidget_Menu::QuitGame()
 	UKismetSystemLibrary::QuitGame(GetWorld(), GetOwningPlayer(), EQuitPreference::Quit, false);
 }
 
-bool UWidget_Menu::SwitchWidget(int32 Index)
+bool UWidget_Menu::SwitchWidget(int32 Index, bool IsForced)
 {
-	if (MenuWS->GetActiveWidgetIndex() == Index)
+	if (MenuWS->GetActiveWidgetIndex() == Index&&
+		!IsForced)
 	{
 		OnBackBtnClicked();
 		return false;
@@ -261,9 +277,11 @@ void UWidget_Menu::Init(UWidget_Dialogue* DialogueWidget,
 {
 	mDialogueWidget = DialogueWidget;
 	mDialogueWidget->Init(this, PersistantData);
+	mDialogueWidget->AddToViewport(0);
 	Option->Init(mDialogueWidget, PersistantData);
 	Option->InitializeSavedOptions();
 	Codex->CreateCodexButtons(mDialogueWidget);
+	SaveLoad->CreateSaveButtons(this);
 	Gallery->CreateGalleryMenu(PersistantData);
 }
 
@@ -281,4 +299,59 @@ void UWidget_Menu::ChangeScene(int32 Index)
 void UWidget_Menu::UpdateGallery(FString TextureName)
 {
 	Gallery->UpdateGallery(TextureName);
+}
+
+void UWidget_Menu::Save(FString SlotName, bool WillGameExit)
+{
+	USG_VN* saveData = Cast<USG_VN>(
+		UGameplayStatics::CreateSaveGameObject(USG_VN::StaticClass()));
+	IInterface_VNSave::Execute_OnSaveGame(GetGameInstance(), saveData);
+	IInterface_VNSave::Execute_OnSaveGame(History, saveData);
+	UGameplayStatics::SaveGameToSlot(saveData, SlotName, 0);
+	if (IsInGame()&&
+		!WillGameExit)
+	{
+		ToggleForScreenshot();
+		UBFL_VN::TakeScreenshotOfUI(SlotName);
+		SaveLoad->SetScreenshotIndex(SlotName);
+	}
+}
+
+void UWidget_Menu::Load(FString SlotName)
+{
+	if (!UGameplayStatics::DoesSaveGameExist(SlotName, 0))
+	{
+		return;
+	}
+	ChangeScene(0);
+	FTimerHandle fadeTimer;
+	GetWorld()->GetTimerManager().SetTimer(fadeTimer, this,
+		&ThisClass::OnBackBtnClicked, FadeBlackAnim->GetEndTime() * 0.5f);
+	USG_VN* saveData = Cast<USG_VN>(
+		UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+	IInterface_VNSave::Execute_OnLoadGame(GetGameInstance(), saveData);
+	IInterface_VNSave::Execute_OnLoadGame(History, saveData);
+	Codex->UpdateAllCodex();
+}
+
+void UWidget_Menu::ToggleForScreenshot(bool TurnAllWidget)
+{
+	if(TurnAllWidget)
+	{
+		mDialogueWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		BGImg->SetRenderOpacity(1.f);
+		MenuWS->SetRenderOpacity(1.f);
+	}
+	else if(BGImg->GetRenderOpacity()==1.f)
+	{
+		mDialogueWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		BGImg->SetRenderOpacity(0.f);
+		MenuWS->SetRenderOpacity(0.f);
+	}
+	else
+	{
+		mDialogueWidget->SetVisibility(ESlateVisibility::Collapsed);
+		BGImg->SetRenderOpacity(1.f);
+		MenuWS->SetRenderOpacity(1.f);
+	}
 }

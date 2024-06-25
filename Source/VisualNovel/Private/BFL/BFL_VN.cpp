@@ -1,11 +1,14 @@
 #include "BFL/BFL_VN.h"
+#include "Save/PersistantData.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgDialogue.h"
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
+#include <Kismet/GameplayStatics.h>
 
 TObjectPtr<UStringTable> UBFL_VN::mKeywordData;
 TObjectPtr<UDataTable> UBFL_VN::mParticipantData;
+FString UBFL_VN::mRecentSlotName;
 
 UBFL_VN::UBFL_VN()
 {
@@ -101,4 +104,21 @@ FString UBFL_VN::RemoveSymbolText(FString InText)
 	tempStr=tempStr.Replace(TEXT("\""), TEXT(""));
 	tempStr=tempStr.Replace(TEXT("'"), TEXT(""));
 	return tempStr;
+}
+
+void UBFL_VN::TakeScreenshotOfUI(FString Name)
+{
+	mRecentSlotName = Name;
+	FScreenshotRequest::RequestScreenshot(Name,true,false);
+}
+
+void UBFL_VN::GetAllSaveGameSlotNames(TArray<FString>& Names)
+{
+	if (!UGameplayStatics::DoesSaveGameExist(SLOTNAME_PERSISTANTDATA, 0))
+	{
+		return;
+	}
+	UPersistantData* persistantData = Cast<UPersistantData>(
+		UGameplayStatics::LoadGameFromSlot(SLOTNAME_PERSISTANTDATA, 0));
+	Names = persistantData->mSaveNames;
 }

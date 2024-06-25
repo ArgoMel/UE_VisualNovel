@@ -32,8 +32,12 @@ void UGI_VN::Init()
 void UGI_VN::Shutdown()
 {
 	Super::Shutdown();
+	if(!IsValid(mMenuWidget))
+	{
+		return;
+	}
+	mMenuWidget->Save(SLOTNAME_QUICK_SAVE,true);
 	UGameplayStatics::SaveGameToSlot(mPersistantData, SLOTNAME_PERSISTANTDATA,0);
-	mMenuWidget->OnQSaveBtnClicked();
 }
 
 FName UGI_VN::GetParticipantName_Implementation() const
@@ -74,6 +78,7 @@ void UGI_VN::OnSaveGame_Implementation(USG_VN* SaveGame)
 {
 	SaveGame->mTriggeredFlags= mTriggeredFlags;
 	SaveGame->mPlayerName = mPlayerName;
+	SaveGame->mSaveTime = FDateTime::UtcNow();
 	IInterface_VNSave::Execute_OnSaveGame(mDialogueWidget, SaveGame);	
 }
 
@@ -127,4 +132,14 @@ void UGI_VN::CreateMenu()
 void UGI_VN::ToggleGameAndMenu()
 {
 	mMenuWidget->ToggleMenuWidget();
+}
+
+void UGI_VN::ChangeVNSaveData(FString OldName, FString NewName)
+{
+	USG_VN* oldData = Cast<USG_VN>(
+		UGameplayStatics::LoadGameFromSlot(OldName, 0));
+	UGameplayStatics::SaveGameToSlot(oldData, NewName, 0);
+	UGameplayStatics::DeleteGameInSlot(OldName, 0);
+	int32 index=mPersistantData->mSaveNames.Find(OldName);
+	mPersistantData->mSaveNames[index] = NewName;
 }

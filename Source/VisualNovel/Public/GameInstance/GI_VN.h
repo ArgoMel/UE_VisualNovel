@@ -58,6 +58,7 @@ public:
 
 	void CreateMenu();
 	void ToggleGameAndMenu();
+	void ChangeVNSaveData(FString OldName,FString NewName);
 
 	UWidget_Menu* GetMenuWidget()
 	{

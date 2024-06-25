@@ -58,10 +58,6 @@ void UWidget_Dialogue::NativeOnInitialized()
 void UWidget_Dialogue::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (IsValid(mDialogueContext))
-	{
-		ChangeBG(VN_START_BG);
-	}
 	if (IsValid(PlayerNameInput))
 	{
 		UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
@@ -585,7 +581,8 @@ void UWidget_Dialogue::ToggleSkipMode()
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if (bSkipModeActive&&
 		mDialogueContext->IsOptionConnectedToVisitedNode(0, false, !bShowUnselectableOption)&&
-		optionNum ==1)
+		optionNum ==1&&
+		PlayerNameInput->GetVisibility() == ESlateVisibility::Collapsed)
 	{
 		ChooseOption();
 	}
@@ -598,7 +595,8 @@ void UWidget_Dialogue::ToggleAutoMode()
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if (bAutoModeActive&&
 		mCurText==mTargetText&&
-		optionNum ==1)
+		optionNum ==1&&
+		PlayerNameInput->GetVisibility()== ESlateVisibility::Collapsed)
 	{
 		ChooseOption();
 	}
@@ -613,17 +611,25 @@ void UWidget_Dialogue::Ending()
 
 void UWidget_Dialogue::Reset()
 {
-	RemoveFromParent();
+	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);
+	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
+	SetVisibility(ESlateVisibility::Collapsed);
 	bSkipModeActive = false;
 	bAutoModeActive = false;
-
 }
 
 void UWidget_Dialogue::Resume()
 {
-	AddToViewport(0);
+	if (GetVisibility() == ESlateVisibility::Collapsed)
+	{
+		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
 	if (!NotifyTextBlock->GetText().IsEmpty())
 	{
 		PlayAnimation(NotifyAnim);
+	}
+	if (mCurText == mTargetText)
+	{
+		OnTextFinishedTyping();
 	}
 }

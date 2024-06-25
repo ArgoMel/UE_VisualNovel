@@ -54,7 +54,7 @@ else \
 #define PRIMARY_ASSET_TYPE_SCRIPT FName(TEXT("Script"))
 
 #define SLOTNAME_PERSISTANTDATA TEXT("PersistantData")
-#define SLOTNAME_QUICK_SAVE TEXT("QuickSave")
+#define SLOTNAME_QUICK_SAVE TEXT("퀵 세이브")
 
 #define PARTICIPANTNAME_WIDGET TEXT("Widget")
 #define PARTICIPANTNAME_GAMEINSTANCE TEXT("GameInstance")

@@ -10,6 +10,7 @@ class UWidget_History;
 class UWidget_Option;
 class UWidget_Codex;
 class UWidget_Gallery;
+class UWidget_SaveLoad;
 class UWidget_Dialogue;
 class UPersistantData;
 
@@ -68,6 +69,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UWidget_Codex> Codex;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UWidget_SaveLoad> SaveLoad;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UWidget_Gallery> Gallery;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
@@ -90,6 +93,12 @@ protected:
 	UFUNCTION()
 	void OnAutoBtnClicked();
 	UFUNCTION()
+	void OnSaveBtnClicked();
+	UFUNCTION()
+	void OnLoadBtnClicked();
+	UFUNCTION()
+	void OnQSaveBtnClicked();
+	UFUNCTION()
 	void OnQLoadBtnClicked();
 	UFUNCTION()
 	void OnOptionBtnClicked();
@@ -107,11 +116,9 @@ protected:
 	UFUNCTION()
 	void QuitGame();
 
-	bool SwitchWidget(int32 Index);
+	bool SwitchWidget(int32 Index,bool IsForced=false);
 
 public:
-	UFUNCTION()
-	void OnQSaveBtnClicked();
 	UFUNCTION()
 	void OnMenuBtnClicked();
 
@@ -127,6 +134,9 @@ public:
 	void AddEntry(FText Name, FText EntryText);
 	void ChangeScene(int32 Index);
 	void UpdateGallery(FString TextureName);
+	void Save(FString SlotName,bool WillGameExit = false);
+	void Load(FString SlotName);
+	void ToggleForScreenshot(bool TurnAllWidget=false);
 
 	UWidget_Option* GetOption()
 	{

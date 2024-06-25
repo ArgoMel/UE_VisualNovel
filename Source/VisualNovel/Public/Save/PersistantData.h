@@ -30,4 +30,7 @@ public:
 	float mAutoSpeed;
 	UPROPERTY(BlueprintReadWrite, Category = "Auto")
 	bool bCancelAutoOnOptions;
+
+	UPROPERTY(BlueprintReadWrite, Category = "SaveLoad")
+	TArray<FString> mSaveNames;
 };

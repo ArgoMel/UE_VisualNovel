@@ -58,18 +58,17 @@ public:
 	}
 };
 
-//말하는 캐릭터 이미지의 개수,초기 위치, 처음 크기
 USTRUCT(BlueprintType)
 struct FParticipantData : public FTableRowBase
 {
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<FName,UTexture2D*> Expressions;
+	TMap<FName,UTexture2D*> Expressions;	//말하는 캐릭터 이미지의 개수
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FVector2D Alignment;
+	FVector2D Alignment;					//초기 위치
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Scale;
+	float Scale;							//초기 크기
 
 	FParticipantData()
 		: Alignment(0.5, 0.65)

@@ -11,9 +11,13 @@ class VISUALNOVEL_API UBFL_VN : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 public:
 	UBFL_VN();
+
 protected:
 	static TObjectPtr<UStringTable> mKeywordData;
 	static TObjectPtr<UDataTable> mParticipantData;
+
+public:
+	static FString mRecentSlotName;
 
 public:
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
@@ -29,4 +33,10 @@ public:
 		bool UseSmallStyle = false);
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static FString RemoveSymbolText(FString InText);
+
+	UFUNCTION(BlueprintCallable, Category = "UIScreenshot")
+	static void TakeScreenshotOfUI(FString Name);
+
+	UFUNCTION(BlueprintCallable, Category = TDLHelpers)
+	static void GetAllSaveGameSlotNames(TArray<FString>& Names);
 };
