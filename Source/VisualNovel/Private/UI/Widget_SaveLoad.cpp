@@ -107,10 +107,9 @@ void UWidget_SaveLoad::SetScreenshotIndex(FString Name)
 		{
 			mSaveSlotIndex = i;
 			FTimerHandle tempTimer;
-			GetWorld()->GetTimerManager().SetTimer(tempTimer,this,&ThisClass::ScreenshotComplete,0.2f);
+			GetWorld()->GetTimerManager().SetTimer(tempTimer,this,&ThisClass::ScreenshotComplete,0.5f);
 			break;
 		}
 	}
-
 }
 

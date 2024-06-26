@@ -542,7 +542,7 @@ void UWidget_Dialogue::ChangeBG(FName TextureName)
 	}
 
 	FProgressBarStyle style = AnimPB->GetWidgetStyle();
-	style.BackgroundImage.SetResourceObject(BGImg->GetBrush().GetResourceObject());
+	style.BackgroundImage=BGImg->GetBrush();
 	style.FillImage.SetResourceObject(galleryTex);
 	AnimPB->SetWidgetStyle(style);
 	BGImg->SetBrushResourceObject(galleryTex);
