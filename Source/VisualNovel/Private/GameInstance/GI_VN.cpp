@@ -12,6 +12,8 @@ UGI_VN::UGI_VN()
 {
 	GetClassAsset(mMenuWidgetClass, UUserWidget, "/Game/VN/UI/WP_Menu.WP_Menu_C");
 	GetClassAsset(mDialogueWidgetClass, UUserWidget, "/Game/VN/UI/WP_Dialogue.WP_Dialogue_C");
+
+	mPlayerName = PARTICIPANTNAME_DEFAULT;
 }
 
 void UGI_VN::Init()

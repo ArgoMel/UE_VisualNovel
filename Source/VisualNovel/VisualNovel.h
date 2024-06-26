@@ -72,3 +72,5 @@ else \
 #define VN_START_BG TEXT("TX_Modern-Dormroom_001")
 #define VN_START_SCRIPT TEXT("Dlg_Test")
 #define VN_START_EXPRESSION TEXT("Happy")
+
+#define MAT_TEX_PARAMETER_VIEWTARGET TEXT("ViewTarget")

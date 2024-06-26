@@ -3,6 +3,7 @@
 #include "UI/Widget_Menu.h"
 #include "UI/Widget_Option.h"
 #include "UI/Widget_Participant.h"
+#include "GameMode/GM_VN.h"
 #include "GameInstance/GI_VN.h"
 #include "Save/PersistantData.h"
 #include "Save/SG_VN.h"
@@ -22,6 +23,7 @@
 #include "Components/VerticalBoxSlot.h"
 #include "Animation/WidgetAnimation.h"
 #include <Engine/AssetManager.h>
+#include <Kismet/GameplayStatics.h>
 
 UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -58,11 +60,6 @@ void UWidget_Dialogue::NativeOnInitialized()
 void UWidget_Dialogue::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (IsValid(PlayerNameInput))
-	{
-		UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
-		PlayerNameInput->SetText(FText::FromName(gameInstance->mPlayerName));
-	}
 }
 
 FName UWidget_Dialogue::GetParticipantName_Implementation() const
@@ -155,6 +152,7 @@ void UWidget_Dialogue::OnLoadGame_Implementation(USG_VN* SaveGame)
 	bAskForPlayerName = SaveGame->bAskForPlayerName;
 	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);
 	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
+	PlayerNameInput->SetText(FText::FromName(SaveGame->mPlayerName));
 	UpdateText();
 }
 
@@ -532,13 +530,22 @@ void UWidget_Dialogue::ChangeBG(FName TextureName)
 {
 	UAssetManager& manager = UAssetManager::Get();
 	FPrimaryAssetId asset= FPrimaryAssetId(PRIMARY_ASSET_TYPE_GALLERY, TextureName);
-	UTexture2D* galleryTex = Cast<UTexture2D>(manager.GetPrimaryAssetObject(asset));
+	UObject* galleryTex = manager.GetPrimaryAssetObject(asset);
+	if(!IsValid(galleryTex))
+	{
+		AGM_VN* gameMode=Cast<AGM_VN>(UGameplayStatics::GetGameMode(GetWorld()));
+		galleryTex = gameMode->GetSceneCaptureMatByName(TextureName, BGImg->GetBrush().GetResourceName());
+	}
+	if (!IsValid(galleryTex))
+	{
+		return;
+	}
 
 	FProgressBarStyle style = AnimPB->GetWidgetStyle();
 	style.BackgroundImage.SetResourceObject(BGImg->GetBrush().GetResourceObject());
 	style.FillImage.SetResourceObject(galleryTex);
 	AnimPB->SetWidgetStyle(style);
-	BGImg->SetBrushFromTexture(galleryTex);
+	BGImg->SetBrushResourceObject(galleryTex);
 
 	FString assetName;
 	FString assetCode;
