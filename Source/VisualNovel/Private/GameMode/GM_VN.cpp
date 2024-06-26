@@ -20,7 +20,7 @@ void AGM_VN::BeginPlay()
 	gameInstance->CreateMenu();
 	if(gameInstance->GetMenuWidget()->IsInGame())
 	{
-		gameInstance->ShowDialogue();
+		gameInstance->ResumeDialogue();
 	}
 	else
 	{

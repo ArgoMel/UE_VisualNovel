@@ -67,6 +67,7 @@ else \
 #define VALUENAME_CHANGE_BG_DESOLVE TEXT("ChangeBG_Desolve")
 #define VALUENAME_CHANGE_BG_WIPE TEXT("ChangeBG_Wipe")
 #define VALUENAME_CHANGE_SCRIPT TEXT("ChangeScript")
+#define VALUENAME_LOADLEVEL TEXT("LoadLevel")
 
 #define VN_START_BG TEXT("TX_Modern-Dormroom_001")
 #define VN_START_SCRIPT TEXT("Dlg_Test")

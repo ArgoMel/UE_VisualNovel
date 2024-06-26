@@ -65,6 +65,10 @@ bool UGI_VN::ModifyNameValue_Implementation(FName ValueName, FName NameValue)
 			mDialogueWidget->Notify(FText::FromString(notify));
 		}
 	}
+	else if (ValueName== VALUENAME_LOADLEVEL)
+	{
+		UGameplayStatics::OpenLevel(GetWorld(), NameValue);
+	}
 	return false;
 }
 
@@ -94,9 +98,10 @@ void UGI_VN::ShowMenu()
 	mMenuWidget->AddToViewport(1);
 }
 
-void UGI_VN::ShowDialogue()
+void UGI_VN::ResumeDialogue()
 {
 	mDialogueWidget->AddToViewport(0);
+	mMenuWidget->AddToViewport(1);
 }
 
 void UGI_VN::CreateMenu()

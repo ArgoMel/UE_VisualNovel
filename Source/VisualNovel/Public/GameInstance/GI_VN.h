@@ -54,7 +54,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	void ShowMenu();
 	UFUNCTION(BlueprintCallable, Category = "Default")
-	void ShowDialogue();
+	void ResumeDialogue();
 
 	void CreateMenu();
 	void ToggleGameAndMenu();
