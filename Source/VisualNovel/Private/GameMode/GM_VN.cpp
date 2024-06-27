@@ -3,12 +3,23 @@
 #include "GameInstance/GI_VN.h"
 #include "UI/Widget_Menu.h"
 #include "Actor/VNSceneCapture2D.h"
+#include "../VisualNovel.h"
+#include "Components/AudioComponent.h"
 #include <Kismet/GameplayStatics.h>
+#include <Engine/AssetManager.h>
 
 AGM_VN::AGM_VN()
 {
 	PlayerControllerClass = APC_VN::StaticClass();
 	DefaultPawnClass = nullptr;
+
+	mBGMComp = CreateDefaultSubobject<UAudioComponent>(TEXT("BGMComp"));
+	SetRootComponent(mBGMComp);
+	mBGMComp->bAutoActivate = false;
+
+	mVoiceComp = CreateDefaultSubobject<UAudioComponent>(TEXT("VoiceComp"));
+	mVoiceComp->SetupAttachment(mBGMComp);
+	mVoiceComp->bAutoActivate = false;
 }
 
 void AGM_VN::BeginPlay()
@@ -35,6 +46,7 @@ void AGM_VN::BeginPlay()
 	else
 	{
 		gameInstance->ShowMenu();
+		SetBGMByName(VN_START_BGM);
 	}
 }
 
@@ -51,4 +63,20 @@ UMaterialInstance* AGM_VN::GetSceneCaptureMatByName(FName TexName, FName OldName
 	AVNSceneCapture2D* capture= mVNSceneCaptures.FindRef(TexName);
 	capture->ToggleCaptureEveryFrame();
 	return capture->GetSceneCaptureMI();
+}
+
+void AGM_VN::SetBGMByName(FName BGMName)
+{
+	UAssetManager& manager = UAssetManager::Get();
+	FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_MUSIC, BGMName);
+	USoundBase* sound = Cast<USoundBase>(manager.GetPrimaryAssetObject(asset));
+	mBGMComp->SetSound(sound);
+	mBGMComp->Play();
+}
+
+void AGM_VN::SetVoice(USoundBase* Voice)
+{
+	mVoiceComp->Stop();
+	mVoiceComp->SetSound(Voice);
+	mVoiceComp->Play();
 }

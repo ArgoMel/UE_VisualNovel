@@ -48,6 +48,8 @@ UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 void UWidget_Dialogue::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+	mGameMode = Cast<AGM_VN>(UGameplayStatics::GetGameMode(GetWorld()));
+
 	ClickToContinueBtn->OnClicked.AddDynamic(this,&ThisClass::OnClickToContinueBtnClicked);
 	PlayerNameInput->OnTextChanged.AddDynamic(this,&ThisClass::OnPlayerNameInputChanged);
 	PlayerNameInput->OnTextCommitted.AddDynamic(this,&ThisClass::OnPlayerNameInputCommitted);
@@ -73,6 +75,10 @@ bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName,
 	if(ValueName== VALUENAME_NOTIFY)
 	{
 		Notify(FText::FromName(NameValue));
+	}
+	else if (ValueName == VALUENAME_CHANGE_BGM)
+	{
+		mGameMode->SetBGMByName(NameValue);
 	}
 	else if (ValueName == VALUENAME_CHANGE_BG_SLIDE)
 	{
@@ -297,6 +303,13 @@ void UWidget_Dialogue::AutoTextTyping()
 
 void UWidget_Dialogue::UpdateText()
 {
+	USoundBase* voice= mDialogueContext->GetActiveNodeVoiceSoundBase();
+	if(IsValid(voice)&&
+		!bSkipModeActive)
+	{
+		mGameMode->SetVoice(voice);
+	}
+
 	HideOptions();
 
 	UObject* activeParicipant =
@@ -400,6 +413,10 @@ void UWidget_Dialogue::OnTextFinishedTyping()
 			float delay = mTextSpeed==0.f? 
 				mDialogueContext->GetActiveNodeText().ToString().Len() * 0.01f : 
 				mAutoSpeed;
+			if(IsValid(mDialogueContext->GetActiveNodeVoiceSoundBase()))
+			{
+				delay = FMath::Max(delay, mDialogueContext->GetActiveNodeVoiceSoundBase()->Duration);
+			}
 			GetWorld()->GetTimerManager().SetTimer(tempTimer,this,&ThisClass::AutoTextTyping, delay);
 		}
 		return;
@@ -533,8 +550,7 @@ void UWidget_Dialogue::ChangeBG(FName TextureName)
 	UObject* galleryTex = manager.GetPrimaryAssetObject(asset);
 	if(!IsValid(galleryTex))
 	{
-		AGM_VN* gameMode=Cast<AGM_VN>(UGameplayStatics::GetGameMode(GetWorld()));
-		galleryTex = gameMode->GetSceneCaptureMatByName(TextureName, BGImg->GetBrush().GetResourceName());
+		galleryTex = mGameMode->GetSceneCaptureMatByName(TextureName, BGImg->GetBrush().GetResourceName());
 	}
 	if (!IsValid(galleryTex))
 	{
@@ -591,6 +607,7 @@ void UWidget_Dialogue::ToggleSkipMode()
 		optionNum ==1&&
 		PlayerNameInput->GetVisibility() == ESlateVisibility::Collapsed)
 	{
+		mGameMode->SetVoice(nullptr);
 		ChooseOption();
 	}
 }
@@ -618,6 +635,7 @@ void UWidget_Dialogue::Ending()
 
 void UWidget_Dialogue::Reset()
 {
+	mGameMode->SetBGMByName(VN_START_BGM);
 	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);
 	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
 	SetVisibility(ESlateVisibility::Collapsed);

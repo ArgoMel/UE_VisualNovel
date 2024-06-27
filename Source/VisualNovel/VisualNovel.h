@@ -52,6 +52,7 @@ else \
 #define PRIMARY_ASSET_TYPE_CODEX FName(TEXT("Codex"))
 #define PRIMARY_ASSET_TYPE_GALLERY FName(TEXT("GalleryImg"))
 #define PRIMARY_ASSET_TYPE_SCRIPT FName(TEXT("Script"))
+#define PRIMARY_ASSET_TYPE_MUSIC FName(TEXT("Music"))
 
 #define SLOTNAME_PERSISTANTDATA TEXT("PersistantData")
 #define SLOTNAME_QUICK_SAVE TEXT("퀵 세이브")
@@ -68,9 +69,11 @@ else \
 #define VALUENAME_CHANGE_BG_WIPE TEXT("ChangeBG_Wipe")
 #define VALUENAME_CHANGE_SCRIPT TEXT("ChangeScript")
 #define VALUENAME_LOADLEVEL TEXT("LoadLevel")
+#define VALUENAME_CHANGE_BGM TEXT("ChangeBGM")
 
 #define VN_START_BG TEXT("TX_Modern-Dormroom_001")
 #define VN_START_SCRIPT TEXT("Dlg_Test")
 #define VN_START_EXPRESSION TEXT("Happy")
+#define VN_START_BGM TEXT("TestBGM")
 
 #define MAT_TEX_PARAMETER_VIEWTARGET TEXT("ViewTarget")

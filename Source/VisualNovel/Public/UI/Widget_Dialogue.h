@@ -17,6 +17,7 @@ class UWidget_Menu;
 class UDlgContext;
 class UDlgDialogue;
 class UPersistantData;
+class AGM_VN;
 
 UCLASS(Abstract)
 class VISUALNOVEL_API UWidget_Dialogue : public UUserWidget
@@ -90,6 +91,8 @@ protected:
 	TObjectPtr<UDlgContext> mDialogueContext;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UPersistantData> mPersistantData;
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
+	TObjectPtr<AGM_VN> mGameMode;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mDialogueOptionClass;

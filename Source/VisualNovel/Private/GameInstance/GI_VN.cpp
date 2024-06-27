@@ -103,7 +103,7 @@ void UGI_VN::ShowMenu()
 void UGI_VN::ResumeDialogue()
 {
 	mDialogueWidget->AddToViewport(0);
-	mMenuWidget->AddToViewport(1);
+	ShowMenu();
 }
 
 void UGI_VN::CreateMenu()
