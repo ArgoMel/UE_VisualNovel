@@ -5,6 +5,7 @@
 #include "UI/Widget_CodexBtn.h"
 #include "Save/PersistantData.h"
 #include "Save/SG_VN.h"
+#include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include <Kismet/GameplayStatics.h>
 
@@ -134,6 +135,12 @@ void UGI_VN::CreateMenu()
 	mMenuWidget = CreateWidget<UWidget_Menu>(
 		UGameplayStatics::GetPlayerController(GetWorld(), 0), mMenuWidgetClass);
 	mMenuWidget->Init(mDialogueWidget,mPersistantData);
+
+	UGameplayStatics::SetBaseSoundMix(GetWorld(), UBFL_VN::GetVNSoundMix());
+	for (int32 i = 0; i < (int32)ESoundKind::Max; ++i)
+	{
+		UBFL_VN::SetVolume(GetWorld(), mPersistantData->mVolumes[i], (ESoundKind)i);
+	}
 }
 
 void UGI_VN::ToggleGameAndMenu()

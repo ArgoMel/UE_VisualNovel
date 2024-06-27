@@ -15,6 +15,7 @@ public:
 protected:
 	static TObjectPtr<UStringTable> mKeywordData;
 	static TObjectPtr<UDataTable> mParticipantData;
+	static TObjectPtr<USoundMix> mSoundMix;
 
 public:
 	static FString mRecentSlotName;
@@ -39,4 +40,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = TDLHelpers)
 	static void GetAllSaveGameSlotNames(TArray<FString>& Names);
+
+	UFUNCTION(BlueprintPure, Category = "Sound")
+	static USoundMix* GetVNSoundMix()
+	{
+		return mSoundMix;
+	}
+	UFUNCTION(BlueprintCallable, Category = "Sound")
+	static void SetVolume(const UObject* WorldContextObject,float Value, 
+		ESoundKind Sound);
 };

@@ -3,6 +3,16 @@
 #include "VNStruct.generated.h"
 
 UENUM(BlueprintType)
+enum class ESoundKind : uint8
+{
+	Master,
+	BGM,
+	Voice,
+	SFX,
+	Max UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
 enum class EParticipantName : uint8
 {
 	Yuri,

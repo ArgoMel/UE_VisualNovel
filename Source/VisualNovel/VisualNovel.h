@@ -53,6 +53,7 @@ else \
 #define PRIMARY_ASSET_TYPE_GALLERY FName(TEXT("GalleryImg"))
 #define PRIMARY_ASSET_TYPE_SCRIPT FName(TEXT("Script"))
 #define PRIMARY_ASSET_TYPE_MUSIC FName(TEXT("Music"))
+#define PRIMARY_ASSET_TYPE_SOUNDCLASS FName(TEXT("SoundClass"))
 
 #define SLOTNAME_PERSISTANTDATA TEXT("PersistantData")
 #define SLOTNAME_QUICK_SAVE TEXT("퀵 세이브")

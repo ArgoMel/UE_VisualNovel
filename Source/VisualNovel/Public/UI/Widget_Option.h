@@ -43,6 +43,23 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCheckBox> CancelAutoModeOnOptionCB;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<USlider> MasterVolumeSlider;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UProgressBar> MasterVolumePB;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<USlider> MusicVolumeSlider;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UProgressBar> MusicVolumePB;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<USlider> VoiceVolumeSlider;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UProgressBar> VoiceVolumePB;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<USlider> SFXVolumeSlider;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UProgressBar> SFXVolumePB;
+
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
@@ -63,6 +80,14 @@ protected:
 	void OnAutoSpeedSliderChanged(float Value);
 	UFUNCTION()
 	void OnCancelAutoModeOnOptionCBChecked(bool Value);
+	UFUNCTION()
+	void OnMasterVolumeSliderChanged(float Value);
+	UFUNCTION()
+	void OnMusicVolumeSliderChanged(float Value);
+	UFUNCTION()
+	void OnVoiceVolumeSliderChanged(float Value);
+	UFUNCTION()
+	void OnSFXVolumeSliderChanged(float Value);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Event")

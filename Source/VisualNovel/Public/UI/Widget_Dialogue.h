@@ -171,6 +171,8 @@ public:
 	void Notify(FText NotifyText);
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void StartDialogue(UDlgDialogue* Dialogue);
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void PlayVoice();
 
 	UFUNCTION(BlueprintPure, Category = "Default")
 	void GetParticipants(UDlgDialogue* Dialogue, TArray<UObject*>& Participants);
@@ -181,10 +183,10 @@ public:
 	void ToggleSkipMode();
 	void ToggleAutoMode();
 	void Ending();
-	void Reset();
+	void Reset(bool ResetDialogue=false);
 	void Resume();
 
-	FName GetDialogueName()
+	FName GetDialogueName() const
 	{
 		return mCurDialogueName;
 	}

@@ -42,6 +42,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> AutoBtn;	// 게임 중에만
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> ReplayBtn;	// 게임 중에만
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> SaveBtn;	// 게임 중에만
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> LoadBtn;	//항상 존재
@@ -93,6 +95,8 @@ protected:
 	UFUNCTION()
 	void OnAutoBtnClicked();
 	UFUNCTION()
+	void OnReplayBtnClicked();
+	UFUNCTION()
 	void OnSaveBtnClicked();
 	UFUNCTION()
 	void OnLoadBtnClicked();
@@ -100,6 +104,8 @@ protected:
 	void OnQSaveBtnClicked();
 	UFUNCTION()
 	void OnQLoadBtnClicked();
+	UFUNCTION()
+	void OnMenuBtnClicked();
 	UFUNCTION()
 	void OnOptionBtnClicked();
 	UFUNCTION()
@@ -114,14 +120,13 @@ protected:
 	UFUNCTION()
 	void OpenMenu();
 	UFUNCTION()
+	void Credit();
+	UFUNCTION()
 	void QuitGame();
 
 	bool SwitchWidget(int32 Index,bool IsForced=false);
 
 public:
-	UFUNCTION()
-	void OnMenuBtnClicked();
-
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void UpdateButtonVisibility();
 	UFUNCTION(BlueprintCallable, Category = "Event")
@@ -137,6 +142,7 @@ public:
 	void Save(FString SlotName,bool WillGameExit = false);
 	void Load(FString SlotName);
 	void ToggleForScreenshot(bool TurnAllWidget=false);
+	void PlayCredit(bool CanSkip=false);
 
 	UWidget_Option* GetOption()
 	{

@@ -5,15 +5,19 @@
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
 #include <Kismet/GameplayStatics.h>
+#include "AudioDevice.h"
+#include <Engine/AssetManager.h>
 
 TObjectPtr<UStringTable> UBFL_VN::mKeywordData;
 TObjectPtr<UDataTable> UBFL_VN::mParticipantData;
+TObjectPtr<USoundMix> UBFL_VN::mSoundMix;
 FString UBFL_VN::mRecentSlotName;
 
 UBFL_VN::UBFL_VN()
 {
 	GetObjectAsset(mKeywordData, UStringTable, "/Game/VN/Data/ST_Keyword.ST_Keyword");
 	GetObjectAsset(mParticipantData, UDataTable, "/Game/VN/Data/DT_ParticipantData.DT_ParticipantData");
+	GetObjectAsset(mSoundMix, USoundMix, "/Game/VN/Sound/SCM_VN.SCM_VN");
 }
 
 bool UBFL_VN::GetKeyword(FString InText, FString& OutText)
@@ -121,4 +125,17 @@ void UBFL_VN::GetAllSaveGameSlotNames(TArray<FString>& Names)
 	UPersistantData* persistantData = Cast<UPersistantData>(
 		UGameplayStatics::LoadGameFromSlot(SLOTNAME_PERSISTANTDATA, 0));
 	Names = persistantData->mSaveNames;
+}
+
+void UBFL_VN::SetVolume(const UObject* WorldContextObject,float Value, 
+	ESoundKind Sound)
+{
+	FString name = TEXT("SC_") + UEnum::GetDisplayValueAsText(Sound).ToString();
+	UAssetManager& manager = UAssetManager::Get();
+	FPrimaryAssetId asset = 
+		FPrimaryAssetId(PRIMARY_ASSET_TYPE_SOUNDCLASS, FName(name));
+	USoundClass* soundClass=
+		Cast<USoundClass>(manager.GetPrimaryAssetObject(asset));
+	UGameplayStatics::SetSoundMixClassOverride(WorldContextObject, 
+		mSoundMix, soundClass, Value);
 }

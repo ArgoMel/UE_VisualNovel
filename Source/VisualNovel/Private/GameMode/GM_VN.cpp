@@ -33,24 +33,21 @@ void AGM_VN::BeginPlay()
 		mVNSceneCaptures.Add(capture->mBGName, capture);
 	}
 
-	UGI_VN* gameInstance=Cast<UGI_VN>(GetGameInstance());
-	if(!IsValid(gameInstance))
+	mGameInstance =Cast<UGI_VN>(GetGameInstance());
+	mGameInstance->CreateMenu();
+	if(mGameInstance->GetMenuWidget()->IsInGame())
 	{
-		return;
-	}
-	gameInstance->CreateMenu();
-	if(gameInstance->GetMenuWidget()->IsInGame())
-	{
-		gameInstance->ResumeDialogue();
+		mGameInstance->ResumeDialogue();
 	}
 	else
 	{
-		gameInstance->ShowMenu();
+		mGameInstance->ShowMenu();
 		SetBGMByName(VN_START_BGM);
 	}
 }
 
-UMaterialInstance* AGM_VN::GetSceneCaptureMatByName(FName TexName, FName OldName)
+UMaterialInstance* AGM_VN::GetSceneCaptureMatByName(FName TexName, 
+	FName OldName)
 {
 	if (mVNSceneCaptures.Contains(OldName))
 	{

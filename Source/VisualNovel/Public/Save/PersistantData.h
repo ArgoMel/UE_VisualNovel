@@ -33,4 +33,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "SaveLoad")
 	TArray<FString> mSaveNames;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Sound")
+	TArray<float> mVolumes;
 };

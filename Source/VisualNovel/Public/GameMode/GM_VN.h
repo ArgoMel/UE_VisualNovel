@@ -1,9 +1,10 @@
 #pragma once
-#include "CoreMinimal.h"
+#include "VNStruct.h"
 #include "GameFramework/GameModeBase.h"
 #include "GM_VN.generated.h"
 
 class UAudioComponent;
+class UGI_VN;
 class AVNSceneCapture2D;
 
 UCLASS()
@@ -20,6 +21,9 @@ protected:
 	TObjectPtr<UAudioComponent> mBGMComp;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Component")
 	TObjectPtr<UAudioComponent> mVoiceComp;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
+	TObjectPtr<UGI_VN> mGameInstance;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Variable")
 	TMap<FName, AVNSceneCapture2D*> mVNSceneCaptures;

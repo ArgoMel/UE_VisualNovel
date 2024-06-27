@@ -38,6 +38,7 @@ void UWidget_Menu::NativeOnInitialized()
 	QLoadBtn->OnClicked.AddDynamic(this, &ThisClass::OnQLoadBtnClicked);
 	MenuBtn->OnClicked.AddDynamic(this, &ThisClass::OnMenuBtnClicked);
 	OptionBtn->OnClicked.AddDynamic(this, &ThisClass::OnOptionBtnClicked);
+	ReplayBtn->OnClicked.AddDynamic(this, &ThisClass::OnReplayBtnClicked);
 	GalleryBtn->OnClicked.AddDynamic(this, &ThisClass::OnGalleryBtnClicked);
 	BackBtn->OnClicked.AddDynamic(this, &ThisClass::OnBackBtnClicked);
 	QuitBtn->OnClicked.AddDynamic(this, &ThisClass::OnQuitBtnClicked);
@@ -51,14 +52,13 @@ void UWidget_Menu::NativeConstruct()
 
 void UWidget_Menu::OnStartBtnClicked()
 {
-	IInterface_VNSave::Execute_OnNewGame(GetGameInstance());
-	IInterface_VNSave::Execute_OnNewGame(History);
-	IInterface_VNSave::Execute_OnNewGame(mDialogueWidget);
-	Codex->UpdateAllCodex();
 	ChangeScene(0);
 	FTimerHandle fadeTimer;
 	GetWorld()->GetTimerManager().SetTimer(fadeTimer,this,
 		&ThisClass::StartGame, FadeBlackAnim->GetEndTime() * 0.5f);
+	IInterface_VNSave::Execute_OnNewGame(GetGameInstance());
+	IInterface_VNSave::Execute_OnNewGame(History);
+	Codex->UpdateAllCodex();
 }
 
 void UWidget_Menu::OnHistoryBtnClicked()
@@ -82,6 +82,11 @@ void UWidget_Menu::OnSkipBtnClicked()
 void UWidget_Menu::OnAutoBtnClicked()
 {
 	mDialogueWidget->ToggleAutoMode();
+}
+
+void UWidget_Menu::OnReplayBtnClicked()
+{
+	mDialogueWidget->PlayVoice();
 }
 
 void UWidget_Menu::OnSaveBtnClicked()
@@ -169,7 +174,14 @@ void UWidget_Menu::StartGame()
 void UWidget_Menu::OpenMenu()
 {
 	MenuWS->SetActiveWidgetIndex(mNextWigetIndex);
-	mDialogueWidget->Ending();
+	mDialogueWidget->Reset(true);
+	UpdateButtonVisibility();
+}
+
+void UWidget_Menu::Credit()
+{
+	MenuWS->SetActiveWidgetIndex(mNextWigetIndex);
+	mDialogueWidget->SetVisibility(ESlateVisibility::Collapsed);
 	UpdateButtonVisibility();
 }
 
@@ -203,8 +215,6 @@ void UWidget_Menu::UpdateButtonVisibility()
 		StartBtn->SetVisibility(ESlateVisibility::Collapsed);
 		HistoryBtn->SetVisibility(ESlateVisibility::Visible);
 		CodexBtn->SetVisibility(ESlateVisibility::Visible);
-		SkipBtn->SetVisibility(ESlateVisibility::Visible);
-		AutoBtn->SetVisibility(ESlateVisibility::Visible);
 		SaveBtn->SetVisibility(ESlateVisibility::Visible);
 		QSaveBtn->SetVisibility(ESlateVisibility::Visible);
 		MenuBtn->SetVisibility(ESlateVisibility::Visible);
@@ -215,8 +225,6 @@ void UWidget_Menu::UpdateButtonVisibility()
 		StartBtn->SetVisibility(ESlateVisibility::Visible);
 		HistoryBtn->SetVisibility(ESlateVisibility::Collapsed);
 		CodexBtn->SetVisibility(ESlateVisibility::Collapsed);
-		SkipBtn->SetVisibility(ESlateVisibility::Collapsed);
-		AutoBtn->SetVisibility(ESlateVisibility::Collapsed);
 		SaveBtn->SetVisibility(ESlateVisibility::Collapsed);
 		QSaveBtn->SetVisibility(ESlateVisibility::Collapsed);
 		MenuBtn->SetVisibility(ESlateVisibility::Collapsed);
@@ -233,10 +241,16 @@ void UWidget_Menu::UpdateButtonVisibility()
 	if (isInGame&& MenuWS->GetActiveWidgetIndex() == 0)
 	{
 		BGImg->SetVisibility(ESlateVisibility::Collapsed);
+		SkipBtn->SetVisibility(ESlateVisibility::Visible);
+		AutoBtn->SetVisibility(ESlateVisibility::Visible);
+		ReplayBtn->SetVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{
 		BGImg->SetVisibility(ESlateVisibility::Visible);
+		SkipBtn->SetVisibility(ESlateVisibility::Collapsed);
+		AutoBtn->SetVisibility(ESlateVisibility::Collapsed);
+		ReplayBtn->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -354,4 +368,12 @@ void UWidget_Menu::ToggleForScreenshot(bool TurnAllWidget)
 		BGImg->SetRenderOpacity(1.f);
 		MenuWS->SetRenderOpacity(1.f);
 	}
+}
+
+void UWidget_Menu::PlayCredit(bool CanSkip)
+{
+	ChangeScene(6);
+	FTimerHandle fadeTimer;
+	GetWorld()->GetTimerManager().SetTimer(fadeTimer, this,
+		&ThisClass::Credit, FadeBlackAnim->GetEndTime() * 0.5f);
 }

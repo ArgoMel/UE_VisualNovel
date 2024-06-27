@@ -197,7 +197,7 @@ void UWidget_Dialogue::OnClickToContinueBtnClicked()
 		}
 		else
 		{
-			mMenuWidget->OnMenuBtnClicked();
+			Ending();
 		}
 	}
 }
@@ -303,13 +303,7 @@ void UWidget_Dialogue::AutoTextTyping()
 
 void UWidget_Dialogue::UpdateText()
 {
-	USoundBase* voice= mDialogueContext->GetActiveNodeVoiceSoundBase();
-	if(IsValid(voice)&&
-		!bSkipModeActive)
-	{
-		mGameMode->SetVoice(voice);
-	}
-
+	PlayVoice();
 	HideOptions();
 
 	UObject* activeParicipant =
@@ -376,7 +370,7 @@ void UWidget_Dialogue::ChooseOption(int32 OptionIndex)
 	}
 	else
 	{
-		mMenuWidget->OnMenuBtnClicked();
+		Ending();
 	}
 }
 
@@ -502,11 +496,22 @@ void UWidget_Dialogue::StartDialogue(UDlgDialogue* Dialogue)
 		TArray<UObject*> participants;
 		GetParticipants(Dialogue, participants);
 		mDialogueContext = UDlgManager::StartDialogue(Dialogue, participants);
+		IInterface_VNSave::Execute_OnNewGame(this);
 		UpdateText();
 	}
 	else
 	{
 		mCurDialogueName = TEXT("");
+	}
+}
+
+void UWidget_Dialogue::PlayVoice()
+{
+	USoundBase* voice = mDialogueContext->GetActiveNodeVoiceSoundBase();
+	if (IsValid(voice) &&
+		!bSkipModeActive)
+	{
+		mGameMode->SetVoice(voice);
 	}
 }
 
@@ -537,7 +542,8 @@ void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue,
 	}
 }
 
-void UWidget_Dialogue::Init(UWidget_Menu* Menu, UPersistantData* PersistantData)
+void UWidget_Dialogue::Init(UWidget_Menu* Menu, 
+	UPersistantData* PersistantData)
 {
 	mMenuWidget = Menu;
 	mPersistantData = PersistantData;
@@ -628,14 +634,16 @@ void UWidget_Dialogue::ToggleAutoMode()
 
 void UWidget_Dialogue::Ending()
 {
-	//크레딧 재생
-	mCurDialogueName = TEXT("");
-	Reset();
+	mMenuWidget->PlayCredit();
 }
 
-void UWidget_Dialogue::Reset()
+void UWidget_Dialogue::Reset(bool ResetDialogue)
 {
-	mGameMode->SetBGMByName(VN_START_BGM);
+	if(ResetDialogue)
+	{ 
+		mCurDialogueName =TEXT("");
+		mGameMode->SetBGMByName(VN_START_BGM);
+	}
 	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);
 	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
 	SetVisibility(ESlateVisibility::Collapsed);

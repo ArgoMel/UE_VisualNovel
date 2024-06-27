@@ -1,6 +1,7 @@
 #include "UI/Widget_Option.h"
 #include "UI/Widget_Dialogue.h"
 #include "Save/PersistantData.h"
+#include "BFL/BFL_VN.h"
 #include "Components/CheckBox.h"
 #include "Components/Slider.h"
 #include "Components/ProgressBar.h"
@@ -22,6 +23,11 @@ void UWidget_Option::NativeOnInitialized()
 
 	AutoSpeedSlider->OnValueChanged.AddDynamic(this,&ThisClass::OnAutoSpeedSliderChanged);
 	CancelAutoModeOnOptionCB->OnCheckStateChanged.AddDynamic(this, &ThisClass::OnCancelAutoModeOnOptionCBChecked);
+
+	MasterVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::OnMasterVolumeSliderChanged);
+	MusicVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::OnMusicVolumeSliderChanged);
+	VoiceVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::OnVoiceVolumeSliderChanged);
+	SFXVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::OnSFXVolumeSliderChanged);
 }
 
 void UWidget_Option::NativeConstruct()
@@ -74,10 +80,47 @@ void UWidget_Option::OnCancelAutoModeOnOptionCBChecked(bool Value)
 	mDialogueWidget->bCancelAutoOnOptions = Value;
 }
 
+void UWidget_Option::OnMasterVolumeSliderChanged(float Value)
+{
+	mPersistantData->mVolumes[(int32)ESoundKind::Master] = Value;
+	UBFL_VN::SetVolume(GetWorld(), Value, ESoundKind::Master);
+	MasterVolumePB->SetPercent(Value);
+}
+
+void UWidget_Option::OnMusicVolumeSliderChanged(float Value)
+{
+	mPersistantData->mVolumes[(int32)ESoundKind::BGM] = Value;
+	UBFL_VN::SetVolume(GetWorld(), Value, ESoundKind::BGM);
+	MusicVolumePB->SetPercent(Value);
+}
+
+void UWidget_Option::OnVoiceVolumeSliderChanged(float Value)
+{
+	mPersistantData->mVolumes[(int32)ESoundKind::Voice] = Value;
+	UBFL_VN::SetVolume(GetWorld(), Value, ESoundKind::Voice);
+	VoiceVolumePB->SetPercent(Value);
+}
+
+void UWidget_Option::OnSFXVolumeSliderChanged(float Value)
+{
+	mPersistantData->mVolumes[(int32)ESoundKind::SFX] = Value;
+	UBFL_VN::SetVolume(GetWorld(), Value, ESoundKind::SFX);
+	SFXVolumePB->SetPercent(Value);
+}
+
 void UWidget_Option::InitializeSavedOptions()
 {
 	ShowUnselectableOptionCB->SetIsChecked(mPersistantData->bShowUnselectableOption);
+	ShowPreviouslyPickedChoicesCB->SetIsChecked(mPersistantData->bShowPreviouslyPickedChoices);
 	TextSpeedSlider->SetValue(mPersistantData->mTextSpeed);	
+	SkipSpeedSlider->SetValue(mPersistantData->mSkipSpeed);
+	CancelSkipModeOnOptionCB->SetIsChecked(mPersistantData->bCancelSkipOnOptions);
+	AutoSpeedSlider->SetValue(mPersistantData->mAutoSpeed);
+	CancelAutoModeOnOptionCB->SetIsChecked(mPersistantData->bCancelAutoOnOptions);
+	MasterVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::Master]);
+	MusicVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::BGM]);
+	VoiceVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::Voice]);
+	SFXVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::SFX]);
 }
 
 void UWidget_Option::Init(UWidget_Dialogue* DialogueWidget, 
