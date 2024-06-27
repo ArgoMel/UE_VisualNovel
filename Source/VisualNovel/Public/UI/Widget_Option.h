@@ -6,6 +6,7 @@
 class UCheckBox;
 class USlider;
 class UProgressBar;
+class UEditableText;
 class UWidget_Dialogue;
 class UPersistantData;
 
@@ -60,6 +61,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UProgressBar> SFXVolumePB;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UEditableText> TextSizeEText;
+
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
@@ -88,6 +92,8 @@ protected:
 	void OnVoiceVolumeSliderChanged(float Value);
 	UFUNCTION()
 	void OnSFXVolumeSliderChanged(float Value);
+	UFUNCTION()
+	void OnTextSizeETextCommitted(const FText& Text, ETextCommit::Type CommitMethod);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Event")

@@ -120,6 +120,8 @@ protected:
 
 public:
 	UPROPERTY(BlueprintReadWrite, Category = "UpdateText")
+	int32 mTextSize;
+	UPROPERTY(BlueprintReadWrite, Category = "UpdateText")
 	float mTextSpeed;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")

@@ -13,8 +13,6 @@ UGI_VN::UGI_VN()
 {
 	GetClassAsset(mMenuWidgetClass, UUserWidget, "/Game/VN/UI/WP_Menu.WP_Menu_C");
 	GetClassAsset(mDialogueWidgetClass, UUserWidget, "/Game/VN/UI/WP_Dialogue.WP_Dialogue_C");
-
-	mPlayerName = PARTICIPANTNAME_DEFAULT;
 }
 
 void UGI_VN::Init()
@@ -78,13 +76,11 @@ bool UGI_VN::ModifyNameValue_Implementation(FName ValueName, FName NameValue)
 void UGI_VN::OnNewGame_Implementation()
 {
 	mTriggeredFlags.Empty();
-	mPlayerName= PARTICIPANTNAME_DEFAULT;
 }
 
 void UGI_VN::OnSaveGame_Implementation(USG_VN* SaveGame)
 {
 	SaveGame->mTriggeredFlags= mTriggeredFlags;
-	SaveGame->mPlayerName = mPlayerName;
 	SaveGame->mSaveTime = FDateTime::UtcNow();
 	IInterface_VNSave::Execute_OnSaveGame(mDialogueWidget, SaveGame);	
 }
@@ -92,7 +88,6 @@ void UGI_VN::OnSaveGame_Implementation(USG_VN* SaveGame)
 void UGI_VN::OnLoadGame_Implementation(USG_VN* SaveGame)
 {
 	mTriggeredFlags = SaveGame->mTriggeredFlags;
-	mPlayerName = SaveGame->mPlayerName;
 	IInterface_VNSave::Execute_OnLoadGame(mDialogueWidget, SaveGame);
 }
 

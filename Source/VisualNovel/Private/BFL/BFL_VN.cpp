@@ -9,6 +9,7 @@
 #include <Engine/AssetManager.h>
 
 TObjectPtr<UStringTable> UBFL_VN::mKeywordData;
+TObjectPtr<UStringTable> UBFL_VN::mStyleData;
 TObjectPtr<UDataTable> UBFL_VN::mParticipantData;
 TObjectPtr<USoundMix> UBFL_VN::mSoundMix;
 FString UBFL_VN::mRecentSlotName;
@@ -16,6 +17,7 @@ FString UBFL_VN::mRecentSlotName;
 UBFL_VN::UBFL_VN()
 {
 	GetObjectAsset(mKeywordData, UStringTable, "/Game/VN/Data/ST_Keyword.ST_Keyword");
+	GetObjectAsset(mStyleData, UStringTable, "/Game/VN/Data/ST_Style.ST_Style");
 	GetObjectAsset(mParticipantData, UDataTable, "/Game/VN/Data/DT_ParticipantData.DT_ParticipantData");
 	GetObjectAsset(mSoundMix, USoundMix, "/Game/VN/Sound/SCM_VN.SCM_VN");
 }
@@ -25,18 +27,23 @@ bool UBFL_VN::GetKeyword(FString InText, FString& OutText)
 	return mKeywordData->GetStringTable()->GetSourceString(InText.ToUpper(), OutText);
 }
 
+bool UBFL_VN::GetStyleword(FString InText, FString& OutText)
+{
+	return mStyleData->GetStringTable()->GetSourceString(InText.ToUpper(), OutText);
+}
+
 FParticipantData UBFL_VN::GetParticipantData(EParticipantName Name)
 {
 	return *mParticipantData->FindRow<FParticipantData>(*UEnum::GetDisplayValueAsText(Name).ToString(), TEXT(""), false);
 }
 
 FString UBFL_VN::ToTargetString(FText InText, bool AddQuotes, 
-	bool UseSmallStyle)
+	int32 TextSize)
 {
 	FString processString = InText.ToString();
 	if (!processString.StartsWith(TEXT("<")))
 	{
-		processString = TEXT("<Normal>") + processString;
+		processString = TEXT("<>") + processString;
 	}
 
 	if (AddQuotes)
@@ -51,50 +58,60 @@ FString UBFL_VN::ToTargetString(FText InText, bool AddQuotes,
 	processString.ParseIntoArray(words, TEXT(" "), true);
 	processString.Empty();
 	FString lastTextStyle;
-	for (FString& curStr : words)
+	for (FString& word : words)
 	{
 		int32 index = INDEX_NONE;
-		curStr.FindChar('>', index);
+		word.FindChar('>', index);
 		if (index != INDEX_NONE)
 		{
-			lastTextStyle = curStr.Mid(0, index + 1);
+			lastTextStyle = word.Mid(0, index + 1);
 		}
-		FString noSymbolStr = RemoveSymbolText(curStr);
+		FString noSymbolStr = RemoveSymbolText(word);
 		FString keyword;
+		FString styleword;
 		if (GetKeyword(noSymbolStr, keyword))
 		{
-			FString rSymbolStr;
+			TArray<FString> stylewords;
+			keyword.ParseIntoArray(stylewords, TEXT(","), false);
+			for (FString& tempword : stylewords)
+			{
+				FString tempStr;
+				GetStyleword(tempword, tempStr);
+				styleword += tempStr;
+			}
 			FString lSymbolStr;
-			curStr.Split(noSymbolStr, &rSymbolStr, &lSymbolStr);
+			FString rSymbolStr;
+			word.Split(noSymbolStr, &lSymbolStr, &rSymbolStr);
 
-			processString += rSymbolStr;
-			processString += keyword;
+			processString += lSymbolStr;
+			processString += TEXT("<");
+			processString += styleword;
+			processString += TEXT(">");
 			processString += noSymbolStr;
 			processString += lastTextStyle;
-			processString += lSymbolStr;
+			processString += rSymbolStr;
 		}
 		else
 		{
-			processString += curStr;
+			processString += word;
 		}
 		processString += TEXT(" ");
 	}
+	processString = processString.LeftChop(1);
 
-	if(UseSmallStyle)
-	{
-		processString.ReplaceInline(TEXT(">"), TEXT("Small>"));
-	}
+	const FString fontSize = FString::Printf(TEXT(" size=\"%d\">"), TextSize);
+	processString.ReplaceInline(TEXT(">"), *fontSize);
 
-	processString.ReplaceInline(TEXT("<"), TEXT("</><"));
+	processString.ReplaceInline(TEXT("<"), TEXT("</><span"));
 	processString = processString.RightChop(3);
-	processString = processString + TEXT("</>");
+	processString += TEXT("</>");
 	return processString;
 }
 
 FText UBFL_VN::ToTargetText(FText InText, bool AddQuotes, 
-	bool UseSmallStyle)
+	int32 TextSize)
 {
-	return FText::FromString(ToTargetString(InText, AddQuotes, UseSmallStyle));
+	return FText::FromString(ToTargetString(InText, AddQuotes, TextSize));
 }
 
 FString UBFL_VN::RemoveSymbolText(FString InText)

@@ -14,6 +14,7 @@ public:
 
 protected:
 	static TObjectPtr<UStringTable> mKeywordData;
+	static TObjectPtr<UStringTable> mStyleData;
 	static TObjectPtr<UDataTable> mParticipantData;
 	static TObjectPtr<USoundMix> mSoundMix;
 
@@ -24,14 +25,16 @@ public:
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static bool GetKeyword(FString InText,FString& OutText);
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
+	static bool GetStyleword(FString InText, FString& OutText);
+	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static FParticipantData GetParticipantData(EParticipantName Name);
 
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static FString ToTargetString(FText InText,bool AddQuotes=false,
-		bool UseSmallStyle = false);
+		int32 TextSize = 28);
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static FText ToTargetText(FText InText,bool AddQuotes=false,
-		bool UseSmallStyle = false);
+		int32 TextSize = 28);
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static FString RemoveSymbolText(FString InText);
 

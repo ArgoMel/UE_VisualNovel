@@ -13,13 +13,13 @@ public class VisualNovel : ModuleRules
 			"Engine", 
 			"InputCore", 
 			"EnhancedInput",
-            "DlgSystem"
-            //"VictoryBPLibrary"
+            "DlgSystem",
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] 
 		{
-            "SlateCore"
+            "SlateCore",
+            "RichTextBlockInlineDecorator"
         });
 	}
 }

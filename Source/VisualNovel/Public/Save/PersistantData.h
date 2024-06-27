@@ -14,6 +14,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	TMap<FString, FStringArray> mUnlockedGalleryImgs;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	int32 mTextSize;
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	float mTextSpeed;
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	bool bShowUnselectableOption;

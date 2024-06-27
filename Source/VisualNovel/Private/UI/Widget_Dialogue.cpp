@@ -4,13 +4,13 @@
 #include "UI/Widget_Option.h"
 #include "UI/Widget_Participant.h"
 #include "GameMode/GM_VN.h"
-#include "GameInstance/GI_VN.h"
 #include "Save/PersistantData.h"
 #include "Save/SG_VN.h"
 #include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
 #include <DlgSystem/DlgManager.h>
+#include <RichTextBlockInlineDecorator.h>
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/RichTextBlock.h"
@@ -28,6 +28,7 @@
 UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	mTextSize = 28;
 	mTextSpeed = 0.05f;
 
 	bShowUnselectableOption = true;
@@ -53,6 +54,10 @@ void UWidget_Dialogue::NativeOnInitialized()
 	ClickToContinueBtn->OnClicked.AddDynamic(this,&ThisClass::OnClickToContinueBtnClicked);
 	PlayerNameInput->OnTextChanged.AddDynamic(this,&ThisClass::OnPlayerNameInputChanged);
 	PlayerNameInput->OnTextCommitted.AddDynamic(this,&ThisClass::OnPlayerNameInputCommitted);
+
+	TArray<TSubclassOf<URichTextBlockDecorator>> decoClass = { URichTextBlockInlineDecorator::StaticClass() };
+	DialogueText->SetDecorators(decoClass);
+	NotifyTextBlock->SetDecorators(decoClass);
 
 	FWidgetAnimationDynamicEvent finishedDelegate;
 	finishedDelegate.BindDynamic(this, &ThisClass::CheckNotify);
@@ -121,6 +126,7 @@ void UWidget_Dialogue::OnNewGame_Implementation()
 		}
 		IInterface_VNSave::Execute_OnNewGame(paricipant);
 	}
+	PlayerNameInput->SetText(FText::FromString(PARTICIPANTNAME_DEFAULT));
 }
 
 void UWidget_Dialogue::OnSaveGame_Implementation(USG_VN* SaveGame)
@@ -130,6 +136,7 @@ void UWidget_Dialogue::OnSaveGame_Implementation(USG_VN* SaveGame)
 		return;
 	}
 	SaveGame->mCurDialogueName = mCurDialogueName;
+	SaveGame->mPlayerName = FName(PlayerNameInput->GetText().ToString());
 	SaveGame->mCurBG = BGImg->GetBrush().GetResourceName();
 	SaveGame->mActiveNodeIndex = mDialogueContext->GetActiveNodeIndex();
 	SaveGame->bAskForPlayerName = bAskForPlayerName;
@@ -219,9 +226,6 @@ void UWidget_Dialogue::OnPlayerNameInputCommitted(const FText& Text,
 	{
 		return;
 	}
-
-	UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
-	gameInstance->mPlayerName = FName(Text.ToString());
 	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);
 	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
 	ChooseOption(0);
@@ -280,7 +284,7 @@ void UWidget_Dialogue::CheckNotify()
 		NotifyTextBlock->SetText(FText::GetEmpty());
 		return;
 	}
-	NotifyTextBlock->SetText(UBFL_VN::ToTargetText(mNotificationQueue[0],false,true));
+	NotifyTextBlock->SetText(UBFL_VN::ToTargetText(mNotificationQueue[0],false, mTextSize*0.6f));
 	mNotificationQueue.RemoveAt(0);
 	PlayAnimation(NotifyAnim);
 }
@@ -325,7 +329,7 @@ void UWidget_Dialogue::UpdateText()
 		bSkipModeActive)
 	{
 		mCurText = UBFL_VN::ToTargetString(
-			mDialogueContext->GetActiveNodeText(),IsValid(activeParicipant));
+			mDialogueContext->GetActiveNodeText(),IsValid(activeParicipant),mTextSize);
 		mTargetText= mCurText;
 		DialogueText->SetText(FText::FromString(mCurText));
 		OnTextFinishedTyping();
@@ -334,7 +338,7 @@ void UWidget_Dialogue::UpdateText()
 	{
 		mCurText.Empty();
 		mConsumedText= UBFL_VN::ToTargetString(
-			mDialogueContext->GetActiveNodeText(), IsValid(activeParicipant));
+			mDialogueContext->GetActiveNodeText(), IsValid(activeParicipant), mTextSize);
 		mTargetText = mConsumedText;
 		DialogueText->SetText(FText::GetEmpty());
 		GetWorld()->GetTimerManager().SetTimer(mTypeTimer, this, &ThisClass::DelayTypeText, mTextSpeed, true);
@@ -440,12 +444,12 @@ void UWidget_Dialogue::OnTextFinishedTyping()
 		if (bShowUnselectableOption)
 		{
 			tempText =UBFL_VN::ToTargetText(
-				mDialogueContext->GetOptionTextFromAll(i), false);
+				mDialogueContext->GetOptionTextFromAll(i), false,mTextSize);
 		}
 		else
 		{
 			tempText =UBFL_VN::ToTargetText(
-				mDialogueContext->GetOptionText(i), false);
+				mDialogueContext->GetOptionText(i), false, mTextSize);
 		}
 		dialogueOption->Init(this, tempText, i);
 		dialogueOption->SetVisibility(ESlateVisibility::Visible);

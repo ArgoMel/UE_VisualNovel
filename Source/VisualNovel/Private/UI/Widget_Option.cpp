@@ -5,6 +5,7 @@
 #include "Components/CheckBox.h"
 #include "Components/Slider.h"
 #include "Components/ProgressBar.h"
+#include "Components/EditableText.h"
 
 UWidget_Option::UWidget_Option(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -28,6 +29,8 @@ void UWidget_Option::NativeOnInitialized()
 	MusicVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::OnMusicVolumeSliderChanged);
 	VoiceVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::OnVoiceVolumeSliderChanged);
 	SFXVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::OnSFXVolumeSliderChanged);
+
+	TextSizeEText->OnTextCommitted.AddDynamic(this, &ThisClass::OnTextSizeETextCommitted);
 }
 
 void UWidget_Option::NativeConstruct()
@@ -108,6 +111,21 @@ void UWidget_Option::OnSFXVolumeSliderChanged(float Value)
 	SFXVolumePB->SetPercent(Value);
 }
 
+void UWidget_Option::OnTextSizeETextCommitted(const FText& Text, 
+	ETextCommit::Type CommitMethod)
+{
+	if (CommitMethod != ETextCommit::OnEnter ||
+		Text.IsEmpty())
+	{
+		TextSizeEText->SetText(FText::AsNumber(mPersistantData->mTextSize));
+		return;
+	}
+	int32 size = FCString::Atoi(*Text.ToString());
+	mDialogueWidget->mTextSize = size;
+	mPersistantData->mTextSize = size;
+	TextSizeEText->SetText(FText::AsNumber(size));
+}
+
 void UWidget_Option::InitializeSavedOptions()
 {
 	ShowUnselectableOptionCB->SetIsChecked(mPersistantData->bShowUnselectableOption);
@@ -121,6 +139,8 @@ void UWidget_Option::InitializeSavedOptions()
 	MusicVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::BGM]);
 	VoiceVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::Voice]);
 	SFXVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::SFX]);
+	mDialogueWidget->mTextSize = mPersistantData->mTextSize;
+	TextSizeEText->SetText(FText::AsNumber(mDialogueWidget->mTextSize));
 }
 
 void UWidget_Option::Init(UWidget_Dialogue* DialogueWidget, 

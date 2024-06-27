@@ -3,6 +3,7 @@
 
 UPersistantData::UPersistantData()
 {
+	mTextSize = 24;
 	mTextSpeed = 0.5f;
 	bShowUnselectableOption = false;
 	bShowPreviouslyPickedChoices = true;
