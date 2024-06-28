@@ -44,22 +44,13 @@ void UWidget_Codex::CreateCodexButtons(UWidget_Dialogue* Dialogue)
 	}
 	for (auto& asset : outAssets)
 	{
-		UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
-		if (!IsValid(dialogue))
-		{
-			continue;
-		}
 		UWidget_CodexBtn* codexBtn = 
 			CreateWidget<UWidget_CodexBtn>(GetOwningPlayer(), mCodexBtnClass);
 		if (!IsValid(codexBtn))
 		{
 			continue;
 		}
-		UGI_VN* gameInstance = Cast<UGI_VN>(GetGameInstance());
-		if (!IsValid(gameInstance))
-		{
-			return;
-		}
+		UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
 		codexBtn->Init(this, Dialogue, dialogue);
 		codexBtn->UpdateCodexDetails();
 		BtnSB->AddChild(codexBtn);

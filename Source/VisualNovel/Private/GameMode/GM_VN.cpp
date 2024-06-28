@@ -34,8 +34,26 @@ void AGM_VN::BeginPlay()
 	}
 
 	mGameInstance =Cast<UGI_VN>(GetGameInstance());
-	mGameInstance->CreateMenu();
-	if(mGameInstance->GetMenuWidget()->IsInGame())
+	mGameInstance->OnAssetLoadComplete.AddUniqueDynamic(this, &ThisClass::OnAssetLoadComplete);
+	mGameInstance->CreateUI();
+	if(mGameInstance->IsAllAssetLoading())
+	{
+		OnAssetLoadComplete();
+	}
+	else
+	{
+		mGameInstance->ShowLoading(true);
+	}
+}
+
+void AGM_VN::OnAssetLoadComplete()
+{
+	if (!mGameInstance->IsAllAssetLoading())
+	{
+		return;
+	}
+	mGameInstance->ShowLoading(false);
+	if (mGameInstance->GetMenuWidget()->IsInGame())
 	{
 		mGameInstance->ResumeDialogue();
 	}
@@ -46,7 +64,7 @@ void AGM_VN::BeginPlay()
 	}
 }
 
-UMaterialInstance* AGM_VN::GetSceneCaptureMatByName(FName TexName, 
+UMaterialInstance* AGM_VN::GetSceneCaptureMatByName(FName TexName,
 	FName OldName)
 {
 	if (mVNSceneCaptures.Contains(OldName))

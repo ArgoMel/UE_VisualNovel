@@ -1,7 +1,6 @@
 #include "UI/Widget_CodexBtn.h"
 #include "UI/Widget_Codex.h"
 #include "UI/Widget_Dialogue.h"
-#include "GameInstance/GI_VN.h"
 #include <BFL/BFL_VN.h>
 #include "DlgSystem/DlgDialogue.h"
 #include <DlgSystem/DlgManager.h>

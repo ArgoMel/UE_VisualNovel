@@ -180,9 +180,11 @@ void UWidget_Menu::OpenMenu()
 
 void UWidget_Menu::Credit()
 {
-	MenuWS->SetActiveWidgetIndex(mNextWigetIndex);
-	mDialogueWidget->SetVisibility(ESlateVisibility::Collapsed);
-	UpdateButtonVisibility();
+	mNextWigetIndex = 0;
+	OpenMenu();
+	//MenuWS->SetActiveWidgetIndex(mNextWigetIndex);
+	//mDialogueWidget->SetVisibility(ESlateVisibility::Collapsed);
+	//UpdateButtonVisibility();
 }
 
 void UWidget_Menu::QuitGame()

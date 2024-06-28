@@ -17,6 +17,7 @@ class UWidget_Menu;
 class UDlgContext;
 class UDlgDialogue;
 class UPersistantData;
+class UGI_VN;
 class AGM_VN;
 
 UCLASS(Abstract)
@@ -91,6 +92,8 @@ protected:
 	TObjectPtr<UDlgContext> mDialogueContext;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UPersistantData> mPersistantData;
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
+	TObjectPtr<UGI_VN> mGameInstance;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<AGM_VN> mGameMode;
 

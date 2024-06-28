@@ -20,5 +20,5 @@ UPersistantData::UPersistantData()
 		mSaveNames.Add(FString::Printf(TEXT("저장 데이터 %03d"),i));
 	}
 
-	mVolumes.Init(1.f, (int32)ESoundKind::Max);
+	mVolumes.Init(0.5f, (int32)ESoundKind::Max);
 }

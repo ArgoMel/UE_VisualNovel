@@ -4,6 +4,7 @@
 #include "UI/Widget_Option.h"
 #include "UI/Widget_Participant.h"
 #include "GameMode/GM_VN.h"
+#include "GameInstance/GI_VN.h"
 #include "Save/PersistantData.h"
 #include "Save/SG_VN.h"
 #include "BFL/BFL_VN.h"
@@ -49,6 +50,7 @@ UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 void UWidget_Dialogue::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+	mGameInstance = Cast<UGI_VN>(GetGameInstance());
 	mGameMode = Cast<AGM_VN>(UGameplayStatics::GetGameMode(GetWorld()));
 
 	ClickToContinueBtn->OnClicked.AddDynamic(this,&ThisClass::OnClickToContinueBtnClicked);
@@ -126,7 +128,7 @@ void UWidget_Dialogue::OnNewGame_Implementation()
 		}
 		IInterface_VNSave::Execute_OnNewGame(paricipant);
 	}
-	PlayerNameInput->SetText(FText::FromString(PARTICIPANTNAME_DEFAULT));
+	PlayerNameInput->SetText(mGameInstance->mPlayerName);
 }
 
 void UWidget_Dialogue::OnSaveGame_Implementation(USG_VN* SaveGame)
@@ -136,7 +138,6 @@ void UWidget_Dialogue::OnSaveGame_Implementation(USG_VN* SaveGame)
 		return;
 	}
 	SaveGame->mCurDialogueName = mCurDialogueName;
-	SaveGame->mPlayerName = FName(PlayerNameInput->GetText().ToString());
 	SaveGame->mCurBG = BGImg->GetBrush().GetResourceName();
 	SaveGame->mActiveNodeIndex = mDialogueContext->GetActiveNodeIndex();
 	SaveGame->bAskForPlayerName = bAskForPlayerName;
@@ -165,7 +166,8 @@ void UWidget_Dialogue::OnLoadGame_Implementation(USG_VN* SaveGame)
 	bAskForPlayerName = SaveGame->bAskForPlayerName;
 	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);
 	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
-	PlayerNameInput->SetText(FText::FromName(SaveGame->mPlayerName));
+	PlayerNameInput->SetText(mGameInstance->mPlayerName);
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	UpdateText();
 }
 
@@ -226,6 +228,7 @@ void UWidget_Dialogue::OnPlayerNameInputCommitted(const FText& Text,
 	{
 		return;
 	}
+	mGameInstance->mPlayerName = Text;
 	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);
 	PlayerNameInput->SetVisibility(ESlateVisibility::Collapsed);
 	ChooseOption(0);
@@ -522,6 +525,10 @@ void UWidget_Dialogue::PlayVoice()
 void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue, 
 	TArray<UObject*>& Participants)
 {
+	if (!Dialogue)
+	{
+		return;
+	}
 	if(mParticipants.IsEmpty())
 	{
 		mParticipants.Add(PARTICIPANTNAME_WIDGET, this);
@@ -646,6 +653,7 @@ void UWidget_Dialogue::Reset(bool ResetDialogue)
 	if(ResetDialogue)
 	{ 
 		mCurDialogueName =TEXT("");
+		mGameMode = Cast<AGM_VN>(UGameplayStatics::GetGameMode(GetWorld()));
 		mGameMode->SetBGMByName(VN_START_BGM);
 	}
 	PlayerNameBorder->SetVisibility(ESlateVisibility::Collapsed);

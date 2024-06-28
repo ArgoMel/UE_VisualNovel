@@ -33,5 +33,5 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "GameInstance")
 	FDateTime mSaveTime;
 	UPROPERTY(BlueprintReadWrite, Category = "GameInstance")
-	FName mPlayerName;
+	FString mPlayerName;
 };

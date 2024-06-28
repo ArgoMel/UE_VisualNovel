@@ -28,6 +28,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Variable")
 	TMap<FName, AVNSceneCapture2D*> mVNSceneCaptures;
 
+protected:
+	UFUNCTION()
+	void OnAssetLoadComplete();
+
 public:
 	UMaterialInstance* GetSceneCaptureMatByName(FName TexName, FName OldName);
 	void SetBGMByName(FName BGMName);

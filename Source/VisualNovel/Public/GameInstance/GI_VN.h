@@ -30,6 +30,9 @@ public:
 	void OnSaveGame_Implementation(USG_VN* SaveGame);
 	void OnLoadGame_Implementation(USG_VN* SaveGame);
 
+private:
+	int32 mLoadedAssetCount;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UPersistantData> mPersistantData;
@@ -37,14 +40,30 @@ protected:
 	TObjectPtr<UWidget_Menu> mMenuWidget;
 	UPROPERTY(BlueprintReadWrite, Category = "Ref")
 	TObjectPtr<UWidget_Dialogue> mDialogueWidget;
+	UPROPERTY(BlueprintReadWrite, Category = "Ref")
+	TObjectPtr<UUserWidget> mLoadingWidget;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mMenuWidgetClass;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> mDialogueWidgetClass;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> mLoadingWidgetClass;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Variable")
 	TSet<FName> mTriggeredFlags;
+
+public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAssetLoadComplete);
+	UPROPERTY(BlueprintAssignable, Category = "Delegate")
+	FOnAssetLoadComplete OnAssetLoadComplete;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Variable")
+	FText mPlayerName;
+
+protected:
+	UFUNCTION()
+	void LoadAssetComplete();
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Default")
@@ -52,9 +71,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	void ResumeDialogue();
 
-	void CreateMenu();
+	void CreateUI();
 	void ToggleGameAndMenu();
 	void ChangeVNSaveData(FString OldName,FString NewName);
+	void ShowLoading(bool IsShow);
+	bool IsAllAssetLoading() const;
 
 	UWidget_Menu* GetMenuWidget()
 	{
