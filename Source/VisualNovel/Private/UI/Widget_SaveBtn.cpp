@@ -60,6 +60,11 @@ void UWidget_SaveBtn::SetSaveImg(UTexture2D* Texture)
 	SaveImg->SetBrushFromTexture(Texture);
 }
 
+void UWidget_SaveBtn::SetSaveImgFromObj(UObject* Texture)
+{
+	SaveImg->SetBrushResourceObject(Texture);
+}
+
 void UWidget_SaveBtn::SetSaveName(FString Text)
 {
 	mSlotName = Text;

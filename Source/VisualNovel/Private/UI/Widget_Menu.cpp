@@ -327,8 +327,6 @@ void UWidget_Menu::Save(FString SlotName, bool WillGameExit)
 	if (IsInGame()&&
 		!WillGameExit)
 	{
-		ToggleForScreenshot();
-		UBFL_VN::TakeScreenshotOfUI(SlotName);
 		SaveLoad->SetScreenshotIndex(SlotName);
 	}
 }
@@ -348,28 +346,6 @@ void UWidget_Menu::Load(FString SlotName)
 	IInterface_VNSave::Execute_OnLoadGame(GetGameInstance(), saveData);
 	IInterface_VNSave::Execute_OnLoadGame(History, saveData);
 	Codex->UpdateAllCodex();
-}
-
-void UWidget_Menu::ToggleForScreenshot(bool TurnAllWidget)
-{
-	if(TurnAllWidget)
-	{
-		mDialogueWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		BGImg->SetRenderOpacity(1.f);
-		MenuWS->SetRenderOpacity(1.f);
-	}
-	else if(BGImg->GetRenderOpacity()==1.f)
-	{
-		mDialogueWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		BGImg->SetRenderOpacity(0.f);
-		MenuWS->SetRenderOpacity(0.f);
-	}
-	else
-	{
-		mDialogueWidget->SetVisibility(ESlateVisibility::Collapsed);
-		BGImg->SetRenderOpacity(1.f);
-		MenuWS->SetRenderOpacity(1.f);
-	}
 }
 
 void UWidget_Menu::PlayCredit(bool CanSkip)

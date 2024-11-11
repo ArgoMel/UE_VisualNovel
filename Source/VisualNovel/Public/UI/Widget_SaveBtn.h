@@ -48,6 +48,7 @@ protected:
 
 public:
 	void SetSaveImg(UTexture2D* Texture);
+	void SetSaveImgFromObj(UObject* Texture);
 	void SetSaveName(FString Text);
 	void SetSaveDetail(FText Text);
 };

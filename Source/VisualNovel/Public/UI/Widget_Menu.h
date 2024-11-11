@@ -141,7 +141,6 @@ public:
 	void UpdateGallery(FString TextureName);
 	void Save(FString SlotName,bool WillGameExit = false);
 	void Load(FString SlotName);
-	void ToggleForScreenshot(bool TurnAllWidget=false);
 	void PlayCredit(bool CanSkip=false);
 
 	UWidget_Option* GetOption()

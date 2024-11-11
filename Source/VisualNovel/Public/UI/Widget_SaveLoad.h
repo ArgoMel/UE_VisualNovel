@@ -14,9 +14,6 @@ class VISUALNOVEL_API UWidget_SaveLoad : public UUserWidget
 public:
 	UWidget_SaveLoad(const FObjectInitializer& ObjectInitializer);
 
-private:
-	int32 mSaveSlotIndex;
-
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> SaveText;
@@ -39,7 +36,7 @@ protected:
 	void OnSaveOrLoad(FString SlotName);
 
 	UFUNCTION()
-	void ScreenshotComplete();
+	void SetSaveButton(UWidget_SaveBtn* SaveBtn, FString Name);
 
 public:
 	void CreateSaveButtons(UWidget_Menu* Menu);
