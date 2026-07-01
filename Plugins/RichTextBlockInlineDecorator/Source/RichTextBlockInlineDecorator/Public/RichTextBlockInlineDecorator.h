@@ -14,7 +14,7 @@ class RICHTEXTBLOCKINLINEDECORATOR_API URichTextBlockInlineDecorator : public UR
 	GENERATED_BODY()
 
 public:
-	URichTextBlockInlineDecorator(const FObjectInitializer& ObjectInitializer);
+	explicit URichTextBlockInlineDecorator(const FObjectInitializer& ObjectInitializer);
 
 	virtual TSharedPtr<ITextDecorator> CreateDecorator(URichTextBlock* InOwner) override;
 };

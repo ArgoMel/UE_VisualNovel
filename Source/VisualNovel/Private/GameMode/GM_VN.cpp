@@ -8,6 +8,8 @@
 #include <Kismet/GameplayStatics.h>
 #include <Engine/AssetManager.h>
 
+#include "Sound/SoundBase.h"
+
 AGM_VN::AGM_VN()
 {
 	PlayerControllerClass = APC_VN::StaticClass();
@@ -27,7 +29,7 @@ void AGM_VN::BeginPlay()
 	Super::BeginPlay();
 	TArray<AActor*> actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),AVNSceneCapture2D::StaticClass(), actors);
-	for(auto& actor:actors)
+	for(const auto& actor:actors)
 	{
 		AVNSceneCapture2D* capture=Cast<AVNSceneCapture2D>(actor);
 		mVNSceneCaptures.Add(capture->mBGName, capture);
@@ -46,6 +48,7 @@ void AGM_VN::BeginPlay()
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void AGM_VN::OnAssetLoadComplete()
 {
 	if (!mGameInstance->IsAllAssetLoading())
@@ -65,7 +68,7 @@ void AGM_VN::OnAssetLoadComplete()
 }
 
 UMaterialInstance* AGM_VN::GetSceneCaptureMatByName(FName TexName,
-	FName OldName)
+	FName OldName) const
 {
 	if (mVNSceneCaptures.Contains(OldName))
 	{
@@ -80,16 +83,16 @@ UMaterialInstance* AGM_VN::GetSceneCaptureMatByName(FName TexName,
 	return capture->GetSceneCaptureMI();
 }
 
-void AGM_VN::SetBGMByName(FName BGMName)
+void AGM_VN::SetBGMByName(FName BGMName) const
 {
-	UAssetManager& manager = UAssetManager::Get();
-	FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_MUSIC, BGMName);
+	const UAssetManager& manager = UAssetManager::Get();
+	const FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_MUSIC, BGMName);
 	USoundBase* sound = Cast<USoundBase>(manager.GetPrimaryAssetObject(asset));
 	mBGMComp->SetSound(sound);
 	mBGMComp->Play();
 }
 
-void AGM_VN::SetVoice(USoundBase* Voice)
+void AGM_VN::SetVoice(USoundBase* Voice) const
 {
 	mVoiceComp->Stop();
 	mVoiceComp->SetSound(Voice);

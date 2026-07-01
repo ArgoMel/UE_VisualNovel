@@ -14,7 +14,7 @@ if (__##RETURN_POINTER.Succeeded()) \
 }\
 else \
 {\
-	UE_LOG(LogTemp,Warning,TEXT("Failed GetObjectAsset : %d"),TEXT(PATH));\
+	UE_LOG(LogTemp,Warning,TEXT("Failed GetObjectAsset : %s"),TEXT(PATH));\
 	RETURN_POINTER = nullptr;\
 }
 
@@ -27,7 +27,7 @@ else \
 	}\
 	else \
 	{\
-		UE_LOG(LogTemp,Warning,TEXT("Failed GetObjectAsset : %d"),TEXT(PATH));\
+		UE_LOG(LogTemp,Warning,TEXT("Failed GetObjectAsset : %s"),TEXT(PATH));\
 		RETURN_POINTER.Add(nullptr);\
 	}\
 }
@@ -44,7 +44,7 @@ if (__##RETURN_POINTER.Succeeded()) \
 }\
 else \
 {\
-	UE_LOG(LogTemp,Warning,TEXT("Failed GetClassAsset : %d"),TEXT(PATH));\
+	UE_LOG(LogTemp,Warning,TEXT("Failed GetClassAsset : %s"),TEXT(PATH));\
 	RETURN_POINTER = nullptr;\
 }
 #pragma endregion

@@ -3,6 +3,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "BFL_VN.generated.h"
 
+class USoundMix;
+class UDataTable;
 class UDlgDialogue;
 
 UCLASS()
@@ -25,7 +27,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static bool GetKeyword(FString InText,FString& OutText);
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
-	static bool GetStyleword(FString InText, FString& OutText);
+	static bool GetStyleWord(FString InText, FString& OutText);
 	UFUNCTION(BlueprintPure, Category = "VisualNovel")
 	static FParticipantData GetParticipantData(EParticipantName Name);
 

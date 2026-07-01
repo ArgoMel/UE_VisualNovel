@@ -7,7 +7,6 @@
 #include "UI/Widget_SaveLoad.h"
 #include "Save/SG_VN.h"
 #include "Interface/Interface_VNSave.h"
-#include "BFL/BFL_VN.h"
 #include "../VisualNovel.h"
 #include "DlgSystem/DlgContext.h"
 #include "Components/Image.h"
@@ -17,6 +16,9 @@
 #include "Animation/WidgetAnimation.h"
 #include <Engine/AssetManager.h>
 #include <Kismet/GameplayStatics.h>
+
+#include "TimerManager.h"
+#include "Engine/GameInstance.h"
 
 UWidget_Menu::UWidget_Menu(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -279,7 +281,7 @@ void UWidget_Menu::ToggleMenuWidget()
 	}
 }
 
-bool UWidget_Menu::IsInGame()
+bool UWidget_Menu::IsInGame() const
 {
 	if(!IsValid(mDialogueWidget))
 	{
@@ -301,7 +303,7 @@ void UWidget_Menu::Init(UWidget_Dialogue* DialogueWidget,
 	Gallery->CreateGalleryMenu(PersistantData);
 }
 
-void UWidget_Menu::AddEntry(FText Name, FText EntryText)
+void UWidget_Menu::AddEntry(FText Name, FText EntryText) const
 {
 	History->AddEntry(Name, EntryText);
 }

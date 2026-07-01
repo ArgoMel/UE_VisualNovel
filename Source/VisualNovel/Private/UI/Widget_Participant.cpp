@@ -4,6 +4,7 @@
 #include "../VisualNovel.h"
 #include "Components/Image.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Engine/Texture2D.h"
 
 UWidget_Participant::UWidget_Participant(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -18,17 +18,16 @@ class VISUALNOVEL_API UGI_VN : public UGameInstance
 	GENERATED_BODY()
 public:
 	UGI_VN();
-protected:
 	virtual void Init() override;
 	virtual void Shutdown() override;
 public:
-	FName GetParticipantName_Implementation() const;
-	bool CheckCondition_Implementation(const UDlgContext* Context, FName ConditionName) const;
-	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
+	virtual FName GetParticipantName_Implementation() const override;
+	virtual bool CheckCondition_Implementation(const UDlgContext* Context, FName ConditionName) const override;
+	virtual bool ModifyNameValue_Implementation(FName ValueName, FName NameValue) override;
 public:
-	void OnNewGame_Implementation();
-	void OnSaveGame_Implementation(USG_VN* SaveGame);
-	void OnLoadGame_Implementation(USG_VN* SaveGame);
+	virtual void OnNewGame_Implementation() override;
+	virtual void OnSaveGame_Implementation(USG_VN* SaveGame) override;
+	virtual void OnLoadGame_Implementation(USG_VN* SaveGame) override;
 
 private:
 	int32 mLoadedAssetCount;
@@ -67,14 +66,14 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Default")
-	void ShowMenu();
+	void ShowMenu() const;
 	UFUNCTION(BlueprintCallable, Category = "Default")
-	void ResumeDialogue();
+	void ResumeDialogue() const;
 
 	void CreateUI();
-	void ToggleGameAndMenu();
-	void ChangeVNSaveData(FString OldName,FString NewName);
-	void ShowLoading(bool IsShow);
+	void ToggleGameAndMenu() const;
+	void ChangeVNSaveData(FString OldName,FString NewName) const;
+	void ShowLoading(bool IsShow) const;
 	bool IsAllAssetLoading() const;
 
 	UWidget_Menu* GetMenuWidget()

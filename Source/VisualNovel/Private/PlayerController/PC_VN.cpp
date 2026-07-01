@@ -14,7 +14,7 @@ void APC_VN::SetupInputComponent()
 	{
 		return;
 	}
-	EChessInputAction::BindInput_StartOnly(input, mVNInputAsset->mToggleGameAndMenu, this, &ThisClass::ToggleGameAndMenu);
+	EInputAction::BindInput_StartOnly(input, mVNInputAsset->mToggleGameAndMenu, this, &ThisClass::ToggleGameAndMenu);
 }
 
 void APC_VN::BeginPlay()
@@ -23,6 +23,7 @@ void APC_VN::BeginPlay()
 	mGameInstance = Cast<UGI_VN>(GetGameInstance());
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void APC_VN::ToggleGameAndMenu()
 {
 	if(!IsValid(mGameInstance))

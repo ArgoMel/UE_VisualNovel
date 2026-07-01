@@ -19,7 +19,7 @@ class VISUALNOVEL_API UWidget_Menu : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UWidget_Menu(const FObjectInitializer& ObjectInitializer);
+	explicit UWidget_Menu(const FObjectInitializer& ObjectInitializer);
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
@@ -133,10 +133,10 @@ public:
 	void ToggleMenuWidget();
 
 	UFUNCTION(BlueprintPure)
-	bool IsInGame();
+	bool IsInGame() const;
 
 	void Init(UWidget_Dialogue* DialogueWidget, UPersistantData* PersistantData);
-	void AddEntry(FText Name, FText EntryText);
+	void AddEntry(FText Name, FText EntryText) const;
 	void ChangeScene(int32 Index);
 	void UpdateGallery(FString TextureName);
 	void Save(FString SlotName,bool WillGameExit = false);

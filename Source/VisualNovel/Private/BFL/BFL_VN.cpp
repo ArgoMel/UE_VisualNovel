@@ -8,6 +8,10 @@
 #include "AudioDevice.h"
 #include <Engine/AssetManager.h>
 
+#include "UnrealClient.h"
+#include "Engine/DataTable.h"
+#include "UObject/ConstructorHelpers.h"
+
 TObjectPtr<UStringTable> UBFL_VN::mKeywordData;
 TObjectPtr<UStringTable> UBFL_VN::mStyleData;
 TObjectPtr<UDataTable> UBFL_VN::mParticipantData;
@@ -27,7 +31,7 @@ bool UBFL_VN::GetKeyword(FString InText, FString& OutText)
 	return mKeywordData->GetStringTable()->GetSourceString(InText.ToUpper(), OutText);
 }
 
-bool UBFL_VN::GetStyleword(FString InText, FString& OutText)
+bool UBFL_VN::GetStyleWord(FString InText, FString& OutText)
 {
 	return mStyleData->GetStringTable()->GetSourceString(InText.ToUpper(), OutText);
 }
@@ -68,16 +72,16 @@ FString UBFL_VN::ToTargetString(FText InText, bool AddQuotes,
 		}
 		FString noSymbolStr = RemoveSymbolText(word);
 		FString keyword;
-		FString styleword;
+		FString styleWord;
 		if (GetKeyword(noSymbolStr, keyword))
 		{
-			TArray<FString> stylewords;
-			keyword.ParseIntoArray(stylewords, TEXT(","), false);
-			for (FString& tempword : stylewords)
+			TArray<FString> styleWords;
+			keyword.ParseIntoArray(styleWords, TEXT(","), false);
+			for (const FString& tempWord : styleWords)
 			{
 				FString tempStr;
-				GetStyleword(tempword, tempStr);
-				styleword += tempStr;
+				GetStyleWord(tempWord, tempStr);
+				styleWord += tempStr;
 			}
 			FString lSymbolStr;
 			FString rSymbolStr;
@@ -85,7 +89,7 @@ FString UBFL_VN::ToTargetString(FText InText, bool AddQuotes,
 
 			processString += lSymbolStr;
 			processString += TEXT("<");
-			processString += styleword;
+			processString += styleWord;
 			processString += TEXT(">");
 			processString += noSymbolStr;
 			processString += lastTextStyle;
@@ -139,7 +143,7 @@ void UBFL_VN::GetAllSaveGameSlotNames(TArray<FString>& Names)
 	{
 		return;
 	}
-	UPersistantData* persistantData = Cast<UPersistantData>(
+	const UPersistantData* persistantData = Cast<UPersistantData>(
 		UGameplayStatics::LoadGameFromSlot(SLOTNAME_PERSISTANTDATA, 0));
 	Names = persistantData->mSaveNames;
 }

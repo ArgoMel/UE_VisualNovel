@@ -15,19 +15,19 @@ class VISUALNOVEL_API UWidget_Participant : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UWidget_Participant(const FObjectInitializer& ObjectInitializer);
+	explicit UWidget_Participant(const FObjectInitializer& ObjectInitializer);
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativePreConstruct() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 public:
-	FName GetParticipantName_Implementation() const;
-	FText GetParticipantDisplayName_Implementation(FName ActiveSpeaker) const;
-	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
+	virtual FName GetParticipantName_Implementation() const override;
+	virtual FText GetParticipantDisplayName_Implementation(FName ActiveSpeaker) const override;
+	virtual bool ModifyNameValue_Implementation(FName ValueName, FName NameValue) override;
 public:
-	void OnNewGame_Implementation();
-	void OnSaveGame_Implementation(USG_VN* SaveGame);
-	void OnLoadGame_Implementation(USG_VN* SaveGame);
+	virtual void OnNewGame_Implementation() override;
+	virtual void OnSaveGame_Implementation(USG_VN* SaveGame) override;
+	virtual void OnLoadGame_Implementation(USG_VN* SaveGame) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))

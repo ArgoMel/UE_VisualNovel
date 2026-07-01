@@ -85,28 +85,28 @@ void UWidget_Option::OnCancelAutoModeOnOptionCBChecked(bool Value)
 
 void UWidget_Option::OnMasterVolumeSliderChanged(float Value)
 {
-	mPersistantData->mVolumes[(int32)ESoundKind::Master] = Value;
+	mPersistantData->mVolumes[static_cast<int32>(ESoundKind::Master)] = Value;
 	UBFL_VN::SetVolume(GetWorld(), Value, ESoundKind::Master);
 	MasterVolumePB->SetPercent(Value);
 }
 
 void UWidget_Option::OnMusicVolumeSliderChanged(float Value)
 {
-	mPersistantData->mVolumes[(int32)ESoundKind::BGM] = Value;
+	mPersistantData->mVolumes[static_cast<int32>(ESoundKind::BGM)] = Value;
 	UBFL_VN::SetVolume(GetWorld(), Value, ESoundKind::BGM);
 	MusicVolumePB->SetPercent(Value);
 }
 
 void UWidget_Option::OnVoiceVolumeSliderChanged(float Value)
 {
-	mPersistantData->mVolumes[(int32)ESoundKind::Voice] = Value;
+	mPersistantData->mVolumes[static_cast<int32>(ESoundKind::Voice)] = Value;
 	UBFL_VN::SetVolume(GetWorld(), Value, ESoundKind::Voice);
 	VoiceVolumePB->SetPercent(Value);
 }
 
 void UWidget_Option::OnSFXVolumeSliderChanged(float Value)
 {
-	mPersistantData->mVolumes[(int32)ESoundKind::SFX] = Value;
+	mPersistantData->mVolumes[static_cast<int32>(ESoundKind::SFX)] = Value;
 	UBFL_VN::SetVolume(GetWorld(), Value, ESoundKind::SFX);
 	SFXVolumePB->SetPercent(Value);
 }
@@ -135,10 +135,10 @@ void UWidget_Option::InitializeSavedOptions()
 	CancelSkipModeOnOptionCB->SetIsChecked(mPersistantData->bCancelSkipOnOptions);
 	AutoSpeedSlider->SetValue(mPersistantData->mAutoSpeed);
 	CancelAutoModeOnOptionCB->SetIsChecked(mPersistantData->bCancelAutoOnOptions);
-	MasterVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::Master]);
-	MusicVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::BGM]);
-	VoiceVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::Voice]);
-	SFXVolumeSlider->SetValue(mPersistantData->mVolumes[(int32)ESoundKind::SFX]);
+	MasterVolumeSlider->SetValue(mPersistantData->mVolumes[static_cast<int32>(ESoundKind::Master)]);
+	MusicVolumeSlider->SetValue(mPersistantData->mVolumes[static_cast<int32>(ESoundKind::BGM)]);
+	VoiceVolumeSlider->SetValue(mPersistantData->mVolumes[static_cast<int32>(ESoundKind::Voice)]);
+	SFXVolumeSlider->SetValue(mPersistantData->mVolumes[static_cast<int32>(ESoundKind::SFX)]);
 	mDialogueWidget->mTextSize = mPersistantData->mTextSize;
 	TextSizeEText->SetText(FText::AsNumber(mDialogueWidget->mTextSize));
 }

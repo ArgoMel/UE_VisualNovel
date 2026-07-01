@@ -27,17 +27,17 @@ class VISUALNOVEL_API UWidget_Dialogue : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UWidget_Dialogue(const FObjectInitializer& ObjectInitializer);
+	explicit UWidget_Dialogue(const FObjectInitializer& ObjectInitializer);
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 public:
-	FName GetParticipantName_Implementation() const;
-	bool ModifyNameValue_Implementation(FName ValueName, FName NameValue);
+	virtual FName GetParticipantName_Implementation() const override;
+	virtual bool ModifyNameValue_Implementation(FName ValueName, FName NameValue) override;
 public:
-	void OnNewGame_Implementation();
-	void OnSaveGame_Implementation(USG_VN* SaveGame);
-	void OnLoadGame_Implementation(USG_VN* SaveGame);
+	virtual void OnNewGame_Implementation() override;
+	virtual void OnSaveGame_Implementation(USG_VN* SaveGame) override;
+	virtual void OnLoadGame_Implementation(USG_VN* SaveGame) override;
 
 private:
 	FTimerHandle mTypeTimer;

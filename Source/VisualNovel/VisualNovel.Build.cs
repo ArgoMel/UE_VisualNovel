@@ -19,7 +19,7 @@ public class VisualNovel : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] 
 		{
             "SlateCore",
-            "RichTextBlockInlineDecorator"
+            "RichTextBlockInlineDecorator",
         });
 	}
 }

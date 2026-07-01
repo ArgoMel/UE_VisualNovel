@@ -33,7 +33,7 @@ protected:
 	void OnAssetLoadComplete();
 
 public:
-	UMaterialInstance* GetSceneCaptureMatByName(FName TexName, FName OldName);
-	void SetBGMByName(FName BGMName);
-	void SetVoice(USoundBase* Voice);
+	UMaterialInstance* GetSceneCaptureMatByName(FName TexName, FName OldName) const;
+	void SetBGMByName(FName BGMName) const;
+	void SetVoice(USoundBase* Voice) const;
 };

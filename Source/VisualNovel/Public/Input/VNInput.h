@@ -44,11 +44,10 @@ public:
 	int32 mCtrlMapPriority;
 };
 
-namespace EChessInputAction
+namespace EInputAction
 {
 	template<class T, class FuncType>
-	void BindInput_StartOnly(UEnhancedInputComponent* Input, const UInputAction* Action, T* Obj,
-		FuncType StartFunc)
+	void BindInput_StartOnly(UEnhancedInputComponent* Input, const UInputAction* Action, T* Obj, FuncType StartFunc)
 	{
 		if(!Action)
 		{

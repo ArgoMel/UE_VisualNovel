@@ -9,9 +9,9 @@
 class FDefaultRichTextDecorator : public ITextDecorator
 {
 public:
-	FDefaultRichTextDecorator(URichTextBlockDecorator* Decorator, const FSlateFontInfo& DefaultFont, const FLinearColor& DefaultColor);
+	FDefaultRichTextDecorator(URichTextBlockDecorator* InDecorator, const FSlateFontInfo& InDefaultFont, const FLinearColor& InDefaultColor);
 
-	virtual ~FDefaultRichTextDecorator();
+	virtual ~FDefaultRichTextDecorator() override;
 
 	virtual bool Supports(const FTextRunParseResults& RunParseResult, const FString& Text) const override;
 
@@ -124,7 +124,7 @@ void FDefaultRichTextDecorator::ExplodeRunInfo(const FRunInfo& InRunInfo, FSlate
 
 	if (FontFamilyString)
 	{
-		FSoftObjectPath Font(**FontFamilyString);
+		const FSoftObjectPath Font(**FontFamilyString);
 		if (UObject* FontAsset = Font.TryLoad())
 		{
 			OutFont.FontObject = FontAsset;
@@ -147,7 +147,7 @@ void FDefaultRichTextDecorator::ExplodeRunInfo(const FRunInfo& InRunInfo, FSlate
 		const FString& FontColorStringRef = *FontColorString;
 
 		// Is Hex color?
-		if (!FontColorStringRef.IsEmpty() && FontColorStringRef[0] == TCHAR('#'))
+		if (!FontColorStringRef.IsEmpty() && FontColorStringRef[0] == static_cast<TCHAR>('#'))
 		{
 			OutFontColor = FLinearColor(FColor::FromHex(FontColorStringRef));
 		}
@@ -172,8 +172,8 @@ URichTextBlockInlineDecorator::URichTextBlockInlineDecorator(const FObjectInitia
 
 TSharedPtr<ITextDecorator> URichTextBlockInlineDecorator::CreateDecorator(URichTextBlock* InOwner)
 {
-	FSlateFontInfo DefaultFont = InOwner->GetCurrentDefaultTextStyle().Font;
-	FLinearColor DefaultColor = InOwner->GetCurrentDefaultTextStyle().ColorAndOpacity.GetSpecifiedColor();
+	const FSlateFontInfo DefaultFont = InOwner->GetCurrentDefaultTextStyle().Font;
+	const FLinearColor DefaultColor = InOwner->GetCurrentDefaultTextStyle().ColorAndOpacity.GetSpecifiedColor();
 	return MakeShareable(new FDefaultRichTextDecorator(this, DefaultFont, DefaultColor));
 }
 

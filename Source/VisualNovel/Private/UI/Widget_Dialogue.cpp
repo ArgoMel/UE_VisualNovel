@@ -1,7 +1,6 @@
 #include "UI/Widget_Dialogue.h"
 #include "UI/Widget_DialogueOption.h"
 #include "UI/Widget_Menu.h"
-#include "UI/Widget_Option.h"
 #include "UI/Widget_Participant.h"
 #include "GameMode/GM_VN.h"
 #include "GameInstance/GI_VN.h"
@@ -25,6 +24,11 @@
 #include "Animation/WidgetAnimation.h"
 #include <Engine/AssetManager.h>
 #include <Kismet/GameplayStatics.h>
+
+#include "TimerManager.h"
+#include "Materials/MaterialInstance.h"
+#include "Sound/SoundBase.h"
+#include "UObject/ConstructorHelpers.h"
 
 UWidget_Dialogue::UWidget_Dialogue(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -57,7 +61,7 @@ void UWidget_Dialogue::NativeOnInitialized()
 	PlayerNameInput->OnTextChanged.AddDynamic(this,&ThisClass::OnPlayerNameInputChanged);
 	PlayerNameInput->OnTextCommitted.AddDynamic(this,&ThisClass::OnPlayerNameInputCommitted);
 
-	TArray<TSubclassOf<URichTextBlockDecorator>> decoClass = { URichTextBlockInlineDecorator::StaticClass() };
+	const TArray<TSubclassOf<URichTextBlockDecorator>> decoClass = { URichTextBlockInlineDecorator::StaticClass() };
 	DialogueText->SetDecorators(decoClass);
 	NotifyTextBlock->SetDecorators(decoClass);
 
@@ -109,8 +113,8 @@ bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName,
 	}
 	else if (ValueName == VALUENAME_CHANGE_SCRIPT)
 	{
-		UAssetManager& manager = UAssetManager::Get();
-		FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_SCRIPT, NameValue);
+		const UAssetManager& manager = UAssetManager::Get();
+		const FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_SCRIPT, NameValue);
 		UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
 		StartDialogue(dialogue);
 	}
@@ -119,14 +123,14 @@ bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName,
 
 void UWidget_Dialogue::OnNewGame_Implementation()
 {
-	for (auto& child : mParticipants)
+	for (const auto& child : mParticipants)
 	{
 		UWidget_Participant* paricipant = Cast<UWidget_Participant>(child.Value);
 		if (!IsValid(paricipant))
 		{
 			continue;
 		}
-		IInterface_VNSave::Execute_OnNewGame(paricipant);
+		Execute_OnNewGame(paricipant);
 	}
 	PlayerNameInput->SetText(mGameInstance->mPlayerName);
 }
@@ -142,20 +146,20 @@ void UWidget_Dialogue::OnSaveGame_Implementation(USG_VN* SaveGame)
 	SaveGame->mActiveNodeIndex = mDialogueContext->GetActiveNodeIndex();
 	SaveGame->bAskForPlayerName = bAskForPlayerName;
 	SaveGame->mVisitedNodes = mDialogueContext->GetVisitedNodeIndices();
-	for (auto& participant : mParticipants)
+	for (const auto& participant : mParticipants)
 	{
 		UWidget_Participant* paricipantWidget = Cast<UWidget_Participant>(participant.Value);
 		if (IsValid(paricipantWidget))
 		{
-			IInterface_VNSave::Execute_OnSaveGame(paricipantWidget, SaveGame);
+			Execute_OnSaveGame(paricipantWidget, SaveGame);
 		}
 	}
 }
 
 void UWidget_Dialogue::OnLoadGame_Implementation(USG_VN* SaveGame)
 {
-	UAssetManager& manager = UAssetManager::Get();
-	FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_SCRIPT, SaveGame->mCurDialogueName);
+	const UAssetManager& manager = UAssetManager::Get();
+	const FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_SCRIPT, SaveGame->mCurDialogueName);
 	UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
 	TArray<UObject*> participants;
 	GetParticipants(dialogue, participants);
@@ -186,11 +190,11 @@ void UWidget_Dialogue::OnClickToContinueBtnClicked()
 		return;
 	}
 
-	int32 optionNum = bShowUnselectableOption ?
+	const int32 optionNum = bShowUnselectableOption ?
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if(optionNum ==1)
 	{
-		for (auto& participant : mParticipants)
+		for (const auto& participant : mParticipants)
 		{
 			UWidget_Participant* participantWidget = Cast<UWidget_Participant>(participant.Value);
 			if (!IsValid(participantWidget))
@@ -213,7 +217,7 @@ void UWidget_Dialogue::OnClickToContinueBtnClicked()
 
 void UWidget_Dialogue::OnPlayerNameInputChanged(const FText& Text)
 {
-	FString temp = Text.ToString();
+	const FString temp = Text.ToString();
 	if(temp.Len()>=10)
 	{
 		PlayerNameInput->SetText(FText::FromString(temp.Left(10)));
@@ -313,13 +317,13 @@ void UWidget_Dialogue::UpdateText()
 	PlayVoice();
 	HideOptions();
 
-	UObject* activeParicipant =
+	const UObject* activeParicipant =
 		Cast<UObject>(mDialogueContext->GetActiveNodeParticipant());
 	FText speakerName = FText::GetEmpty();
 	if (IsValid(activeParicipant))
 	{
 		speakerName =
-			IDlgDialogueParticipant::Execute_GetParticipantDisplayName(activeParicipant, FName());
+			Execute_GetParticipantDisplayName(activeParicipant, FName());
 		SpeakerName->SetText(speakerName);
 		SpeakerBorder->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
@@ -352,7 +356,7 @@ void UWidget_Dialogue::UpdateText()
 
 void UWidget_Dialogue::ChooseOption(int32 OptionIndex)
 {
-	for (auto& participant : mParticipants)
+	for (const auto& participant : mParticipants)
 	{
 		UWidget_Participant* participantWidget = Cast<UWidget_Participant>(participant.Value);
 		if (!IsValid(participantWidget))
@@ -362,7 +366,7 @@ void UWidget_Dialogue::ChooseOption(int32 OptionIndex)
 		participantWidget->FinishAnimating();
 	}
 	StopAllAnimations();
-	bool canChoose = false;
+	bool canChoose;
 	if(bShowUnselectableOption)
 	{
 		canChoose =mDialogueContext->ChooseOptionFromAll(OptionIndex);
@@ -395,7 +399,7 @@ void UWidget_Dialogue::OnTextFinishedTyping()
 	{
 		return;
 	}
-	int32 optionNum = bShowUnselectableOption ?
+	const int32 optionNum = bShowUnselectableOption ?
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if (optionNum ==1)	//선택지가 없는경우
 	{
@@ -432,8 +436,8 @@ void UWidget_Dialogue::OnTextFinishedTyping()
 	}
 	for (int32 i = 0; i < optionNum; ++i)
 	{
-		UWidget_DialogueOption* dialogueOption = nullptr;
-		bool canRecycle = i < ButtonsVBox->GetChildrenCount();
+		UWidget_DialogueOption* dialogueOption;
+		const bool canRecycle = i < ButtonsVBox->GetChildrenCount();
 		if (canRecycle)
 		{
 			dialogueOption = Cast<UWidget_DialogueOption>(ButtonsVBox->GetChildAt(i));
@@ -503,7 +507,7 @@ void UWidget_Dialogue::StartDialogue(UDlgDialogue* Dialogue)
 		TArray<UObject*> participants;
 		GetParticipants(Dialogue, participants);
 		mDialogueContext = UDlgManager::StartDialogue(Dialogue, participants);
-		IInterface_VNSave::Execute_OnNewGame(this);
+		Execute_OnNewGame(this);
 		UpdateText();
 	}
 	else
@@ -533,8 +537,8 @@ void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue,
 	{
 		mParticipants.Add(PARTICIPANTNAME_WIDGET, this);
 		mParticipants.Add(PARTICIPANTNAME_GAMEINSTANCE, GetGameInstance());
-		UCanvasPanel* canvas = Cast<UCanvasPanel>(GetRootWidget());
-		for (auto& child : canvas->GetAllChildren())
+		const UCanvasPanel* canvas = Cast<UCanvasPanel>(GetRootWidget());
+		for (const auto& child : canvas->GetAllChildren())
 		{
 			UWidget_Participant* paricipant = Cast<UWidget_Participant>(child);
 			if (IsValid(paricipant))
@@ -562,8 +566,8 @@ void UWidget_Dialogue::Init(UWidget_Menu* Menu,
 
 void UWidget_Dialogue::ChangeBG(FName TextureName)
 {
-	UAssetManager& manager = UAssetManager::Get();
-	FPrimaryAssetId asset= FPrimaryAssetId(PRIMARY_ASSET_TYPE_GALLERY, TextureName);
+	const UAssetManager& manager = UAssetManager::Get();
+	const FPrimaryAssetId asset= FPrimaryAssetId(PRIMARY_ASSET_TYPE_GALLERY, TextureName);
 	UObject* galleryTex = manager.GetPrimaryAssetObject(asset);
 	if(!IsValid(galleryTex))
 	{
@@ -617,7 +621,7 @@ void UWidget_Dialogue::SetDialogueVisible(bool Visible)
 void UWidget_Dialogue::ToggleSkipMode()
 {
 	bSkipModeActive = !bSkipModeActive;
-	int32 optionNum = bShowUnselectableOption ?
+	const int32 optionNum = bShowUnselectableOption ?
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if (bSkipModeActive&&
 		mDialogueContext->IsOptionConnectedToVisitedNode(0, false, !bShowUnselectableOption)&&
@@ -632,7 +636,7 @@ void UWidget_Dialogue::ToggleSkipMode()
 void UWidget_Dialogue::ToggleAutoMode()
 {
 	bAutoModeActive = !bAutoModeActive;
-	int32 optionNum = bShowUnselectableOption ?
+	const int32 optionNum = bShowUnselectableOption ?
 		mDialogueContext->GetAllOptionsNum() : mDialogueContext->GetOptionsNum();
 	if (bAutoModeActive&&
 		mCurText==mTargetText&&

@@ -5,6 +5,9 @@
 #include <Kismet/KismetRenderingLibrary.h>
 #include <Kismet/KismetMaterialLibrary.h>
 
+#include "Materials/MaterialInstanceDynamic.h"
+#include "UObject/ConstructorHelpers.h"
+
 AVNSceneCapture2D::AVNSceneCapture2D()
 {
 	PrimaryActorTick.bCanEverTick = false;
