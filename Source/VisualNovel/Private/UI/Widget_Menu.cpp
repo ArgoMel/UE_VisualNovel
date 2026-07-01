@@ -161,11 +161,12 @@ void UWidget_Menu::OnQuitBtnClicked()
 		&ThisClass::QuitGame, FadeBlackAnim->GetEndTime() * 0.5f);
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void UWidget_Menu::StartGame()
 {
 	MenuWS->SetActiveWidgetIndex(mNextWigetIndex);
-	UAssetManager& manager = UAssetManager::Get();
-	FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_SCRIPT, VN_START_SCRIPT);
+	const UAssetManager& manager = UAssetManager::Get();
+	const FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_SCRIPT, VN_START_SCRIPT);
 	UDlgDialogue* dialogue = Cast<UDlgDialogue>(manager.GetPrimaryAssetObject(asset));
 	mDialogueWidget->StartDialogue(dialogue);
 	mDialogueWidget->ChangeBG(VN_START_BG);
@@ -211,9 +212,9 @@ bool UWidget_Menu::SwitchWidget(int32 Index, bool IsForced)
 	return true;
 }
 
-void UWidget_Menu::UpdateButtonVisibility()
+void UWidget_Menu::UpdateButtonVisibility() const
 {
-	bool isInGame = IsInGame();
+	const bool isInGame = IsInGame();
 	if(isInGame)
 	{
 		StartBtn->SetVisibility(ESlateVisibility::Collapsed);
@@ -314,12 +315,12 @@ void UWidget_Menu::ChangeScene(int32 Index)
 	PlayAnimationForward(FadeBlackAnim);
 }
 
-void UWidget_Menu::UpdateGallery(FString TextureName)
+void UWidget_Menu::UpdateGallery(FString TextureName) const
 {
 	Gallery->UpdateGallery(TextureName);
 }
 
-void UWidget_Menu::Save(FString SlotName, bool WillGameExit)
+void UWidget_Menu::Save(FString SlotName, bool WillGameExit) const
 {
 	USG_VN* saveData = Cast<USG_VN>(
 		UGameplayStatics::CreateSaveGameObject(USG_VN::StaticClass()));

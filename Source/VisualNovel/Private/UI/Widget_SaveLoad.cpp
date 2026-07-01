@@ -10,6 +10,8 @@
 #include <Kismet/GameplayStatics.h>
 #include <Engine/AssetManager.h>
 
+#include "UObject/ConstructorHelpers.h"
+
 UWidget_SaveLoad::UWidget_SaveLoad(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -19,7 +21,7 @@ UWidget_SaveLoad::UWidget_SaveLoad(const FObjectInitializer& ObjectInitializer)
 	bIsSaveMode = true;
 }
 
-void UWidget_SaveLoad::OnSaveOrLoad(FString SlotName)
+void UWidget_SaveLoad::OnSaveOrLoad(FString SlotName) const
 {
 	if(bIsSaveMode)
 	{
@@ -31,17 +33,22 @@ void UWidget_SaveLoad::OnSaveOrLoad(FString SlotName)
 	}
 }
 
-void UWidget_SaveLoad::SetSaveButton(UWidget_SaveBtn* SaveBtn, FString Name)
+void UWidget_SaveLoad::SetSaveButton(UWidget_SaveBtn* SaveBtn, FString Name) const
 {
 	//FString saveFile =
 	//	FPaths::ProjectSavedDir() + TEXT("Screenshots/WindowsEditor/") + saveBtn->mSlotName + TEXT(".png");
 	//saveBtn->SetSaveImg(FImageUtils::ImportFileAsTexture2D(saveFile));
 
-	USG_VN* data = Cast<USG_VN>(UGameplayStatics::LoadGameFromSlot(Name, 0));
+	if (!UGameplayStatics::DoesSaveGameExist(Name, 0))
+	{
+		USaveGame* saveGame = UGameplayStatics::CreateSaveGameObject(USG_VN::StaticClass());
+		UGameplayStatics::SaveGameToSlot(saveGame, Name, 0);
+	}
+	const USG_VN* data = Cast<USG_VN>(UGameplayStatics::LoadGameFromSlot(Name, 0));
 	if (data)
 	{
-		UAssetManager& manager = UAssetManager::Get();
-		FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_GALLERY, data->mCurBG);
+		const UAssetManager& manager = UAssetManager::Get();
+		const FPrimaryAssetId asset = FPrimaryAssetId(PRIMARY_ASSET_TYPE_GALLERY, data->mCurBG);
 		UObject* galleryTex = manager.GetPrimaryAssetObject(asset);
 		SaveBtn->SetSaveImgFromObj(galleryTex);
 		SaveBtn->SetSaveDetail(FText::AsDateTime(data->mSaveTime));
@@ -61,7 +68,7 @@ void UWidget_SaveLoad::CreateSaveButtons(UWidget_Menu* Menu)
 
 	TArray<FString> names;
 	UBFL_VN::GetAllSaveGameSlotNames(names);
-	for (auto& name: names)
+	for (const auto& name: names)
 	{
 		UWidget_SaveBtn* saveBtn =
 			CreateWidget<UWidget_SaveBtn>(GetOwningPlayer(), mSaveBtnClass);
@@ -71,7 +78,7 @@ void UWidget_SaveLoad::CreateSaveButtons(UWidget_Menu* Menu)
 		}
 		SetSaveButton(saveBtn, name);
 		saveBtn->OnSaveOrLoad.AddDynamic(this,&ThisClass::OnSaveOrLoad);
-		int32 childNum = SaveContainer->GetChildrenCount();
+		const int32 childNum = SaveContainer->GetChildrenCount();
 		SaveContainer->AddChildToUniformGrid(saveBtn, childNum / mSavesPerRow, childNum % mSavesPerRow);
 	}
 }

@@ -128,7 +128,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Event")
-	void UpdateButtonVisibility();
+	void UpdateButtonVisibility() const;
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void ToggleMenuWidget();
 
@@ -138,8 +138,8 @@ public:
 	void Init(UWidget_Dialogue* DialogueWidget, UPersistantData* PersistantData);
 	void AddEntry(FText Name, FText EntryText) const;
 	void ChangeScene(int32 Index);
-	void UpdateGallery(FString TextureName);
-	void Save(FString SlotName,bool WillGameExit = false);
+	void UpdateGallery(FString TextureName) const;
+	void Save(FString SlotName,bool WillGameExit = false) const;
 	void Load(FString SlotName);
 	void PlayCredit(bool CanSkip=false);
 

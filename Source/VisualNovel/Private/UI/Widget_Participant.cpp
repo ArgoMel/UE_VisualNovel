@@ -90,7 +90,7 @@ void UWidget_Participant::OnSaveGame_Implementation(USG_VN* SaveGame)
 
 void UWidget_Participant::OnLoadGame_Implementation(USG_VN* SaveGame)
 {
-	FCharacterSaveInfo* info=SaveGame->mCharacterInfo.Find(GetFName());
+	const FCharacterSaveInfo* info=SaveGame->mCharacterInfo.Find(GetFName());
 	SetParticipantData(info->ParticipantName);
 	CharacterImg->SetRenderTranslation(info->Position);
 	mTargetOpacity=info->Opacity;

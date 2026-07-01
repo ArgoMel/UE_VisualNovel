@@ -12,7 +12,7 @@ class VISUALNOVEL_API UWidget_SaveLoad : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UWidget_SaveLoad(const FObjectInitializer& ObjectInitializer);
+	explicit UWidget_SaveLoad(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -33,10 +33,10 @@ protected:
 
 protected:
 	UFUNCTION()
-	void OnSaveOrLoad(FString SlotName);
+	void OnSaveOrLoad(FString SlotName) const;
 
 	UFUNCTION()
-	void SetSaveButton(UWidget_SaveBtn* SaveBtn, FString Name);
+	void SetSaveButton(UWidget_SaveBtn* SaveBtn, FString Name) const;
 
 public:
 	void CreateSaveButtons(UWidget_Menu* Menu);
