@@ -171,13 +171,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void OnTextFinishedTyping();
 	UFUNCTION(BlueprintCallable, Category = "Event")
-	void HideOptions();
+	void HideOptions() const;
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void Notify(FText NotifyText);
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void StartDialogue(UDlgDialogue* Dialogue);
 	UFUNCTION(BlueprintCallable, Category = "Event")
-	void PlayVoice();
+	void PlayVoice() const;
 
 	UFUNCTION(BlueprintPure, Category = "Default")
 	void GetParticipants(UDlgDialogue* Dialogue, TArray<UObject*>& Participants);

@@ -125,12 +125,12 @@ void UWidget_Dialogue::OnNewGame_Implementation()
 {
 	for (const auto& child : mParticipants)
 	{
-		UWidget_Participant* paricipant = Cast<UWidget_Participant>(child.Value);
-		if (!IsValid(paricipant))
+		UWidget_Participant* participant = Cast<UWidget_Participant>(child.Value);
+		if (!IsValid(participant))
 		{
 			continue;
 		}
-		Execute_OnNewGame(paricipant);
+		Execute_OnNewGame(participant);
 	}
 	PlayerNameInput->SetText(mGameInstance->mPlayerName);
 }
@@ -317,13 +317,13 @@ void UWidget_Dialogue::UpdateText()
 	PlayVoice();
 	HideOptions();
 
-	const UObject* activeParicipant =
+	const UObject* activeParticipant =
 		Cast<UObject>(mDialogueContext->GetActiveNodeParticipant());
 	FText speakerName = FText::GetEmpty();
-	if (IsValid(activeParicipant))
+	if (IsValid(activeParticipant))
 	{
 		speakerName =
-			Execute_GetParticipantDisplayName(activeParicipant, FName());
+			Execute_GetParticipantDisplayName(activeParticipant, FName());
 		SpeakerName->SetText(speakerName);
 		SpeakerBorder->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
@@ -336,7 +336,7 @@ void UWidget_Dialogue::UpdateText()
 		bSkipModeActive)
 	{
 		mCurText = UBFL_VN::ToTargetString(
-			mDialogueContext->GetActiveNodeText(),IsValid(activeParicipant),mTextSize);
+			mDialogueContext->GetActiveNodeText(),IsValid(activeParticipant),mTextSize);
 		mTargetText= mCurText;
 		DialogueText->SetText(FText::FromString(mCurText));
 		OnTextFinishedTyping();
@@ -345,7 +345,7 @@ void UWidget_Dialogue::UpdateText()
 	{
 		mCurText.Empty();
 		mConsumedText= UBFL_VN::ToTargetString(
-			mDialogueContext->GetActiveNodeText(), IsValid(activeParicipant), mTextSize);
+			mDialogueContext->GetActiveNodeText(), IsValid(activeParticipant), mTextSize);
 		mTargetText = mConsumedText;
 		DialogueText->SetText(FText::GetEmpty());
 		GetWorld()->GetTimerManager().SetTimer(mTypeTimer, this, &ThisClass::DelayTypeText, mTextSpeed, true);
@@ -480,7 +480,7 @@ void UWidget_Dialogue::OnTextFinishedTyping()
 	}
 }
 
-void UWidget_Dialogue::HideOptions()
+void UWidget_Dialogue::HideOptions() const
 {
 	for (int32 i = 0; i < ButtonsVBox->GetChildrenCount(); ++i)
 	{
@@ -516,7 +516,7 @@ void UWidget_Dialogue::StartDialogue(UDlgDialogue* Dialogue)
 	}
 }
 
-void UWidget_Dialogue::PlayVoice()
+void UWidget_Dialogue::PlayVoice() const
 {
 	USoundBase* voice = mDialogueContext->GetActiveNodeVoiceSoundBase();
 	if (IsValid(voice) &&
