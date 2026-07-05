@@ -22,6 +22,7 @@ void UWidget_DialogueOption::NativeConstruct()
 	Super::NativeConstruct();
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void UWidget_DialogueOption::OnDialogueBtnClicked()
 {
 	mDialogueWidget->ChooseOption(mOptionIndex);
@@ -35,7 +36,7 @@ void UWidget_DialogueOption::Init(UWidget_Dialogue* DialogueWidget, FText Text,
 	mOptionIndex = OptionIndex;
 }
 
-void UWidget_DialogueOption::SetPreviouslyPickedChoice(bool UseCB, bool WasChoice)
+void UWidget_DialogueOption::SetPreviouslyPickedChoice(bool UseCB, bool WasChoice) const
 {
 	DialogueCB->SetIsChecked(WasChoice);
 	UHorizontalBoxSlot* slotText = Cast<UHorizontalBoxSlot>(DialogueText->Slot);

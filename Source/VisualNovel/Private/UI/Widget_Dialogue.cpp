@@ -104,7 +104,7 @@ bool UWidget_Dialogue::ModifyNameValue_Implementation(FName ValueName,
 	else if (ValueName == VALUENAME_CHANGE_BG_DESOLVE)
 	{
 		ChangeBG(NameValue);
-		PlayAnimation(DesolveAnim);
+		PlayAnimation(DissolveAnim);
 	}
 	else if (ValueName == VALUENAME_CHANGE_BG_WIPE)
 	{
@@ -148,10 +148,10 @@ void UWidget_Dialogue::OnSaveGame_Implementation(USG_VN* SaveGame)
 	SaveGame->mVisitedNodes = mDialogueContext->GetVisitedNodeIndices();
 	for (const auto& participant : mParticipants)
 	{
-		UWidget_Participant* paricipantWidget = Cast<UWidget_Participant>(participant.Value);
-		if (IsValid(paricipantWidget))
+		UWidget_Participant* participantWidget = Cast<UWidget_Participant>(participant.Value);
+		if (IsValid(participantWidget))
 		{
-			Execute_OnSaveGame(paricipantWidget, SaveGame);
+			Execute_OnSaveGame(participantWidget, SaveGame);
 		}
 	}
 }
@@ -540,10 +540,10 @@ void UWidget_Dialogue::GetParticipants(UDlgDialogue* Dialogue,
 		const UCanvasPanel* canvas = Cast<UCanvasPanel>(GetRootWidget());
 		for (const auto& child : canvas->GetAllChildren())
 		{
-			UWidget_Participant* paricipant = Cast<UWidget_Participant>(child);
-			if (IsValid(paricipant))
+			UWidget_Participant* participantWidget = Cast<UWidget_Participant>(child);
+			if (IsValid(participantWidget))
 			{
-				mParticipants.Add(paricipant->GetParticipantName(), paricipant);
+				mParticipants.Add(participantWidget->GetParticipantName(), participantWidget);
 			}
 		}
 	}

@@ -37,6 +37,6 @@ protected:
 	void OnDialogueBtnClicked();
 
 public:
-	void Init(UWidget_Dialogue* DialogueContext,FText Text,int32 OptionIndex);
-	void SetPreviouslyPickedChoice(bool UseCB,bool WasChoice);
+	void Init(UWidget_Dialogue* DialogueWidget,FText Text,int32 OptionIndex);
+	void SetPreviouslyPickedChoice(bool UseCB,bool WasChoice) const;
 };

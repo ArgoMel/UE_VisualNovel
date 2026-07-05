@@ -78,7 +78,7 @@ protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<UWidgetAnimation> FadeAnim;
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	TObjectPtr<UWidgetAnimation> DesolveAnim;
+	TObjectPtr<UWidgetAnimation> DissolveAnim;
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<UWidgetAnimation> WipeAnim;
 	UPROPERTY(meta = (BindWidgetAnim), Transient)

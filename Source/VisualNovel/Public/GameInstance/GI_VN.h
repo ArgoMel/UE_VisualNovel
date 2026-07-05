@@ -5,6 +5,7 @@
 #include "Interface/Interface_VNSave.h"
 #include "GI_VN.generated.h"
 
+class UUserWidget;
 class UPersistantData;
 class UWidget_Menu;
 class UWidget_Option;
