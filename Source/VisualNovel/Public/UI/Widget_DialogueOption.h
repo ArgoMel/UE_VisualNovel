@@ -13,7 +13,7 @@ class VISUALNOVEL_API UWidget_DialogueOption : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UWidget_DialogueOption(const FObjectInitializer& ObjectInitializer);
+	explicit UWidget_DialogueOption(const FObjectInitializer& ObjectInitializer);
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;

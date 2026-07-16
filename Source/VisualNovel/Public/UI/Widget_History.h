@@ -12,11 +12,11 @@ class VISUALNOVEL_API UWidget_History : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UWidget_History(const FObjectInitializer& ObjectInitializer);
+	explicit UWidget_History(const FObjectInitializer& ObjectInitializer);
 public:
-	void OnNewGame_Implementation();
-	void OnSaveGame_Implementation(USG_VN* SaveGame);
-	void OnLoadGame_Implementation(USG_VN* SaveGame);
+	virtual void OnNewGame_Implementation() override;
+	virtual void OnSaveGame_Implementation(USG_VN* SaveGame) override;
+	virtual void OnLoadGame_Implementation(USG_VN* SaveGame) override;
 
 private:
 	FText mLatestNameText;
